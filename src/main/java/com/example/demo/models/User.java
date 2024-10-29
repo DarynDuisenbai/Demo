@@ -31,4 +31,7 @@ public class User {
 
     @Field("profileImage")
     private String profileImage;
+
+    @Field("role")
+    private String role;
 }

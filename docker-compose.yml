@@ -11,5 +11,3 @@ services:
       - "8080:5002"
     environment:
       - JAVA_OPTS=-Xms512m -Xmx1024m
-    volumes:
-      - .:/app

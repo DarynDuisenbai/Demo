@@ -14,7 +14,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -74,18 +76,38 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Tokens generated successfully"),
             @ApiResponse(responseCode = "401", description = "Authentication failed")
     })
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) throws InvalidLoginException, InvalidPasswordException {
-        UserDto userDto = userService.login(loginRequest);
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest)
+            throws InvalidLoginException, InvalidPasswordException {
+        // Аутентификация пользователя
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
         final UserDetails userDetails = userService.loadUserByUsername(loginRequest.getEmail());
         final String accessToken = jwtTokenUtil.generateToken(userDetails);
         final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
 
+        // Создаем cookie для accessToken
+        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(jwtTokenUtil.getAccessTokenExpiration())
+                .build();
+
+        // Создаем cookie для refreshToken
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(jwtTokenUtil.getRefreshTokenExpiration())
+                .build();
+
         Map<String, String> tokens = new HashMap<>();
         tokens.put("accessToken", accessToken);
         tokens.put("refreshToken", refreshToken);
 
-        return ResponseEntity.ok(tokens);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString(), refreshTokenCookie.toString())
+                .body(tokens);
     }
 }

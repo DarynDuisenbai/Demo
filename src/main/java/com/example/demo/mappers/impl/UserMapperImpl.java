@@ -1,6 +1,7 @@
 package com.example.demo.mappers.impl;
 
 import com.example.demo.dtos.requests.CreateUserRequest;
+import com.example.demo.dtos.requests.GetProfileRequest;
 import com.example.demo.dtos.requests.LoginRequest;
 import com.example.demo.dtos.responces.UserDto;
 import com.example.demo.mappers.UserMapper;

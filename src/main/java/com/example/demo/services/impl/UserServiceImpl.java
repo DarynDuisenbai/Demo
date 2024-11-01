@@ -1,6 +1,7 @@
 package com.example.demo.services.impl;
 
 import com.example.demo.dtos.requests.CreateUserRequest;
+import com.example.demo.dtos.requests.GetProfileRequest;
 import com.example.demo.dtos.requests.LoginRequest;
 import com.example.demo.dtos.responces.UserDto;
 import com.example.demo.exceptions.DuplicateUserException;
@@ -88,5 +89,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isPresent(String email) {
         return userRepository.findByEmail(email).orElse(null) != null;
+    }
+
+    @Override
+    public UserDto getProfile(GetProfileRequest getProfileRequest) {
+        User user = userRepository.findByEmail(getProfileRequest.getEmail()).orElse(null);
+        if(user == null){
+            return null;
+        }
+        return userMapper.toUserDto(user);
     }
 }

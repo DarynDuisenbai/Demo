@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.dtos.requests.CreateUserRequest;
+import com.example.demo.dtos.requests.GetProfileRequest;
 import com.example.demo.dtos.requests.LoginRequest;
 import com.example.demo.dtos.responces.UserDto;
 import com.example.demo.exceptions.DuplicateUserException;
@@ -13,5 +14,7 @@ public interface UserService extends UserDetailsService {
     UserDto login(LoginRequest loginRequest) throws InvalidLoginException, InvalidPasswordException;
     UserDto register(CreateUserRequest createUserRequest) throws InvalidLoginException, InvalidPasswordException, DuplicateUserException;
     boolean isPresent(String email);
+
+    UserDto getProfile(GetProfileRequest getProfileRequest);
 
 }

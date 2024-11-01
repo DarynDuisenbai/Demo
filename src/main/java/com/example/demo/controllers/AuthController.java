@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.dtos.requests.CreateUserRequest;
 import com.example.demo.dtos.requests.LoginRequest;
 import com.example.demo.dtos.responces.UserDto;
+import com.example.demo.exceptions.DuplicateUserException;
 import com.example.demo.exceptions.InvalidLoginException;
 import com.example.demo.exceptions.InvalidPasswordException;
 import com.example.demo.models.User;
@@ -35,17 +36,14 @@ public class AuthController {
 
     private AuthenticationManager authenticationManager;
     private JwtTokenUtil jwtTokenUtil;
-    private Validator validator;
 
     @Autowired
     public AuthController(UserServiceImpl userService,
                           AuthenticationManager authenticationManager,
-                          JwtTokenUtil jwtTokenUtil,
-                          Validator validator) {
+                          JwtTokenUtil jwtTokenUtil) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
-        this.validator = validator;
     }
 
     @GetMapping("/register")
@@ -59,7 +57,8 @@ public class AuthController {
             @ApiResponse(responseCode = "201", description = "User registered successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid email or password format")
     })
-    public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest) throws InvalidLoginException, InvalidPasswordException {
+    public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest)
+            throws InvalidLoginException, InvalidPasswordException, DuplicateUserException {
         userService.register(createUserRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully.");
     }
@@ -76,9 +75,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Tokens generated successfully"),
             @ApiResponse(responseCode = "401", description = "Authentication failed")
     })
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest)
-            throws InvalidLoginException, InvalidPasswordException {
-        // Аутентификация пользователя
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
@@ -86,7 +83,6 @@ public class AuthController {
         final String accessToken = jwtTokenUtil.generateToken(userDetails);
         final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
 
-        // Создаем cookie для accessToken
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
                 .secure(true)
@@ -94,7 +90,6 @@ public class AuthController {
                 .maxAge(jwtTokenUtil.getAccessTokenExpiration())
                 .build();
 
-        // Создаем cookie для refreshToken
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)

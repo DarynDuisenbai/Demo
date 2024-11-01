@@ -1,5 +1,6 @@
 package com.example.demo.exceptions.handler;
 
+import com.example.demo.exceptions.DuplicateUserException;
 import com.example.demo.exceptions.InvalidLoginException;
 import com.example.demo.exceptions.InvalidPasswordException;
 import org.springframework.http.HttpStatus;
@@ -18,5 +19,9 @@ public class AuthExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<String> handleInvalidSignature(InvalidPasswordException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must contain at least 8 characters, including uppercase, lowercase, digit, and special character.");
+    }
+    @ExceptionHandler(DuplicateUserException.class)
+    public ResponseEntity<String> handleInvalidSignature(DuplicateUserException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This email has been taken.");
     }
 }

@@ -1,8 +1,10 @@
 package com.example.demo.services.impl;
 
 import com.example.demo.dtos.requests.CreateUserRequest;
+import com.example.demo.dtos.requests.GetProfileRequest;
 import com.example.demo.dtos.requests.LoginRequest;
 import com.example.demo.dtos.responces.UserDto;
+import com.example.demo.exceptions.DuplicateUserException;
 import com.example.demo.exceptions.InvalidLoginException;
 import com.example.demo.exceptions.InvalidPasswordException;
 import com.example.demo.mappers.UserMapper;
@@ -52,6 +54,7 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
     public UserDto login(LoginRequest loginRequest) throws InvalidLoginException, InvalidPasswordException {
         if(!validator.isValidEmail(loginRequest.getEmail())){
             throw new InvalidLoginException("Invalid email format.");
@@ -65,7 +68,12 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
-    public UserDto register(CreateUserRequest createUserRequest) throws InvalidLoginException, InvalidPasswordException {
+
+    @Override
+    public UserDto register(CreateUserRequest createUserRequest) throws InvalidLoginException, InvalidPasswordException, DuplicateUserException {
+        if(isPresent(createUserRequest.getEmail())){
+            throw new DuplicateUserException("This email has been taken.");
+        }
         if(!validator.isValidEmail(createUserRequest.getEmail())){
             throw new InvalidLoginException("Invalid email format.");
         }
@@ -78,4 +86,17 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserDto(user);
     }
 
+    @Override
+    public boolean isPresent(String email) {
+        return userRepository.findByEmail(email).orElse(null) != null;
+    }
+
+    @Override
+    public UserDto getProfile(GetProfileRequest getProfileRequest) {
+        User user = userRepository.findByEmail(getProfileRequest.getEmail()).orElse(null);
+        if(user == null){
+            return null;
+        }
+        return userMapper.toUserDto(user);
+    }
 }

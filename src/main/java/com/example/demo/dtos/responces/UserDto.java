@@ -9,6 +9,7 @@ import java.util.Date;
 @Setter
 public class UserDto {
     private String email;
+    private String password;
     private String name;
     private Date registrationDate;
     private String profileImage;

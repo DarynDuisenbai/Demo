@@ -14,6 +14,7 @@ import com.example.demo.utils.Validator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,20 +32,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class AuthController {
-    private UserService userService;
+    private final UserService userService;
 
-    private AuthenticationManager authenticationManager;
-    private JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    public AuthController(UserServiceImpl userService,
-                          AuthenticationManager authenticationManager,
-                          JwtTokenUtil jwtTokenUtil) {
-        this.userService = userService;
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @GetMapping("/register")
     public String register() {

@@ -8,24 +8,26 @@ import com.example.demo.dtos.responces.UserDto;
 import com.example.demo.exceptions.InvalidPasswordException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@Tag(name = "User Controller", description = "Endpoints for managing user operations")
+@RestController
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
+    @Operation(summary = "Get user profile")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @GetMapping("/profile")
     public ResponseEntity<UserDto> profile(@RequestBody GetProfileRequest getProfileRequest)
             throws UserNotFoundException {
@@ -33,6 +35,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userProf);
     }
 
+    @Operation(summary = "Change user password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid password format"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @PostMapping("/password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest)
             throws UserNotFoundException, InvalidPasswordException {
@@ -40,6 +48,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully");
     }
 
+    @Operation(summary = "Delete user account")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAccount(@RequestBody DeleteAccountRequest deleteAccountRequest)
             throws UserNotFoundException {
@@ -47,6 +60,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has successfully deleted.");
     }
 
+    @Operation(summary = "Forgot password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password reset link sent to email"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @PostMapping("/reset-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest)
             throws UserNotFoundException {

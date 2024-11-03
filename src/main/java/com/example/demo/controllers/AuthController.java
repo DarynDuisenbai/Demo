@@ -14,6 +14,7 @@ import com.example.demo.utils.Validator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -32,10 +33,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@Tag(name = "Auth Controller",  description = "Endpoints for managing authentication")
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
-
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
 

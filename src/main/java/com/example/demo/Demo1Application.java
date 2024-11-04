@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         scheme = "bearer",
         bearerFormat = "JWT"
 )
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.example.demo")
 public class Demo1Application {
 
     public static void main(String[] args) {

@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User Controller", description = "Endpoints for managing user operations")
@@ -28,6 +29,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Profile retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/profile")
     public ResponseEntity<UserDto> profile(@RequestBody GetProfileRequest getProfileRequest)
             throws UserNotFoundException {
@@ -41,6 +43,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid password format"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest)
             throws UserNotFoundException, InvalidPasswordException {
@@ -53,6 +56,7 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAccount(@RequestBody DeleteAccountRequest deleteAccountRequest)
             throws UserNotFoundException {
@@ -65,6 +69,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Password reset link sent to email"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
+    @PreAuthorize("permitAll")
     @PostMapping("/reset-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest)
             throws UserNotFoundException {

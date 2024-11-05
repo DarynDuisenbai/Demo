@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -19,6 +20,7 @@ public class Conclusion {
     private String _id;
 
     @Field("registrationNumber")
+    @Indexed(unique = true)
     private String registrationNumber;
 
     @Field("creationDate")
@@ -30,11 +32,11 @@ public class Conclusion {
     @Field("registrationDate")
     private LocalDate registrationDate;
 
-    @Field("criminalCode")
-    private String criminalCode;
+    @Field("article")
+    private String article;
 
-    @Field("solution")
-    private String solution;
+    @Field("decision")
+    private String decision;
 
     @Field("plot")
     private String plot;
@@ -49,28 +51,28 @@ public class Conclusion {
     private String jobTitleOfCalled;
 
     @Field("BIN/IIN")
-    private String BINorIIN;
+    private String BINorIINOfCalled;
 
     @Field("jobPlace")
     private String jobPlace;
 
     @Field("region")
-    private String region;
+    private Region region;
 
     @Field("plannedActions")
     private String plannedActions;
 
-    @Field("conductTime")
-    private LocalDate conductTime;
+    @Field("eventTime")
+    private LocalDate eventTime;
 
-    @Field("conductPlace")
-    private String conductPlace;
+    @Field("eventPlace")
+    private String eventPlace;
 
     @Field("investigator")
     private String investigator;
 
     @Field("status")
-    private Status status;
+    private int status;
 
     @Field("relation")
     private String relation;
@@ -83,9 +85,6 @@ public class Conclusion {
 
     @Field("BIN/IINPension")
     private String BINOrIINofBusiness;
-
-    @Field("jobPlacePension")
-    private String jobPlacePension;
 
     @Field("IINofDefender")
     private String IINDefender;

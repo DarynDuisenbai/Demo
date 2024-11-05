@@ -5,9 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateUserRequest {
+public class ShortConclusionRequest {
     private String email;
-    private String name;
-    private String secondName;
-    private String password;
 }

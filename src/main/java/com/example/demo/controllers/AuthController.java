@@ -2,21 +2,17 @@ package com.example.demo.controllers;
 
 import com.example.demo.dtos.requests.CreateUserRequest;
 import com.example.demo.dtos.requests.LoginRequest;
-import com.example.demo.dtos.responces.UserDto;
 import com.example.demo.exceptions.DuplicateUserException;
 import com.example.demo.exceptions.InvalidLoginException;
 import com.example.demo.exceptions.InvalidPasswordException;
-import com.example.demo.models.User;
+import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.services.UserService;
-import com.example.demo.services.impl.UserServiceImpl;
 import com.example.demo.utils.JwtTokenUtil;
-import com.example.demo.utils.Validator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -69,7 +65,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Tokens generated successfully"),
             @ApiResponse(responseCode = "401", description = "Authentication failed")
     })
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) throws UserNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 

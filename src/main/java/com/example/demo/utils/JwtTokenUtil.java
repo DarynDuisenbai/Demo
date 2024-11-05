@@ -1,8 +1,12 @@
 package com.example.demo.utils;
 
+import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.models.User;
+import com.example.demo.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -16,6 +20,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenUtil {
 
     @Value("${jwt.access.token.expiration}")
@@ -23,6 +28,9 @@ public class JwtTokenUtil {
 
     @Value("${jwt.refresh.token.expiration}")
     private long refreshTokenExpiration;
+
+    private final UserRepository userRepository;
+
     private String secretKey = generateSecret();
 
     private String generateSecret() {
@@ -59,24 +67,34 @@ public class JwtTokenUtil {
     }
 
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return createToken(new HashMap<>(), userDetails.getUsername(), refreshTokenExpiration);
+    public String generateRefreshToken(UserDetails userDetails) throws UserNotFoundException {
+        return createToken(userDetails.getUsername(), refreshTokenExpiration);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return createToken(new HashMap<>(), userDetails.getUsername(), accessTokenExpiration);
+    public String generateToken(UserDetails userDetails) throws UserNotFoundException {
+        return createToken(userDetails.getUsername(), accessTokenExpiration);
     }
 
-    private String createToken(Map<String, Object> claims, String subject, long expiration) {
-        return Jwts
-                .builder()
+    private String createToken(String username, long expiration) throws UserNotFoundException {
+        User user = userRepository.findByEmail(username).get();
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("name", user.getName());
+        claims.put("secondName", user.getSecondName());
+        claims.put("password", user.getPassword());
+        claims.put("email", user.getEmail());
+        claims.put("profileImage", user.getProfileImage());
+        claims.put("registrationDate", user.getRegistrationDate());
+
+        return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secretKey).compact();
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
+                .compact();
     }
-
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

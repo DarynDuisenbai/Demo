@@ -6,6 +6,7 @@ import com.example.demo.dtos.responces.UserDto;
 import com.example.demo.exceptions.DuplicateUserException;
 import com.example.demo.exceptions.InvalidLoginException;
 import com.example.demo.exceptions.InvalidPasswordException;
+import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.models.User;
 import com.example.demo.services.UserService;
 import com.example.demo.services.impl.UserServiceImpl;
@@ -69,7 +70,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Tokens generated successfully"),
             @ApiResponse(responseCode = "401", description = "Authentication failed")
     })
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) throws UserNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 

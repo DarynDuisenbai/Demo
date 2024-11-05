@@ -21,13 +21,15 @@ public class User {
     @Field("name")
     private String name;
 
+    @Field("secondName")
+    private String secondName;
+
     @Field("password")
     private String password;
 
     @Field("email")
     @Indexed(unique = true)
     private String email;
-
 
     @Field("registrationDate")
     private Date registrationDate;

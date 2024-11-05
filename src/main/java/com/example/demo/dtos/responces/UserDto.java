@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,4 +15,7 @@ public class UserDto {
     private String secondName;
     private Date registrationDate;
     private String profileImage;
+    private String IIN;
+    private String department;
+    private List<ConclusionDto> conclusions;
 }

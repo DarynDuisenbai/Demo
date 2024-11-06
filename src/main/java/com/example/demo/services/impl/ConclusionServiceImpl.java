@@ -104,4 +104,8 @@ public class ConclusionServiceImpl implements ConclusionService {
         return conclusionMapper.toDtoList(user.getConclusions());
     }
 
+    @Override
+    public List<String> allUD() {
+        return conclusionRepository.findAll().stream().map(Conclusion::getUD).toList();
+    }
 }

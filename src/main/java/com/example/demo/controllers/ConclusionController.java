@@ -100,4 +100,13 @@ public class ConclusionController {
         return ResponseEntity.ok(conclusions);
     }
 
+
+    @Operation(summary = "Get all UD", description = "Retrieves a list of UD's")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All UD's retireved")
+    })
+    @GetMapping("/allUD")
+    public ResponseEntity<List<String>> allUD(){
+        conclusionService.
+    }
 }

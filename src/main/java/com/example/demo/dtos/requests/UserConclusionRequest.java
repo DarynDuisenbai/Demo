@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserConclusionRequest {
-    private String email;
+    private String IIN;
 }

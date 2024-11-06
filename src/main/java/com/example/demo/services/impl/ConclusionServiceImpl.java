@@ -100,7 +100,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     @Override
     public List<ConclusionDto> userConclusions(UserConclusionRequest userConclusionRequest) throws UserNotFoundException {
         LOGGER.debug("Retrieving user conclusions...");
-        User user = userRepository.findByEmail(userConclusionRequest.getEmail()).orElseThrow(()-> new UserNotFoundException("User not found."));
+        User user = userRepository.findByEmail(userConclusionRequest.getIIN()).orElseThrow(()-> new UserNotFoundException("User not found."));
         return conclusionMapper.toDtoList(user.getConclusions());
     }
 }

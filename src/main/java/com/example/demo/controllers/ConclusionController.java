@@ -7,6 +7,7 @@ import com.example.demo.dtos.requests.UserConclusionRequest;
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
 import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.models.Region;
 import com.example.demo.services.ConclusionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,12 +17,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -50,7 +55,23 @@ public class ConclusionController {
     })
     @GetMapping("/filter")
    // @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ConclusionDto>> filter(@RequestBody FilterRequest filterRequest) {
+    public ResponseEntity<List<ConclusionDto>> filter(@RequestParam(required = false) String registrationNumber,
+                                                      @RequestParam(required = false) Integer status,
+                                                      @RequestParam(required = false) Region region,
+                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+                                                      @RequestParam(required = false) String iin,
+                                                      @RequestParam(required = false) String ud,
+                                                      @RequestParam(required = false) String fullName) {
+        FilterRequest filterRequest = new FilterRequest();
+        filterRequest.setRegistrationNumber(registrationNumber);
+        filterRequest.setStatus(status);
+        filterRequest.setRegion(region);
+        filterRequest.setFrom(from);
+        filterRequest.setTo(to);
+        filterRequest.setIIN(iin);
+        filterRequest.setUD(ud);
+        filterRequest.setFullName(fullName);
         List<ConclusionDto> results = conclusionService.filter(filterRequest);
         return ResponseEntity.ok(results);
     }

@@ -22,7 +22,7 @@ public class FilterRepoImpl implements FilterRepo{
         if (filterRequest.getRegistrationNumber() != null) {
             query.addCriteria(Criteria.where("registrationNumber").is(filterRequest.getRegistrationNumber()));
         }
-        if (filterRequest.getStatus() != 0) {
+        if (filterRequest.getStatus() != null) {
             query.addCriteria(Criteria.where("status").is(filterRequest.getStatus()));
         }
         if (filterRequest.getRegion() != null) {

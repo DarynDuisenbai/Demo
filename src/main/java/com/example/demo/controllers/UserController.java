@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "User Controller", description = "Endpoints for managing user operations")
 @RestController
 @RequiredArgsConstructor
@@ -75,5 +77,15 @@ public class UserController {
             throws UserNotFoundException {
         userService.forgotPassword(forgotPasswordRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Password reset link sent to your email.");
+    }
+
+    @Operation(summary = "All names")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All names retrieved")
+    })
+    @PostMapping("/allNames")
+    public ResponseEntity<List<String>> allNames(){
+        List<String> allNames = userService.allNames();
+        return ResponseEntity.ok(allNames);
     }
 }

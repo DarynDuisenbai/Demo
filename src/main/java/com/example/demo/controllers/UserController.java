@@ -83,7 +83,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All names retrieved")
     })
-    @PostMapping("/allNames")
+    @GetMapping("/allNames")
     public ResponseEntity<List<String>> allNames(){
         List<String> allNames = userService.allNames();
         return ResponseEntity.ok(allNames);

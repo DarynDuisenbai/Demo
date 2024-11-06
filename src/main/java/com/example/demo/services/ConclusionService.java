@@ -15,6 +15,7 @@ public interface ConclusionService {
     List<ConclusionDto> filter(FilterRequest filterRequest);
     //List<AgreementDto> agreement() throws UserNotFoundException;
     List<ConclusionDto> userConclusions(UserConclusionRequest userConclusionRequest) throws UserNotFoundException;
+    List<String> allUD();
 
 
 }

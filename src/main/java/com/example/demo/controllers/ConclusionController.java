@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @PostMapping("/create")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createConclusion(@Valid @RequestBody CreateConclusionRequest createConclusionRequest) throws UserNotFoundException {
         conclusionService.createConclusion(createConclusionRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Document successfully created.");
@@ -47,6 +49,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @GetMapping("/filter")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ConclusionDto>> filter(@RequestBody FilterRequest filterRequest) throws UserNotFoundException {
         List<ConclusionDto> results = conclusionService.filter(filterRequest);
         return ResponseEntity.ok(results);
@@ -70,6 +73,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @GetMapping("/long")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ConclusionDto>> myConclusions(@RequestBody UserConclusionRequest userConclusionRequest) throws UserNotFoundException {
         List<ConclusionDto> conclusions = conclusionService.userConclusions(userConclusionRequest);
         return ResponseEntity.ok(conclusions);

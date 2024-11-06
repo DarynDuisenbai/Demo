@@ -28,8 +28,8 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebConfig {
 
-    private UserService userService;
-    private JwtRequestFilter jwtRequestFilter;
+    private final UserService userService;
+    private final JwtRequestFilter jwtRequestFilter;
 
     @Autowired
     public WebConfig(@Lazy UserService userService,  @Lazy JwtRequestFilter jwtRequestFilter) {
@@ -41,9 +41,9 @@ public class WebConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**","/login", "/register").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**","/login", "/register", "/reset-password").permitAll()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userService)

@@ -6,6 +6,7 @@ import com.example.demo.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,23 +24,18 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtTokenUtil {
 
+    @Getter
     @Value("${jwt.access.token.expiration}")
     private long accessTokenExpiration;
 
+    @Getter
     @Value("${jwt.refresh.token.expiration}")
     private long refreshTokenExpiration;
 
     private final UserRepository userRepository;
 
-    private String secretKey = generateSecret();
-
-    private String generateSecret() {
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] randomBytes = new byte[32];
-        secureRandom.nextBytes(randomBytes);
-
-        return Base64.getEncoder().encodeToString(randomBytes);
-    }
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -56,7 +52,7 @@ public class JwtTokenUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(secretKey.getBytes())
+                .setSigningKey(Base64.getDecoder().decode(secretKey))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -84,12 +80,17 @@ public class JwtTokenUtil {
         claims.put("name", user.getName());
         claims.put("secondName", user.getSecondName());
         claims.put("password", user.getPassword());
-        claims.put("email", user.getEmail());
-        claims.put("profileImage", user.getProfileImage());
-        claims.put("registrationDate", user.getRegistrationDate());
+        //claims.put("email", user.getEmail());
+        //claims.put("profileImage", user.getProfileImage());
+        //claims.put("registrationDate", user.getRegistrationDate());
+        //claims.put("department", user.getDepartment());
+        //claims.put("IIN", user.getIIN());
+        //claims.put("job", user.getJob());
+        //claims.put("role", user.getRole());
 
         return Jwts.builder()
                 .setClaims(claims)
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
@@ -98,14 +99,6 @@ public class JwtTokenUtil {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-
-    public long getAccessTokenExpiration() {
-        return accessTokenExpiration;
-    }
-
-    public long getRefreshTokenExpiration() {
-        return refreshTokenExpiration;
     }
 
 }

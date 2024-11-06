@@ -103,4 +103,5 @@ public class ConclusionServiceImpl implements ConclusionService {
         User user = userRepository.findByEmail(userConclusionRequest.getIIN()).orElseThrow(()-> new UserNotFoundException("User not found."));
         return conclusionMapper.toDtoList(user.getConclusions());
     }
+
 }

@@ -16,4 +16,5 @@ public interface ConclusionService {
     //List<AgreementDto> agreement() throws UserNotFoundException;
     List<ConclusionDto> userConclusions(UserConclusionRequest userConclusionRequest) throws UserNotFoundException;
 
+
 }

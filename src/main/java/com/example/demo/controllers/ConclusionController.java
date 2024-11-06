@@ -99,4 +99,5 @@ public class ConclusionController {
         List<ConclusionDto> conclusions = conclusionService.userConclusions(userConclusionRequest);
         return ResponseEntity.ok(conclusions);
     }
+
 }

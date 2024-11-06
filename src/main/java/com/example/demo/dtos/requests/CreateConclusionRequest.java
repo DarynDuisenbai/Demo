@@ -17,6 +17,7 @@ public class CreateConclusionRequest {
     private String plannedActions;
     private LocalDate eventDateTime;
     private String eventPlace;
+   // private int status;
     private String relation;
     private String investigationType;
     private Boolean relatesToBusiness;

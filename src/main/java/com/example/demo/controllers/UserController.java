@@ -29,7 +29,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Profile retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @PreAuthorize("isAuthenticated()")
+   // @PreAuthorize("isAuthenticated()")
     @GetMapping("/profile")
     public ResponseEntity<UserDto> profile(@RequestBody GetProfileRequest getProfileRequest)
             throws UserNotFoundException {
@@ -43,7 +43,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid password format"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @PreAuthorize("isAuthenticated()")
+  //  @PreAuthorize("isAuthenticated()")
     @PostMapping("/password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest)
             throws UserNotFoundException, InvalidPasswordException {
@@ -56,7 +56,7 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAccount(@RequestBody DeleteAccountRequest deleteAccountRequest)
             throws UserNotFoundException {

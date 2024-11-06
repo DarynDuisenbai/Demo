@@ -15,6 +15,8 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.services.ConclusionService;
 import com.example.demo.utils.Generator;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.xml.crypto.Data;
@@ -25,6 +27,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ConclusionServiceImpl implements ConclusionService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConclusionServiceImpl.class);
     private final ConclusionRepository conclusionRepository;
     private final UserRepository userRepository;
     private final ConclusionMapper conclusionMapper;
@@ -32,6 +35,7 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     public void createConclusion(CreateConclusionRequest createConclusionRequest) throws UserNotFoundException {
+        LOGGER.debug("Creating a new conclusion");
         Conclusion conclusion = conclusionMapper.fromCreateToConclusion(createConclusionRequest);
 
         conclusion.setRegistrationNumber(generator.generateUniqueNumber());
@@ -80,18 +84,9 @@ public class ConclusionServiceImpl implements ConclusionService {
         // Implement fetching investigator from user profile
     }*/
     @Override
-    public List<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException {
-        //User user = userRepository.findByIIN(filterRequest.getIIN()).orElseThrow(() -> new UserNotFoundException("User not found."));
-        List<Conclusion> filteredConclusions = conclusionRepository.filterConclusions(
-                filterRequest.getRegistrationNumber(),
-                String.valueOf(filterRequest.getStatus()),
-                filterRequest.getRegion().getName(),
-                filterRequest.getFrom(),
-                filterRequest.getTo(),
-                filterRequest.getIIN(),
-                filterRequest.getUD(),
-                filterRequest.getFullName()
-        );
+    public List<ConclusionDto> filter(FilterRequest filterRequest){
+        LOGGER.debug("Filtering...");
+        List<Conclusion> filteredConclusions = conclusionRepository.filterConclusions(filterRequest);
         return conclusionMapper.toDtoList(filteredConclusions);
     }
 
@@ -104,6 +99,7 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     public List<ConclusionDto> userConclusions(UserConclusionRequest userConclusionRequest) throws UserNotFoundException {
+        LOGGER.debug("Retrieving user conclusions...");
         User user = userRepository.findByEmail(userConclusionRequest.getEmail()).orElseThrow(()-> new UserNotFoundException("User not found."));
         return conclusionMapper.toDtoList(user.getConclusions());
     }

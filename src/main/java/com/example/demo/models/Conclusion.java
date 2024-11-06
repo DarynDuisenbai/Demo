@@ -11,8 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDate;
 import java.util.Date;
 
-@Getter
-@Setter
 @Data
 @Document(collection = "conclusions")
 public class Conclusion {

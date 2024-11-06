@@ -43,11 +43,11 @@ public class WebConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**","/login", "/register", "/reset-password").permitAll()
-                        .anyRequest().authenticated()
+                        //.requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**","/login", "/register", "/reset-password").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .userDetailsService(userService)
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                //.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .invalidateHttpSession(true)

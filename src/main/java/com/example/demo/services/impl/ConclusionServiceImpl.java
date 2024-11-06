@@ -84,19 +84,9 @@ public class ConclusionServiceImpl implements ConclusionService {
         // Implement fetching investigator from user profile
     }*/
     @Override
-    public List<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException {
+    public List<ConclusionDto> filter(FilterRequest filterRequest){
         LOGGER.debug("Filtering...");
-        //User user = userRepository.findByIIN(filterRequest.getIIN()).orElseThrow(() -> new UserNotFoundException("User not found."));
-        List<Conclusion> filteredConclusions = conclusionRepository.filterConclusions(
-                filterRequest.getRegistrationNumber(),
-                String.valueOf(filterRequest.getStatus()),
-                filterRequest.getRegion().getName(),
-                filterRequest.getFrom(),
-                filterRequest.getTo(),
-                filterRequest.getIIN(),
-                filterRequest.getUD(),
-                filterRequest.getFullName()
-        );
+        List<Conclusion> filteredConclusions = conclusionRepository.filterConclusions(filterRequest);
         return conclusionMapper.toDtoList(filteredConclusions);
     }
 

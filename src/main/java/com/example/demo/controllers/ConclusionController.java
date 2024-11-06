@@ -37,7 +37,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @PostMapping("/create")
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createConclusion(@Valid @RequestBody CreateConclusionRequest createConclusionRequest) throws UserNotFoundException {
         conclusionService.createConclusion(createConclusionRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Document successfully created.");
@@ -49,8 +49,8 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @GetMapping("/filter")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ConclusionDto>> filter(@RequestBody FilterRequest filterRequest) throws UserNotFoundException {
+   // @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<ConclusionDto>> filter(@RequestBody FilterRequest filterRequest) {
         List<ConclusionDto> results = conclusionService.filter(filterRequest);
         return ResponseEntity.ok(results);
     }
@@ -73,7 +73,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @GetMapping("/long")
-    @PreAuthorize("isAuthenticated()")
+    //@PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ConclusionDto>> myConclusions(@RequestBody UserConclusionRequest userConclusionRequest) throws UserNotFoundException {
         List<ConclusionDto> conclusions = conclusionService.userConclusions(userConclusionRequest);
         return ResponseEntity.ok(conclusions);

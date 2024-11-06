@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ConclusionService {
     void createConclusion(CreateConclusionRequest createConclusionRequest) throws UserNotFoundException;
-    List<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException;
+    List<ConclusionDto> filter(FilterRequest filterRequest);
     //List<AgreementDto> agreement() throws UserNotFoundException;
     List<ConclusionDto> userConclusions(UserConclusionRequest userConclusionRequest) throws UserNotFoundException;
 

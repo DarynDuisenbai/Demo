@@ -3,23 +3,38 @@ package com.example.demo.mappers.impl;
 import com.example.demo.dtos.requests.CreateConclusionRequest;
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
+import com.example.demo.dtos.responces.TempConclusionDto;
+import com.example.demo.exceptions.RegionNotFoundException;
 import com.example.demo.mappers.ConclusionMapper;
 import com.example.demo.models.Conclusion;
+import com.example.demo.models.Region;
+import com.example.demo.models.Status;
+import com.example.demo.models.TemporaryConclusion;
+import com.example.demo.repository.RegionRepository;
+import com.example.demo.repository.StatusRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ConclusionMapperImpl implements ConclusionMapper {
+    private final RegionRepository regionRepository;
+    private final StatusRepository statusRepository;
     @Override
-    public Conclusion fromCreateToConclusion(CreateConclusionRequest createConclusionRequest) {
+    public Conclusion fromCreateToConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException {
         Conclusion conclusion = new Conclusion();
         conclusion.setUD(createConclusionRequest.getUD());
         conclusion.setIINofCalled(createConclusionRequest.getIIN());
         conclusion.setBINorIINOfCalled(createConclusionRequest.getBIN_IIN());
         conclusion.setJobTitleOfCalled(createConclusionRequest.getJobTitle());
-        conclusion.setRegion(createConclusionRequest.getRegion());
+
+        Region region = regionRepository.findRegionByName(createConclusionRequest.getRegion()).
+                orElseThrow(() -> new RegionNotFoundException("Region not found."));
+
+        conclusion.setRegion(region);
         conclusion.setPlannedActions(createConclusionRequest.getPlannedActions());
         conclusion.setEventTime(createConclusionRequest.getEventDateTime());
         conclusion.setEventPlace(createConclusionRequest.getEventPlace());
@@ -37,7 +52,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
     public ConclusionDto toConclusionDto(Conclusion conclusion) {
         ConclusionDto dto = new ConclusionDto();
         dto.setRegistrationNumber(conclusion.getRegistrationNumber());
-        dto.setCreationDate(conclusion.getCreationDate().toString());
+        dto.setCreationDate(conclusion.getCreationDate());
         dto.setUdNumber(conclusion.getUD());
         dto.setRegistrationDate(conclusion.getRegistrationDate());
         dto.setArticle(conclusion.getArticle());
@@ -53,7 +68,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         dto.setEventDateTime(conclusion.getEventTime());
         dto.setEventPlace(conclusion.getEventPlace());
         dto.setInvestigator(conclusion.getInvestigator());
-        dto.setStatus(conclusion.getStatus());
+        dto.setStatus(conclusion.getStatus().getName());
         dto.setRelationToEvent(conclusion.getRelation());
         dto.setInvestigationTypes(conclusion.getInvestigation());
         dto.setRelatesToBusiness(conclusion.isBusiness());
@@ -75,4 +90,35 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         return dtos;
     }
 
+    @Override
+    public Conclusion fromTempToConclusion(TemporaryConclusion tempConclusionDto) {
+        Conclusion conclusion = new Conclusion();
+        conclusion.setRegistrationNumber(tempConclusionDto.getRegistrationNumber());
+        conclusion.setCreationDate(tempConclusionDto.getCreationDate());
+        conclusion.setUD(tempConclusionDto.getUD());
+        conclusion.setRegistrationDate(tempConclusionDto.getRegistrationDate());
+        conclusion.setArticle(tempConclusionDto.getArticle());
+        conclusion.setDecision(tempConclusionDto.getDecision());
+        conclusion.setPlot(tempConclusionDto.getDecision());
+        conclusion.setIINofCalled(tempConclusionDto.getIINofCalled());
+        conclusion.setFullNameOfCalled(tempConclusionDto.getFullNameOfCalled());
+        conclusion.setJobTitleOfCalled(tempConclusionDto.getJobTitleOfCalled());
+        conclusion.setBINorIINOfCalled(tempConclusionDto.getBINorIINOfCalled());
+        conclusion.setEventPlace(tempConclusionDto.getEventPlace());
+        conclusion.setRegion(tempConclusionDto.getRegion());
+        conclusion.setPlannedActions(tempConclusionDto.getPlannedActions());
+        conclusion.setEventTime(tempConclusionDto.getEventTime());
+        conclusion.setEventPlace(tempConclusionDto.getEventPlace());
+        conclusion.setInvestigator(tempConclusionDto.getInvestigator());
+        conclusion.setStatus(tempConclusionDto.getStatus());
+        conclusion.setRelation(tempConclusionDto.getRelation());
+        conclusion.setInvestigation(tempConclusionDto.getInvestigation());
+        conclusion.setBusiness(tempConclusionDto.isBusiness());
+        conclusion.setIINDefender(tempConclusionDto.getIINDefender());
+        conclusion.setFullNameOfDefender(tempConclusionDto.getFullNameOfDefender());
+        conclusion.setJustification(tempConclusionDto.getJustification());
+        conclusion.setResult(tempConclusionDto.getResult());
+
+        return conclusion;
+    }
 }

@@ -3,6 +3,7 @@ package com.example.demo.dtos.responces;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -13,9 +14,10 @@ public class UserDto {
     private String password;
     private String name;
     private String secondName;
-    private Date registrationDate;
+    private LocalDateTime registrationDate;
     private String profileImage;
     private String IIN;
     private String department;
+    private String region;
     private List<ConclusionDto> conclusions;
 }

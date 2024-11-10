@@ -80,20 +80,20 @@ public class JwtTokenUtil {
         claims.put("name", user.getName());
         claims.put("secondName", user.getSecondName());
         claims.put("password", user.getPassword());
-        //claims.put("email", user.getEmail());
-        //claims.put("profileImage", user.getProfileImage());
-        //claims.put("registrationDate", user.getRegistrationDate());
-        //claims.put("department", user.getDepartment());
-        //claims.put("IIN", user.getIIN());
-        //claims.put("job", user.getJob());
-        //claims.put("role", user.getRole());
+        claims.put("email", user.getEmail());
+        claims.put("profileImage", user.getProfileImage());
+        claims.put("registrationDate", user.getRegistrationDate().toString());
+        claims.put("department", user.getDepartment());
+        claims.put("IIN", user.getIIN());
+        claims.put("job", user.getJob());
+        claims.put("role", user.getRole());
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
+                .signWith(SignatureAlgorithm.HS256, Base64.getDecoder().decode(secretKey))
                 .compact();
     }
     public Boolean validateToken(String token, UserDetails userDetails) {

@@ -1,11 +1,11 @@
 package com.example.demo.controllers;
 
-import com.example.demo.dtos.requests.CreateConclusionRequest;
-import com.example.demo.dtos.requests.FilterRequest;
-import com.example.demo.dtos.requests.ShortConclusionRequest;
-import com.example.demo.dtos.requests.UserConclusionRequest;
+import com.example.demo.dtos.requests.*;
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
+import com.example.demo.dtos.responces.TempConclusionDto;
+import com.example.demo.exceptions.NoTemporaryConclusionFound;
+import com.example.demo.exceptions.RegionNotFoundException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.models.Region;
 import com.example.demo.services.ConclusionService;
@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -42,11 +43,23 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @PostMapping("/create")
-    //@PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> createConclusion(@Valid @RequestBody CreateConclusionRequest createConclusionRequest) throws UserNotFoundException {
+    public ResponseEntity<?> createConclusion(@Valid @RequestBody CreateConclusionRequest createConclusionRequest) throws UserNotFoundException, RegionNotFoundException {
         conclusionService.createConclusion(createConclusionRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Document successfully created.");
     }
+
+    @Operation(summary = "Turn temporary to permanent", description = "Turns temporary conclusion into permanent")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Document successfully created"),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
+    })
+    @PostMapping("/turn")
+    public ResponseEntity<?> turnConclusion(@RequestParam String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound {
+        conclusionService.turnToPermanent(registrationNumber);
+        return ResponseEntity.status(HttpStatus.OK).body("Document successfully created.");
+    }
+
+
 
     @Operation(summary = "Filter conclusions", description = "Filter conclusions based on specified criteria")
     @ApiResponses(value = {
@@ -54,12 +67,11 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @GetMapping("/filter")
-   // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ConclusionDto>> filter(@RequestParam(required = false) String registrationNumber,
-                                                      @RequestParam(required = false) Integer status,
-                                                      @RequestParam(required = false) Region region,
-                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+                                                      @RequestParam(required = false) String status,
+                                                      @RequestParam(required = false) String region,
+                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime from,
+                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime to,
                                                       @RequestParam(required = false) String iin,
                                                       @RequestParam(required = false) String ud,
                                                       @RequestParam(required = false) String fullName) {
@@ -94,19 +106,54 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @GetMapping("/long")
-    //@PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ConclusionDto>> myConclusions(@RequestBody UserConclusionRequest userConclusionRequest) throws UserNotFoundException {
-        List<ConclusionDto> conclusions = conclusionService.userConclusions(userConclusionRequest);
+    public ResponseEntity<List<ConclusionDto>> myConclusions(@RequestParam String IIN) throws UserNotFoundException {
+        List<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
+        return ResponseEntity.ok(conclusions);
+    }
+
+    @Operation(summary = "Get user's temporary conclusions", description = "Retrieves a list of temporary conclusions associated with a specific user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Conclusions retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
+    })
+    @GetMapping("/temps")
+    public ResponseEntity<List<TempConclusionDto>> myTempConclusions(@RequestParam String IIN) throws UserNotFoundException {
+        List<TempConclusionDto> conclusions = conclusionService.userSavedConclusions(IIN);
         return ResponseEntity.ok(conclusions);
     }
 
 
     @Operation(summary = "Get all UD", description = "Retrieves a list of UD's")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "All UD's retireved")
+            @ApiResponse(responseCode = "200", description = "All UD's retrieved")
     })
     @GetMapping("/allUD")
     public ResponseEntity<List<String>> allUD(){
-        conclusionService.
+        List<String> allUD = conclusionService.allUD();
+        return ResponseEntity.ok(allUD);
     }
+
+    @Operation(summary = "Save a temporary conclusion", description = "Saving option for user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Saved a temporary conclusion")
+    })
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody CreateConclusionRequest createConclusionRequest)
+            throws UserNotFoundException, RegionNotFoundException {
+        conclusionService.saveConclusion(createConclusionRequest);
+        return ResponseEntity.status(HttpStatus.OK).body("Document successfully saved.");
+    }
+
+    @Operation(summary = "Edit a temporary conclusion", description = "After saving user can continue to edit it")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Edited a temporary conclusion")
+    })
+    @PutMapping("/edit")
+    public ResponseEntity<?> edit(@RequestBody EditSavedConclusionRequest editSavedConclusionRequest)
+            throws UserNotFoundException, RegionNotFoundException, NoTemporaryConclusionFound {
+        conclusionService.editSavedConclusion(editSavedConclusionRequest);
+        return ResponseEntity.status(HttpStatus.OK).body("Document successfully edited.");
+    }
+
+
 }

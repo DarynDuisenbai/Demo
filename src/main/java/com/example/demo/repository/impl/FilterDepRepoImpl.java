@@ -1,17 +1,17 @@
-package com.example.demo.repository;
+package com.example.demo.repository.impl;
 
 import com.example.demo.dtos.requests.FilterRequest;
 import com.example.demo.models.Conclusion;
+import com.example.demo.repository.FilterDepRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class FilterRepoImpl implements FilterRepo{
+public class FilterDepRepoImpl implements FilterDepRepo {
 
     private final MongoTemplate mongoTemplate;
 
@@ -23,10 +23,10 @@ public class FilterRepoImpl implements FilterRepo{
             query.addCriteria(Criteria.where("registrationNumber").is(filterRequest.getRegistrationNumber()));
         }
         if (filterRequest.getStatus() != null) {
-            query.addCriteria(Criteria.where("status").is(filterRequest.getStatus()));
+            query.addCriteria(Criteria.where("status.name").is(filterRequest.getStatus()));
         }
         if (filterRequest.getRegion() != null) {
-            query.addCriteria(Criteria.where("region").is(filterRequest.getRegion()));
+            query.addCriteria(Criteria.where("region.name").is(filterRequest.getRegion()));
         }
         if (filterRequest.getFrom() != null && filterRequest.getTo() != null) {
             query.addCriteria(Criteria.where("creationDate").gte(filterRequest.getFrom()).lte(filterRequest.getTo()));

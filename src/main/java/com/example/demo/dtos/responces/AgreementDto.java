@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class AgreementDto {
     private String jobTitle;
     private String fullName;
-    private int status;
+    private String status;
     private LocalDate time;
     private String reason;
 }

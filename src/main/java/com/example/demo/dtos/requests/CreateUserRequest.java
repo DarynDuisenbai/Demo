@@ -10,4 +10,7 @@ public class CreateUserRequest {
     private String name;
     private String secondName;
     private String password;
+    private String IIN;
+    private String department;
+    private String region;
 }

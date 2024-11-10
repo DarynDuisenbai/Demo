@@ -1,9 +1,6 @@
 package com.example.demo.exceptions.handler;
 
-import com.example.demo.exceptions.DuplicateUserException;
-import com.example.demo.exceptions.InvalidLoginException;
-import com.example.demo.exceptions.InvalidPasswordException;
-import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,4 +26,12 @@ public class AuthExceptionHandler {
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
     }
+
+    @ExceptionHandler(InvalidIINFormat.class)
+    public ResponseEntity<String> handleInvalidIINFormat(InvalidIINFormat invalidIINFormat){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("IIN code must be exactly 12 digits");
+    }
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.example.demo.utils;
 
+import com.example.demo.dtos.responces.TokenInfo;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.models.User;
 import com.example.demo.repository.UserRepository;
@@ -99,6 +100,32 @@ public class JwtTokenUtil {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public TokenInfo getTokenInfo(String token) {
+        Claims claims = extractAllClaims(token);
+
+        return new TokenInfo(
+                safeToString(claims.get("name")),
+                safeToString(claims.get("secondName")),
+                safeToString(claims.get("email")),
+                safeToString(claims.get("profileImage")),
+                safeToString(claims.get("registrationDate")),
+                safeToString(claims.get("department")),
+                safeToString(claims.get("IIN")),
+                safeToString(claims.get("job")),
+                safeToString(claims.get("role"))
+        );
+    }
+
+    private String safeToString(Object claim) {
+        if (claim instanceof String) {
+            return (String) claim;
+        } else if (claim != null) {
+            return claim.toString(); // Fallback to calling toString for non-string types
+        } else {
+            return null;
+        }
     }
 
 }

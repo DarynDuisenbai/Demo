@@ -16,7 +16,7 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must contain at least 8 characters, including uppercase, lowercase, digit, and special character.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must contain at least 6 characters, including uppercase, lowercase, digit, and special character.");
     }
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<String> handleDuplicateUserException(DuplicateUserException ex) {

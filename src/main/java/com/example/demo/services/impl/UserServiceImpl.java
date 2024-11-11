@@ -6,6 +6,8 @@ import com.example.demo.exceptions.*;
 import com.example.demo.mappers.UserMapper;
 import com.example.demo.models.JobTitle;
 import com.example.demo.models.User;
+import com.example.demo.repository.DepartmentRepository;
+import com.example.demo.repository.JobRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.services.UserService;
 import com.example.demo.utils.EmailSender;
@@ -30,9 +32,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private final String EMPLOYEE = "EMPLOYEE";
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
+    private final JobRepository jobRepository;
     private BCryptPasswordEncoder passwordEncoder;
     private final Validator validator;
     private final UserMapper userMapper;
@@ -96,8 +100,8 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.fromRegisterToUser(createUserRequest);
         user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
         user.setRegistrationDate(LocalDateTime.now());
-        JobTitle jobTitle = new JobTitle();
-        jobTitle.setName("EMPLOYEE");
+
+        JobTitle jobTitle = jobRepository.findJobTitleByName(EMPLOYEE);
         user.setJob(jobTitle);
 
         userRepository.save(user);
@@ -117,6 +121,7 @@ public class UserServiceImpl implements UserService {
         }
         LOGGER.debug("Retrieving a user...");
         User user = userRepository.findByEmail(email).get();
+        LOGGER.warn("USER IS " + user);
         return userMapper.toUserDto(user);
     }
 

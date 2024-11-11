@@ -22,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConclusionMapperImpl implements ConclusionMapper {
     private final RegionRepository regionRepository;
-    private final StatusRepository statusRepository;
     @Override
     public Conclusion fromCreateToConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException {
         Conclusion conclusion = new Conclusion();

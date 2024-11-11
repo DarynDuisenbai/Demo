@@ -20,4 +20,5 @@ public class UserDto {
     private String department;
     private String region;
     private List<ConclusionDto> conclusions;
+    private List<TempConclusionDto> tempConclusionDtos;
 }

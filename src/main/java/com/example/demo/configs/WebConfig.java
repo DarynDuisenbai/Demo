@@ -44,7 +44,7 @@ public class WebConfig {
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/login", "/register", "/reset-password").permitAll()
                         .requestMatchers("/allUD", "/allDepartments", "/allRegions", "allStatus").permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .userDetailsService(userService)
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
@@ -69,14 +69,16 @@ public class WebConfig {
     @Bean
     public CorsConfigurationSource corsConfigurer() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOrigin("http://localhost:9000/#");
-        corsConfig.addAllowedMethod("GET");
-        corsConfig.addAllowedMethod("POST");
-        corsConfig.addAllowedMethod("PUT");
-        corsConfig.addAllowedMethod("DELETE");
-        corsConfig.addAllowedMethod("OPTIONS");
+        corsConfig.addAllowedOrigin("http://localhost:9000");
+        corsConfig.addAllowedOrigin("http://localhost:9000/#/");
+
+        corsConfig.addAllowedMethod("*");
+
         corsConfig.addAllowedHeader("*");
+
         corsConfig.setAllowCredentials(true);
+        corsConfig.addAllowedMethod("OPTIONS");
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
 

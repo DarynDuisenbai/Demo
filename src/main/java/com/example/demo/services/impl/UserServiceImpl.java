@@ -185,6 +185,32 @@ public class UserServiceImpl implements UserService {
                 .map(user -> user.getName() + " " + user.getSecondName()).toList();
     }
 
+    @Override
+    public List<UserDto> getAllWithinDep(String department) {
+        return userMapper.toDtoList(
+                userRepository.findByDepartment(department));
+    }
+
+    @Override
+    public List<UserDto> getAllWithinJob(String job) {
+        return userMapper.toDtoList(
+                userRepository.findByJob(job));
+    }
+
+    @Override
+    public void promote(String IIN) throws UserNotFoundException {
+        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+        String job = user.getJob().getName();
+        if(job.equals("EMPLOYEE")){
+            JobTitle analyticJob = jobRepository.findJobTitleByName("ANALYST");
+            user.setJob(analyticJob);
+        }else if(job.equals("ANALYST")){
+            JobTitle moderatorJob = jobRepository.findJobTitleByName("MODERATOR");
+            user.setJob(moderatorJob);
+        }
+
+        userRepository.save(user);
+    }
 
 }
 

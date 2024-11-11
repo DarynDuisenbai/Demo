@@ -5,6 +5,6 @@ import com.example.demo.models.Conclusion;
 
 import java.util.List;
 
-public interface FilterDepRepo {
+public interface FilterConclusionRepo {
     List<Conclusion> filterConclusions(FilterRequest filterRequest);
 }

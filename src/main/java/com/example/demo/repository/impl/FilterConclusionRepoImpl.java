@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.dtos.requests.FilterRequest;
 import com.example.demo.models.Conclusion;
-import com.example.demo.repository.FilterDepRepo;
+import com.example.demo.repository.FilterConclusionRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class FilterDepRepoImpl implements FilterDepRepo {
+public class FilterConclusionRepoImpl implements FilterConclusionRepo {
 
     private final MongoTemplate mongoTemplate;
 
@@ -43,4 +43,7 @@ public class FilterDepRepoImpl implements FilterDepRepo {
 
         return mongoTemplate.find(query, Conclusion.class);
     }
+
+
+
 }

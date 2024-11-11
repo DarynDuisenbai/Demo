@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final ConclusionRepository conclusionRepository;
     private final TemporaryConclusionRepository temporaryConclusionRepository;
     private final UserRepository userRepository;
+    private final JobRepository jobRepository;
     private final StatusRepository statusRepository;
     private final RegionRepository regionRepository;
     private final ConclusionMapper conclusionMapper;
@@ -195,7 +197,19 @@ public class ConclusionServiceImpl implements ConclusionService {
     public List<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user conclusions...");
         User user = userRepository.findByIIN(IIN).orElseThrow(()-> new UserNotFoundException("User not found."));
-        return conclusionMapper.toDtoList(user.getConclusions());
+        Department userDep = user.getDepartment();
+        String job = user.getJob().getName();
+        if(job.equals("EMPLOYEE")){
+            return conclusionMapper.toDtoList(user.getConclusions());
+        }else if(job.equals("ANALYST")){
+            List<User> users = userRepository.findByDepartment(userDep.getName());
+            List<Conclusion> allConclusions = users.stream()
+                    .flatMap(deptUser -> deptUser.getConclusions().stream())
+                    .collect(Collectors.toList());
+            return conclusionMapper.toDtoList(allConclusions);
+        }else {
+            return getAllConclusions();
+        }
     }
 
     @Override
@@ -208,5 +222,10 @@ public class ConclusionServiceImpl implements ConclusionService {
     @Override
     public List<String> allUD() {
         return conclusionRepository.findAll().stream().map(Conclusion::getUD).toList();
+    }
+
+    @Override
+    public List<ConclusionDto> getAllConclusions() {
+        return conclusionMapper.toDtoList(conclusionRepository.findAll());
     }
 }

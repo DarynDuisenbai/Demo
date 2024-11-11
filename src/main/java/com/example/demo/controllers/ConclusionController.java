@@ -105,7 +105,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "200", description = "Conclusions retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
-    @GetMapping("/long")
+    @GetMapping("/usersDocs")
     public ResponseEntity<List<ConclusionDto>> myConclusions(@RequestParam String IIN) throws UserNotFoundException {
         List<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
         return ResponseEntity.ok(conclusions);

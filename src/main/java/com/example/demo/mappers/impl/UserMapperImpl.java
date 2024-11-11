@@ -13,6 +13,9 @@ import com.example.demo.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class UserMapperImpl implements UserMapper {
@@ -52,5 +55,15 @@ public class UserMapperImpl implements UserMapper {
         userDto.setTempConclusionDtos(tempMapper.toDtoList(user.getTemporaryConclusions()));
         userDto.setIIN(user.getIIN());
         return userDto;
+    }
+
+    @Override
+    public List<UserDto> toDtoList(List<User> users) {
+        List<UserDto> dtos = new ArrayList<>();
+        for(User user : users){
+            dtos.add(toUserDto(user));
+        }
+
+        return dtos;
     }
 }

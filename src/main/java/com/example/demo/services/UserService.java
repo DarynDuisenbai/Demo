@@ -18,5 +18,8 @@ public interface UserService extends UserDetailsService {
     void deleteAccount(DeleteAccountRequest deleteAccountRequest) throws UserNotFoundException;
     void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) throws UserNotFoundException;
     List<String> allNames();
+    List<UserDto> getAllWithinDep(String department);
+    List<UserDto> getAllWithinJob(String job);
+    void promote(String IIN) throws UserNotFoundException;
 
 }

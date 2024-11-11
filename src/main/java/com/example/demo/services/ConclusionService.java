@@ -20,6 +20,5 @@ public interface ConclusionService {
     List<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException;
     List<TempConclusionDto> userSavedConclusions(String IIN) throws UserNotFoundException;
     List<String> allUD();
-
-
+    List<ConclusionDto> getAllConclusions();
 }

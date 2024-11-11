@@ -20,7 +20,7 @@ public class ApprovalPath {
     private String jobTitle;
 
     @Field("status")
-    private int status;
+    private Status status;
 
     @Field("date")
     private LocalDate date;

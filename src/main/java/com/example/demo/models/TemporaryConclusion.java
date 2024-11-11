@@ -1,8 +1,6 @@
 package com.example.demo.models;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,11 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
-@Document(collection = "conclusions")
-public class Conclusion {
+@Document(collection = "temp")
+public class TemporaryConclusion {
     @Id
     private String _id;
 
@@ -96,4 +93,5 @@ public class Conclusion {
 
     @Field("result")
     private String result;
+
 }

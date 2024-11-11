@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.List;
 public class User {
     public User() {
         this.conclusions = new ArrayList<>();
+        this.temporaryConclusions = new ArrayList<>();
     }
 
     @Id
@@ -38,7 +41,7 @@ public class User {
     private String email;
 
     @Field("registrationDate")
-    private Date registrationDate;
+    private LocalDateTime registrationDate;
 
     @Field("profileImage")
     private String profileImage;
@@ -54,6 +57,9 @@ public class User {
 
     @Field("docs")
     private List<Conclusion> conclusions;
+
+    @Field("tempDocs")
+    private List<TemporaryConclusion> temporaryConclusions;
 
     @Field("role")
     private String role;

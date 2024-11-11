@@ -1,5 +1,8 @@
 package com.example.demo.utils;
 
+import com.example.demo.dtos.requests.CreateUserRequest;
+import com.example.demo.exceptions.InvalidLoginException;
+import com.example.demo.exceptions.InvalidPasswordException;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
@@ -26,4 +29,18 @@ public class Validator {
 
         return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar;
     }
+    public boolean isValidIIN(String IIN) {
+        if (IIN == null || IIN.length() != 12) {
+            return false;
+        }
+        return IIN.chars().allMatch(Character::isDigit);
+    }
+
+    public boolean isValidUD(String UD) {
+        if (UD == null || UD.length() != 15) {
+            return false;
+        }
+        return UD.chars().allMatch(Character::isDigit);
+    }
 }
+

@@ -2,11 +2,9 @@ package com.example.demo.services.impl;
 
 import com.example.demo.dtos.requests.*;
 import com.example.demo.dtos.responces.UserDto;
-import com.example.demo.exceptions.DuplicateUserException;
-import com.example.demo.exceptions.InvalidLoginException;
-import com.example.demo.exceptions.InvalidPasswordException;
-import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.exceptions.*;
 import com.example.demo.mappers.UserMapper;
+import com.example.demo.models.JobTitle;
 import com.example.demo.models.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.services.UserService;
@@ -22,6 +20,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        LOGGER.warn("EMAIL IS " + email);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         LOGGER.debug("Retrieving a user...");
         String role = user.getRole() != null ? user.getRole() : "USER";
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto register(CreateUserRequest createUserRequest) throws InvalidLoginException, InvalidPasswordException, DuplicateUserException {
+    public UserDto register(CreateUserRequest createUserRequest) throws InvalidLoginException, InvalidPasswordException, DuplicateUserException, InvalidIINFormat, InvalidUDFormat {
         if (isPresent(createUserRequest.getEmail())) {
             LOGGER.warn("Email has been taken...");
             throw new DuplicateUserException("This email has been taken.");
@@ -87,9 +88,18 @@ public class UserServiceImpl implements UserService {
             LOGGER.warn("Password is invalid...");
             throw new InvalidPasswordException("Password must contain at least 8 characters, including uppercase, lowercase, digit, and special character.");
         }
+        if(!validator.isValidIIN(createUserRequest.getIIN())){
+            LOGGER.warn("IIN is invalid...");
+            throw new InvalidIINFormat("IIN code must be exactly 12 digits");
+        }
         LOGGER.debug("Creating a new user...");
         User user = userMapper.fromRegisterToUser(createUserRequest);
         user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
+        user.setRegistrationDate(LocalDateTime.now());
+        JobTitle jobTitle = new JobTitle();
+        jobTitle.setName("EMPLOYEE");
+        user.setJob(jobTitle);
+
         userRepository.save(user);
         return userMapper.toUserDto(user);
     }
@@ -100,13 +110,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getProfile(GetProfileRequest getProfileRequest) throws UserNotFoundException {
-        if (!isPresent(getProfileRequest.getEmail())) {
+    public UserDto getProfile(String email) throws UserNotFoundException {
+        if (!isPresent(email)) {
             LOGGER.warn("User not found...");
             throw new UserNotFoundException("User not found.");
         }
         LOGGER.debug("Retrieving a user...");
-        User user = userRepository.findByEmail(getProfileRequest.getEmail()).get();
+        User user = userRepository.findByEmail(email).get();
         return userMapper.toUserDto(user);
     }
 

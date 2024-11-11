@@ -1,18 +1,15 @@
 package com.example.demo.dtos.responces;
 
 import com.example.demo.models.Region;
-import com.example.demo.models.Status;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
-public class ConclusionDto {
+public class TempConclusionDto {
     private String registrationNumber;
     private LocalDateTime creationDate;
     private String udNumber;

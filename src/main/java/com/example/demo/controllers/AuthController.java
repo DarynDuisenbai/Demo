@@ -2,10 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.dtos.requests.CreateUserRequest;
 import com.example.demo.dtos.requests.LoginRequest;
-import com.example.demo.exceptions.DuplicateUserException;
-import com.example.demo.exceptions.InvalidLoginException;
-import com.example.demo.exceptions.InvalidPasswordException;
-import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.exceptions.*;
 import com.example.demo.services.UserService;
 import com.example.demo.utils.JwtTokenUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,11 +33,6 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
 
-    @GetMapping("/register")
-    public String register() {
-        return "register";
-    }
-
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
     @ApiResponses(value = {
@@ -48,15 +40,10 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Invalid email or password format")
     })
     public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest)
-            throws InvalidLoginException, InvalidPasswordException, DuplicateUserException {
+            throws InvalidLoginException, InvalidPasswordException, DuplicateUserException,
+            InvalidUDFormat, InvalidIINFormat {
         userService.register(createUserRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully.");
-    }
-
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
     }
 
     @PostMapping("/login")

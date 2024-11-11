@@ -1,11 +1,11 @@
 package com.example.demo.dtos.requests;
 
-import com.example.demo.models.Region;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,13 +13,13 @@ public class FilterRequest {
     @Nullable
     private String registrationNumber;
     @Nullable
-    private Integer status;
+    private String status;
     @Nullable
-    private Region region;
+    private String region;
     @Nullable
-    private LocalDate from;
+    private LocalDateTime from;
     @Nullable
-    private LocalDate to;
+    private LocalDateTime to;
     @Nullable
     private String IIN;
     @Nullable

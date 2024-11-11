@@ -18,7 +18,7 @@ public class Validator {
         return EMAIL_PATTERN.matcher(email).matches();
     }
     public boolean isValidPassword(String password) {
-        if (password == null || password.length() < 8) {
+        if (password == null || password.length() < 6) {
             return false;
         }
 

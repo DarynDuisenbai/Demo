@@ -41,7 +41,9 @@ public class WebConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurer()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**","/login", "/register", "/reset-password").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/login", "/register", "/reset-password").permitAll()
+                        .requestMatchers("/allUD", "/allDepartments", "/allRegions", "allStatus").permitAll()
                         .anyRequest().permitAll()
                 )
                 .userDetailsService(userService)

@@ -157,4 +157,14 @@ public class ConclusionController {
     }
 
 
+//    @Operation(summary = "Making decision for conclusion", description = " «На согласовании», «Согласовано», «Отказано», «Оставлено без рассмотрения», «Отправлено на доработку».")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Decision was made")
+//    })
+//    @PostMapping("/decision")
+//    public ResponseEntity<?> decision(DecisionRequest decisionRequest){
+//        conclusionService.
+//    }
+
+
 }

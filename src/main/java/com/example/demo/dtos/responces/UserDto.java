@@ -1,5 +1,7 @@
 package com.example.demo.dtos.responces;
 
+import com.example.demo.models.Department;
+import com.example.demo.models.JobTitle;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,8 +18,8 @@ public class UserDto {
     private LocalDateTime registrationDate;
     private String profileImage;
     private String IIN;
-    private String department;
-    private String region;
+    private Department department;
+    private JobTitle jobTitle;
     private List<ConclusionDto> conclusions;
     private List<TempConclusionDto> tempConclusionDtos;
     private List<ConclusionDto> receivedConclusionDtos;

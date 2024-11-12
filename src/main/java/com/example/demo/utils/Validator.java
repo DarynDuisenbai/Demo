@@ -1,8 +1,5 @@
 package com.example.demo.utils;
 
-import com.example.demo.dtos.requests.CreateUserRequest;
-import com.example.demo.exceptions.InvalidLoginException;
-import com.example.demo.exceptions.InvalidPasswordException;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;

@@ -2,6 +2,8 @@ package com.example.demo.utils;
 
 import com.example.demo.dtos.responces.TokenInfo;
 import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.models.Department;
+import com.example.demo.models.JobTitle;
 import com.example.demo.models.User;
 import com.example.demo.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
@@ -14,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 
-import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -105,19 +106,21 @@ public class JwtTokenUtil {
     public TokenInfo getTokenInfo(String token) {
         Claims claims = extractAllClaims(token);
 
+
+        Department department = mapToDepartment((Map<String, Object>) claims.get("department"));
+        JobTitle job = mapToJobTitle((Map<String, Object>) claims.get("job"));
+
         return new TokenInfo(
                 safeToString(claims.get("name")),
                 safeToString(claims.get("secondName")),
                 safeToString(claims.get("email")),
                 safeToString(claims.get("profileImage")),
                 safeToString(claims.get("registrationDate")),
-                safeToString(claims.get("department")),
+                department,
                 safeToString(claims.get("IIN")),
-                safeToString(claims.get("job")),
-                safeToString(claims.get("role"))
+                job
         );
     }
-
     private String safeToString(Object claim) {
         if (claim instanceof String) {
             return (String) claim;
@@ -128,4 +131,20 @@ public class JwtTokenUtil {
         }
     }
 
+    private Department mapToDepartment(Map<String, Object> map) {
+        if (map == null) return null;
+        Department department = new Department();
+        department.set_id(safeToString(map.get("_id")));
+        department.setName(safeToString(map.get("name")));
+        department.setRegion(safeToString(map.get("region")));
+        return department;
+    }
+
+    private JobTitle mapToJobTitle(Map<String, Object> map) {
+        if (map == null) return null;
+        JobTitle jobTitle = new JobTitle();
+        jobTitle.set_id(safeToString(map.get("_id")));
+        jobTitle.setName(safeToString(map.get("name")));
+        return jobTitle;
+    }
 }

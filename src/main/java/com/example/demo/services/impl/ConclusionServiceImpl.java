@@ -212,6 +212,7 @@ public class ConclusionServiceImpl implements ConclusionService {
             conclusions = users.stream()
                     .flatMap(deptUser -> deptUser.getConclusions().stream())
                     .collect(Collectors.toList());
+            conclusions.addAll(user.getConclusions());
         } else {
             conclusions = getAllConclusions();
         }

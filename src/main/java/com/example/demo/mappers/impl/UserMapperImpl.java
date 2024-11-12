@@ -48,8 +48,7 @@ public class UserMapperImpl implements UserMapper {
         userDto.setSecondName(user.getSecondName());
         userDto.setProfileImage(user.getProfileImage());
         userDto.setRegistrationDate(user.getRegistrationDate());
-        userDto.setRegion(user.getDepartment().getRegion());
-        userDto.setDepartment(user.getDepartment().getName());
+        userDto.setDepartment(user.getDepartment());
 
         userDto.setConclusions(conclusionMapper.toDtoList(user.getConclusions()));
         userDto.setTempConclusionDtos(tempMapper.toDtoList(user.getTemporaryConclusions()));

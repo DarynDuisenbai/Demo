@@ -11,6 +11,6 @@ public class AgreementDto {
     private String jobTitle;
     private String fullName;
     private String status;
-    private LocalDate time;
+    private LocalDate date;
     private String reason;
 }

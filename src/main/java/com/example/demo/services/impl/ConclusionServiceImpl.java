@@ -4,10 +4,8 @@ import com.example.demo.dtos.requests.*;
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
 import com.example.demo.dtos.responces.TempConclusionDto;
-import com.example.demo.exceptions.CaseNotFound;
-import com.example.demo.exceptions.NoTemporaryConclusionFound;
-import com.example.demo.exceptions.RegionNotFoundException;
-import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.exceptions.*;
+import com.example.demo.mappers.AgreementMapper;
 import com.example.demo.mappers.ConclusionMapper;
 import com.example.demo.mappers.TempMapper;
 import com.example.demo.models.*;
@@ -41,6 +39,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final RegionRepository regionRepository;
     private final ConclusionMapper conclusionMapper;
     private final TempMapper tempMapper;
+    private final AgreementMapper agreementMapper;
     private final Generator generator;
 
     @Override
@@ -248,5 +247,26 @@ public class ConclusionServiceImpl implements ConclusionService {
     @Override
     public List<Conclusion> getAllConclusions() {
         return conclusionRepository.findAll();
+    }
+
+    @Override
+    public AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException {
+        AgreementDto agreementDto = new AgreementDto();
+
+        User user = userRepository.findByIIN(decisionRequest.getIIN()).orElseThrow(() -> new UserNotFoundException("User not found."));
+        agreementDto.setFullName(user.getName() + " " + user.getSecondName());
+        agreementDto.setJobTitle(user.getJob().getName());
+
+        Conclusion conclusion = conclusionRepository.findConclusionByRegistrationNumber(decisionRequest.getRegistrationNumber()).
+                orElseThrow(()-> new NoConclusionException("Conclusion not found."));
+
+        Status status = statusRepository.findByName(decisionRequest.getStatus());
+        conclusion.setStatus(status);
+        agreementDto.setDate(conclusion.getEventTime());
+        agreementDto.setReason(decisionRequest.getReason());
+
+        user.getAgreements().add(agreementMapper.fromDtoToAgreement(agreementDto));
+        userRepository.save(user);
+        return agreementDto;
     }
 }

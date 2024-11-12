@@ -2,6 +2,7 @@ package com.example.demo.exceptions.handler;
 
 import com.example.demo.exceptions.CaseNotFound;
 import com.example.demo.exceptions.InvalidUDFormat;
+import com.example.demo.exceptions.NoConclusionException;
 import com.example.demo.exceptions.RegionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,12 @@ public class ConclusionExceptionHandler {
     public ResponseEntity<String> handleCaseNotFoundException(CaseNotFound caseNotFound){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Case not found.");
     }
+
+    @ExceptionHandler(NoConclusionException.class)
+    public ResponseEntity<String> handleConclusionNotFoundException(NoConclusionException caseNotFound){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Conclusion not found.");
+    }
+
 
 
 }

@@ -4,10 +4,7 @@ import com.example.demo.dtos.requests.*;
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
 import com.example.demo.dtos.responces.TempConclusionDto;
-import com.example.demo.exceptions.CaseNotFound;
-import com.example.demo.exceptions.NoTemporaryConclusionFound;
-import com.example.demo.exceptions.RegionNotFoundException;
-import com.example.demo.exceptions.UserNotFoundException;
+import com.example.demo.exceptions.*;
 import com.example.demo.models.Region;
 import com.example.demo.services.ConclusionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -157,14 +154,15 @@ public class ConclusionController {
     }
 
 
-//    @Operation(summary = "Making decision for conclusion", description = " «На согласовании», «Согласовано», «Отказано», «Оставлено без рассмотрения», «Отправлено на доработку».")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Decision was made")
-//    })
-//    @PostMapping("/decision")
-//    public ResponseEntity<?> decision(DecisionRequest decisionRequest){
-//        conclusionService.
-//    }
+    @Operation(summary = "Making decision for conclusion", description = " «На согласовании», «Согласовано», «Отказано», «Оставлено без рассмотрения», «Отправлено на доработку».")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Decision was made")
+    })
+    @PostMapping("/decision")
+    public ResponseEntity<?> decision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException {
+        conclusionService.makeDecision(decisionRequest);
+        return ResponseEntity.status(HttpStatus.OK).body("Decision was made.");
+    }
 
 
 }

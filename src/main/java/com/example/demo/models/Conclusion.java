@@ -62,7 +62,7 @@ public class Conclusion {
     private String plannedActions;
 
     @Field("eventTime")
-    private LocalDate eventTime;
+    private LocalDateTime eventTime;
 
     @Field("eventPlace")
     private String eventPlace;

@@ -23,4 +23,5 @@ public class UserDto {
     private List<ConclusionDto> conclusions;
     private List<TempConclusionDto> tempConclusionDtos;
     private List<ConclusionDto> receivedConclusionDtos;
+    private List<AgreementDto> agreementDtos;
 }

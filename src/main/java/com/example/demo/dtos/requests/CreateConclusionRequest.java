@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ public class CreateConclusionRequest {
     private String jobTitle;
     private String region;
     private String plannedActions;
-    private LocalDate eventDateTime;
+    private LocalDateTime eventDateTime;
     private String eventPlace;
     private String relation;
     private String investigationType;

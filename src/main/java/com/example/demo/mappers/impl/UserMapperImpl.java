@@ -4,6 +4,7 @@ import com.example.demo.dtos.requests.CreateUserRequest;
 import com.example.demo.dtos.requests.GetProfileRequest;
 import com.example.demo.dtos.requests.LoginRequest;
 import com.example.demo.dtos.responces.UserDto;
+import com.example.demo.mappers.AgreementMapper;
 import com.example.demo.mappers.ConclusionMapper;
 import com.example.demo.mappers.TempMapper;
 import com.example.demo.mappers.UserMapper;
@@ -22,6 +23,8 @@ public class UserMapperImpl implements UserMapper {
     private final ConclusionMapper conclusionMapper;
     private final TempMapper tempMapper;
     private final DepartmentRepository departmentRepository;
+    private final AgreementMapper agreementMapper;
+
     @Override
     public User fromRegisterToUser(CreateUserRequest createUserRequest) {
         User user = new User();
@@ -53,6 +56,7 @@ public class UserMapperImpl implements UserMapper {
         userDto.setConclusions(conclusionMapper.toDtoList(user.getConclusions()));
         userDto.setTempConclusionDtos(tempMapper.toDtoList(user.getTemporaryConclusions()));
         userDto.setReceivedConclusionDtos(conclusionMapper.toDtoList(user.getReceivedConclusions()));
+        userDto.setAgreementDtos(agreementMapper.toDtoList(user.getAgreements()));
         userDto.setIIN(user.getIIN());
         return userDto;
     }

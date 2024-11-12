@@ -7,18 +7,28 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class ApprovalPath {
+@Document(collection = "agreement")
+public class Agreement {
 
+    @Id
     private String _id;
 
+    @Field("fullname")
+    private String fullName;
+
+    @Field("job")
     private String jobTitle;
 
+    @Field("status")
     private Status status;
 
-    private LocalDate date;
+    @Field("date")
+    private LocalDateTime date;
 
-    private String reasonForStatus;
+    @Field("reason")
+    private String reason;
 }

@@ -8,5 +8,6 @@ import lombok.Setter;
 public class DecisionRequest {
     private String IIN;
     private String registrationNumber;
-    
+    private String status;
+    private String reason;
 }

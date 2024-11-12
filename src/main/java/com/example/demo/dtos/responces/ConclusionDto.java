@@ -27,7 +27,7 @@ public class ConclusionDto {
     private String workPlace;
     private Region region;
     private String plannedInvestigativeActions;
-    private LocalDate eventDateTime;
+    private LocalDateTime eventDateTime;
     private String eventPlace;
     private String investigator;
     private String status;

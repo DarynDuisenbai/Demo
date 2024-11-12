@@ -21,6 +21,7 @@ public class User {
         this.conclusions = new ArrayList<>();
         this.temporaryConclusions = new ArrayList<>();
         this.receivedConclusions = new ArrayList<>();
+        this.agreements = new ArrayList<>();
     }
 
     @Id
@@ -62,6 +63,9 @@ public class User {
 
     @Field("receivedDocs")
     private List<Conclusion> receivedConclusions;
+
+    @Field("agreement")
+    private List<Agreement> agreements;
 
     @Field("role")
     private String role;

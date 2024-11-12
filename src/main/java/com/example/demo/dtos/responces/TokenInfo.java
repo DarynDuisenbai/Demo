@@ -1,5 +1,7 @@
 package com.example.demo.dtos.responces;
 
+import com.example.demo.models.Department;
+import com.example.demo.models.JobTitle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +15,7 @@ public class TokenInfo {
     private String email;
     private String profileImage;
     private String registrationDate;
-    private String department;
+    private Department department;
     private String IIN;
-    private String job;
-    private String role;
+    private JobTitle job;
 }

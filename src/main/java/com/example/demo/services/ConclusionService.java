@@ -24,4 +24,6 @@ public interface ConclusionService {
     List<String> allUD();
     List<Conclusion> getAllConclusions();
     void sendConclusion(Conclusion conclusion, String IIN) throws UserNotFoundException;
+
+
 }

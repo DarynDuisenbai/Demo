@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public class AuthController {
             @ApiResponse(responseCode = "201", description = "User registered successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid email or password format")
     })
-    public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest)
+    public ResponseEntity<?> registerUser(@Valid @RequestBody CreateUserRequest createUserRequest)
             throws InvalidLoginException, InvalidPasswordException, DuplicateUserException,
             InvalidUDFormat, InvalidIINFormat {
         userService.register(createUserRequest);

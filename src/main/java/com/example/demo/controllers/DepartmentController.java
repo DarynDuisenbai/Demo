@@ -24,7 +24,7 @@ public class DepartmentController {
             @ApiResponse(responseCode = "200", description = "All departments retrieved"),
     })
     @GetMapping("/allDepartments")
-    public ResponseEntity<Set<String>> allRegions(){
+    public ResponseEntity<Set<String>> allDepartments(){
         Set<String> allDepartments = departmentService.getAllDepartments();
         return ResponseEntity.ok(allDepartments);
     }

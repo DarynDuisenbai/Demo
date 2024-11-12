@@ -4,6 +4,7 @@ import com.example.demo.dtos.requests.*;
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
 import com.example.demo.dtos.responces.TempConclusionDto;
+import com.example.demo.exceptions.CaseNotFound;
 import com.example.demo.exceptions.NoTemporaryConclusionFound;
 import com.example.demo.exceptions.RegionNotFoundException;
 import com.example.demo.exceptions.UserNotFoundException;
@@ -43,7 +44,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @PostMapping("/create")
-    public ResponseEntity<?> createConclusion(@Valid @RequestBody CreateConclusionRequest createConclusionRequest) throws UserNotFoundException, RegionNotFoundException {
+    public ResponseEntity<?> createConclusion(@Valid @RequestBody CreateConclusionRequest createConclusionRequest) throws UserNotFoundException, RegionNotFoundException, CaseNotFound {
         conclusionService.createConclusion(createConclusionRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Document successfully created.");
     }

@@ -8,10 +8,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -22,6 +20,7 @@ public class User {
     public User() {
         this.conclusions = new ArrayList<>();
         this.temporaryConclusions = new ArrayList<>();
+        this.receivedConclusions = new ArrayList<>();
     }
 
     @Id
@@ -60,6 +59,9 @@ public class User {
 
     @Field("tempDocs")
     private List<TemporaryConclusion> temporaryConclusions;
+
+    @Field("receivedDocs")
+    private List<Conclusion> receivedConclusions;
 
     @Field("role")
     private String role;

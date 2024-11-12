@@ -53,6 +53,7 @@ public class UserMapperImpl implements UserMapper {
 
         userDto.setConclusions(conclusionMapper.toDtoList(user.getConclusions()));
         userDto.setTempConclusionDtos(tempMapper.toDtoList(user.getTemporaryConclusions()));
+        userDto.setReceivedConclusionDtos(conclusionMapper.toDtoList(user.getReceivedConclusions()));
         userDto.setIIN(user.getIIN());
         return userDto;
     }

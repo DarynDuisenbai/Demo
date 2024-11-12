@@ -44,7 +44,6 @@ public class AuthController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")

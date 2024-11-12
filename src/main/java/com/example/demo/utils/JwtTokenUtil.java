@@ -122,7 +122,7 @@ public class JwtTokenUtil {
         if (claim instanceof String) {
             return (String) claim;
         } else if (claim != null) {
-            return claim.toString(); // Fallback to calling toString for non-string types
+            return claim.toString();
         } else {
             return null;
         }

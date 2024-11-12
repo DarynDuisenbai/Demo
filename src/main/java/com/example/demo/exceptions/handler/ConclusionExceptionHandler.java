@@ -1,5 +1,6 @@
 package com.example.demo.exceptions.handler;
 
+import com.example.demo.exceptions.CaseNotFound;
 import com.example.demo.exceptions.InvalidUDFormat;
 import com.example.demo.exceptions.RegionNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -18,4 +19,11 @@ public class ConclusionExceptionHandler {
     public ResponseEntity<String> handleRegionNotFoundException(RegionNotFoundException regionNotFoundException){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Region not found.");
     }
+
+    @ExceptionHandler(CaseNotFound.class)
+    public ResponseEntity<String> handleCaseNotFoundException(CaseNotFound caseNotFound){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Case not found.");
+    }
+
+
 }

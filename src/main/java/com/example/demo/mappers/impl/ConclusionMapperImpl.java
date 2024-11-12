@@ -25,8 +25,6 @@ public class ConclusionMapperImpl implements ConclusionMapper {
     @Override
     public Conclusion fromCreateToConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException {
         Conclusion conclusion = new Conclusion();
-        conclusion.setUD(createConclusionRequest.getUD());
-        conclusion.setIINofCalled(createConclusionRequest.getIIN());
         conclusion.setBINorIINOfCalled(createConclusionRequest.getBIN_IIN());
         conclusion.setJobTitleOfCalled(createConclusionRequest.getJobTitle());
 

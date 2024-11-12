@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -21,4 +20,5 @@ public class UserDto {
     private String region;
     private List<ConclusionDto> conclusions;
     private List<TempConclusionDto> tempConclusionDtos;
+    private List<ConclusionDto> receivedConclusionDtos;
 }

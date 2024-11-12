@@ -18,9 +18,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
+    private static final Set<String> PERMITTED_ENDPOINTS = Set.of(
+            "/swagger-ui",
+            "/v3/api-docs",
+            "/login",
+            "/register",
+            "/reset-password",
+            "/allUD",
+            "/allDepartments",
+            "/allRegions",
+            "/allStatus"
+    );
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
     private UserService userService;
     private JwtTokenUtil jwtTokenUtil;
@@ -71,9 +83,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
     private boolean isPermittedEndpoint(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/swagger-ui") ||
-                request.getRequestURI().startsWith("/v3/api-docs") ||
-                request.getRequestURI().startsWith("/login") ||
-                request.getRequestURI().startsWith("/register");
+        String requestURI = request.getRequestURI();
+        return PERMITTED_ENDPOINTS.stream().anyMatch(requestURI::startsWith);
     }
 }

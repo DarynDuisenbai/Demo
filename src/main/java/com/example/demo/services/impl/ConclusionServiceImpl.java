@@ -4,6 +4,7 @@ import com.example.demo.dtos.requests.*;
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
 import com.example.demo.dtos.responces.TempConclusionDto;
+import com.example.demo.exceptions.CaseNotFound;
 import com.example.demo.exceptions.NoTemporaryConclusionFound;
 import com.example.demo.exceptions.RegionNotFoundException;
 import com.example.demo.exceptions.UserNotFoundException;
@@ -21,16 +22,19 @@ import org.springframework.stereotype.Service;
 import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ConclusionServiceImpl implements ConclusionService {
-    private final String DEFAULT_STATUS = "Send for revision";
-    private final String SAVED = "In work";
+    private final String DEFAULT_STATUS = "На согласовании";
+    private final String SAVED = "В работе";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConclusionServiceImpl.class);
     private final ConclusionRepository conclusionRepository;
+    private final CaseRepository caseRepository;
     private final TemporaryConclusionRepository temporaryConclusionRepository;
     private final UserRepository userRepository;
     private final StatusRepository statusRepository;
@@ -40,7 +44,14 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final Generator generator;
 
     @Override
-    public void createConclusion(CreateConclusionRequest createConclusionRequest) throws UserNotFoundException, RegionNotFoundException {
+    public void sendConclusion(Conclusion conclusion, String IIN) throws UserNotFoundException {
+        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+        user.getReceivedConclusions().add(conclusion);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void createConclusion(CreateConclusionRequest createConclusionRequest) throws UserNotFoundException, RegionNotFoundException, CaseNotFound {
         LOGGER.debug("Creating a new conclusion");
         Conclusion conclusion = conclusionMapper.fromCreateToConclusion(createConclusionRequest);
 
@@ -49,15 +60,18 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         Status status = statusRepository.findByName(DEFAULT_STATUS);
         conclusion.setStatus(status);
-       /* conclusion.setRegistrationDate(fetchRegistrationDate(createConclusionRequest.getUD()));
-        conclusion.setArticle(fetchArticleByUD(createConclusionRequest.getUD()));
-        conclusion.setDecision(fetchDecisionByUD(createConclusionRequest.getUD()));
-        conclusion.setPlot(fetchSummaryByUD(createConclusionRequest.getUD()));
+
+        Case relatedCase = assignCase(conclusion.getUD());
+        conclusion.setRegistrationDate(relatedCase.getRegistrationDate());
+        conclusion.setUD(relatedCase.getUD());
+        conclusion.setArticle(relatedCase.getArticle());
+        conclusion.setDecision(relatedCase.getDecision());
+        conclusion.setPlot(relatedCase.getSummary());
 
         conclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIIN()));
         conclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
 
-        conclusion.setInvestigator(getCurrentUserInvestigator());*/
+        sendConclusion(conclusion, createConclusionRequest.getIINDefender());
 
         String userIIN = createConclusionRequest.getIIN();
         LOGGER.warn("IIN IS " + userIIN);
@@ -70,29 +84,17 @@ public class ConclusionServiceImpl implements ConclusionService {
         userRepository.save(user);
 
     }
-   /* private LocalDate fetchRegistrationDate(String ud) {
-        // Implement fetching registration date based on UD
+
+    private String fetchFullNameByIIN(String iin) throws UserNotFoundException {
+        User user = userRepository.findByIIN(iin)
+                .orElseThrow(() -> new UserNotFoundException("User not found for IIN: " + iin));
+
+        return user.getName() + " " + user.getSecondName();
     }
 
-    private String fetchArticleByUD(String ud) {
-        // Implement fetching article based on UD
+    private Case assignCase(String UD) throws CaseNotFound {
+        return caseRepository.findCaseByUD(UD).orElseThrow(()-> new CaseNotFound("Case not found."));
     }
-
-    private String fetchDecisionByUD(String ud) {
-        // Implement fetching decision based on UD
-    }
-
-    private String fetchSummaryByUD(String ud) {
-        // Implement fetching summary based on UD
-    }
-
-    private String fetchFullNameByIIN(String iin) {
-        // Implement fetching full name based on IIN
-    }
-
-    private String getCurrentUserInvestigator() {
-        // Implement fetching investigator from user profile
-    }*/
 
     @Override
     public void saveConclusion(CreateConclusionRequest createConclusionRequest)
@@ -118,7 +120,8 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
-    public void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException {
+    public void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest)
+            throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException {
         LOGGER.debug("Editing a temporary conclusion.");
         String userIIN = editSavedConclusionRequest.getCreateConclusionRequest().getIIN();
         LOGGER.warn("IIN IS " + userIIN);
@@ -173,6 +176,9 @@ public class ConclusionServiceImpl implements ConclusionService {
                 temporaryConclusion.getRegistrationNumber().equals(tempConclusion.getRegistrationNumber())
         );
         user.getConclusions().add(conclusion);
+
+        sendConclusion(conclusion, conclusion.getIINDefender());
+
         userRepository.save(user);
         temporaryConclusionRepository.delete(tempConclusion);
     }
@@ -195,7 +201,35 @@ public class ConclusionServiceImpl implements ConclusionService {
     public List<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user conclusions...");
         User user = userRepository.findByIIN(IIN).orElseThrow(()-> new UserNotFoundException("User not found."));
-        return conclusionMapper.toDtoList(user.getConclusions());
+        Department userDep = user.getDepartment();
+        String job = user.getJob().getName();
+        List<Conclusion> conclusions;
+
+        if(job.equals("Сотрудник СУ")) {
+            conclusions = user.getConclusions();
+        } else if(job.equals("Аналитик СД")) {
+            List<User> users = userRepository.findByDepartment(userDep.getName());
+            conclusions = users.stream()
+                    .flatMap(deptUser -> deptUser.getConclusions().stream())
+                    .collect(Collectors.toList());
+        } else {
+            conclusions = getAllConclusions();
+        }
+        conclusions.addAll(0, user.getReceivedConclusions());
+        conclusions.sort(Comparator.comparingInt(conclusion -> getStatusOrder(conclusion.getStatus().getName())));
+
+        List<ConclusionDto> conclusionDtos = conclusionMapper.toDtoList(conclusions);
+        return conclusionDtos;
+    }
+    private int getStatusOrder(String status) {
+        switch (status) {
+            case "На согласовании": return 1;
+            case "Отправлено на доработку": return 2;
+            case "Согласовано": return 3;
+            case "Оставлено без рассмотрения": return 4;
+            case "Отказано": return 5;
+            default: return Integer.MAX_VALUE;
+        }
     }
 
     @Override
@@ -208,5 +242,10 @@ public class ConclusionServiceImpl implements ConclusionService {
     @Override
     public List<String> allUD() {
         return conclusionRepository.findAll().stream().map(Conclusion::getUD).toList();
+    }
+
+    @Override
+    public List<Conclusion> getAllConclusions() {
+        return conclusionRepository.findAll();
     }
 }

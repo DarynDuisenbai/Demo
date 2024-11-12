@@ -84,5 +84,26 @@ public class UserController {
         return ResponseEntity.ok(allNames);
     }
 
+    @Operation(summary = "All users within same department")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All users retrieved")
+    })
+    @GetMapping("/depRelated")
+    public ResponseEntity<List<UserDto>> depRelated(@RequestParam String department){
+        List<UserDto> allUsers = userService.getAllWithinDep(department);
+        return ResponseEntity.ok(allUsers);
+    }
+
+    @Operation(summary = "All users that has same job")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All users retrieved")
+    })
+    @GetMapping("/jobRelated")
+    public ResponseEntity<List<UserDto>> jobRelated(@RequestParam String jobTitle){
+        List<UserDto> allUsers = userService.getAllWithinJob(jobTitle);
+        return ResponseEntity.ok(allUsers);
+    }
+
+
 
 }

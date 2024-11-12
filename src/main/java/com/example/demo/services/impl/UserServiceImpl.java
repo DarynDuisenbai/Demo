@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final String EMPLOYEE = "EMPLOYEE";
+    private final String EMPLOYEE = "Сотрудник СУ";
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
@@ -185,6 +185,32 @@ public class UserServiceImpl implements UserService {
                 .map(user -> user.getName() + " " + user.getSecondName()).toList();
     }
 
+    @Override
+    public List<UserDto> getAllWithinDep(String department) {
+        return userMapper.toDtoList(
+                userRepository.findByDepartment(department));
+    }
+
+    @Override
+    public List<UserDto> getAllWithinJob(String job) {
+        return userMapper.toDtoList(
+                userRepository.findByJob(job));
+    }
+
+    @Override
+    public void promote(String IIN) throws UserNotFoundException {
+        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+        String job = user.getJob().getName();
+        if(job.equals("Сотрудник СУ")){
+            JobTitle analyticJob = jobRepository.findJobTitleByName("Аналитик СД");
+            user.setJob(analyticJob);
+        }else if(job.equals("Аналитик СД")){
+            JobTitle moderatorJob = jobRepository.findJobTitleByName("Модератор");
+            user.setJob(moderatorJob);
+        }
+
+        userRepository.save(user);
+    }
 
 }
 

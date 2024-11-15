@@ -106,12 +106,14 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Profile successfully edited."),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @PostMapping("/editProfile")
+    @PutMapping("/editProfile")
     public ResponseEntity<?> editProfiled(@RequestBody EditProfileRequest editProfileRequest)
             throws UserNotFoundException {
         userService.editProfile(editProfileRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Profile has successfully edited.");
     }
+
+
 
 
 }

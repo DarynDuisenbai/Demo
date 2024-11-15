@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface ConclusionService {
     void createConclusion(CreateConclusionRequest createConclusionRequest) throws UserNotFoundException, RegionNotFoundException, CaseNotFound;
-    void saveConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException;
-    void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException;
+    void saveConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException, CaseNotFound;
+    void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound;
     void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound;
     List<ConclusionDto> filter(FilterRequest filterRequest);
     List<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException;

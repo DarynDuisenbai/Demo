@@ -86,18 +86,6 @@ public class ConclusionController {
         return ResponseEntity.ok(results);
     }
 
-    /*@Operation(summary = "Get agreement of conclusions", description = "Returns a list of conclusions based on agreement")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Agreement of conclusions returned successfully"),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
-    })
-    @GetMapping("/short")
-    public ResponseEntity<List<AgreementDto>> agreement(@RequestBody AgreementDto agreementDto) throws UserNotFoundException {
-        List<AgreementDto> results = conclusionService.agreement(agreementDto);
-        return ResponseEntity.ok(results);
-    }*/
-
-
     @Operation(summary = "Get user's conclusions", description = "Retrieves a list of conclusions associated with a specific user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Conclusions retrieved successfully"),

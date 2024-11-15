@@ -25,6 +25,6 @@ public class Case {
     @Field("decision")
     private String decision;
 
-    @Field("Summary")
+    @Field("summary")
     private String summary;
 }

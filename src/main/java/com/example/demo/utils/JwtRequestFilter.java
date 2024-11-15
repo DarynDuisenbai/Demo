@@ -31,7 +31,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/allUD",
             "/allDepartments",
             "/allRegions",
-            "/allStatus"
+            "/allStatus",
+            "/regInDep"
     );
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
     private UserService userService;

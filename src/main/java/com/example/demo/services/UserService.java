@@ -21,5 +21,6 @@ public interface UserService extends UserDetailsService {
     List<UserDto> getAllWithinDep(String department);
     List<UserDto> getAllWithinJob(String job);
     void promote(String IIN) throws UserNotFoundException;
+    void editProfile(EditProfileRequest editProfileRequest) throws UserNotFoundException;
 
 }

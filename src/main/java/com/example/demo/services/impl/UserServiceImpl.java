@@ -212,5 +212,14 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public void editProfile(EditProfileRequest editProfileRequest) throws UserNotFoundException {
+        User user = userRepository.findByIIN(editProfileRequest.getIIN()).orElseThrow(() -> new UserNotFoundException("User not found."));
+        user.setName(editProfileRequest.getName());
+        user.setSecondName(editProfileRequest.getSurname());
+        user.setEmail(editProfileRequest.getEmail());
+
+        userRepository.save(user);
+    }
 }
 

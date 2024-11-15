@@ -97,7 +97,7 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     public void saveConclusion(CreateConclusionRequest createConclusionRequest)
-            throws RegionNotFoundException, UserNotFoundException {
+            throws RegionNotFoundException, UserNotFoundException, CaseNotFound {
         LOGGER.debug("Saving a temporary conclusion.");
         TemporaryConclusion temporaryConclusion = tempMapper.fromCreateToTemp(createConclusionRequest);
         temporaryConclusion.setRegistrationNumber(generator.generateUniqueNumber());
@@ -105,6 +105,16 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         Status status = statusRepository.findByName(SAVED);
         temporaryConclusion.setStatus(status);
+
+        Case relatedCase = assignCase(createConclusionRequest.getUD());
+        temporaryConclusion.setRegistrationDate(relatedCase.getRegistrationDate());
+        temporaryConclusion.setUD(relatedCase.getUD());
+        temporaryConclusion.setArticle(relatedCase.getArticle());
+        temporaryConclusion.setDecision(relatedCase.getDecision());
+        temporaryConclusion.setPlot(relatedCase.getSummary());
+
+        temporaryConclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIIN()));
+        temporaryConclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
 
         String userIIN = createConclusionRequest.getIIN();
         LOGGER.warn("IIN IS " + userIIN);
@@ -120,7 +130,7 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     public void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest)
-            throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException {
+            throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound {
         LOGGER.debug("Editing a temporary conclusion.");
         String userIIN = editSavedConclusionRequest.getCreateConclusionRequest().getIIN();
         LOGGER.warn("IIN IS " + userIIN);
@@ -134,7 +144,17 @@ public class ConclusionServiceImpl implements ConclusionService {
                 orElseThrow(() -> new NoTemporaryConclusionFound("No temporary conclusions found."));
 
         CreateConclusionRequest request = editSavedConclusionRequest.getCreateConclusionRequest();
-        temporaryConclusion.setUD(request.getUD());
+
+        Case relatedCase = assignCase(request.getUD());
+        temporaryConclusion.setRegistrationDate(relatedCase.getRegistrationDate());
+        temporaryConclusion.setUD(relatedCase.getUD());
+        temporaryConclusion.setArticle(relatedCase.getArticle());
+        temporaryConclusion.setDecision(relatedCase.getDecision());
+        temporaryConclusion.setPlot(relatedCase.getSummary());
+
+        temporaryConclusion.setFullNameOfCalled(fetchFullNameByIIN(request.getIIN()));
+        temporaryConclusion.setFullNameOfDefender(fetchFullNameByIIN(request.getIINDefender()));
+
         temporaryConclusion.setIINofCalled(request.getIIN());
         temporaryConclusion.setBINorIINOfCalled(request.getBIN_IIN());
         temporaryConclusion.setJobTitleOfCalled(request.getJobTitle());

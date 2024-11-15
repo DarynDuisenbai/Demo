@@ -60,7 +60,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         Status status = statusRepository.findByName(DEFAULT_STATUS);
         conclusion.setStatus(status);
 
-        Case relatedCase = assignCase(conclusion.getUD());
+        Case relatedCase = assignCase(createConclusionRequest.getUD());
         conclusion.setRegistrationDate(relatedCase.getRegistrationDate());
         conclusion.setUD(relatedCase.getUD());
         conclusion.setArticle(relatedCase.getArticle());

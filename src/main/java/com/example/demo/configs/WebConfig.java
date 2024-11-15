@@ -43,7 +43,7 @@ public class WebConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/login", "/register", "/reset-password").permitAll()
-                        .requestMatchers("/allUD", "/allDepartments", "/allRegions", "allStatus").permitAll()
+                        .requestMatchers("/allUD", "/allDepartments", "/allRegions", "allStatus", "regInDep").permitAll()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userService)

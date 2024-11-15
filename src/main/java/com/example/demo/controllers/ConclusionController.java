@@ -159,7 +159,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "200", description = "Decision was made")
     })
     @PostMapping("/decision")
-    public ResponseEntity<?> decision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException {
+    public ResponseEntity<?> decision(@RequestBody DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException {
         conclusionService.makeDecision(decisionRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Decision was made.");
     }

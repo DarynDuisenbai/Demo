@@ -1,9 +1,6 @@
 package com.example.demo.controllers;
 
-import com.example.demo.dtos.requests.ChangePasswordRequest;
-import com.example.demo.dtos.requests.DeleteAccountRequest;
-import com.example.demo.dtos.requests.ForgotPasswordRequest;
-import com.example.demo.dtos.requests.GetProfileRequest;
+import com.example.demo.dtos.requests.*;
 import com.example.demo.dtos.responces.UserDto;
 import com.example.demo.exceptions.InvalidPasswordException;
 import com.example.demo.exceptions.UserNotFoundException;
@@ -104,6 +101,17 @@ public class UserController {
         return ResponseEntity.ok(allUsers);
     }
 
+    @Operation(summary = "Edit profile")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile successfully edited."),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @PostMapping("/editProfile")
+    public ResponseEntity<?> editProfiled(@RequestBody EditProfileRequest editProfileRequest)
+            throws UserNotFoundException {
+        userService.editProfile(editProfileRequest);
+        return ResponseEntity.status(HttpStatus.OK).body("Profile has successfully edited.");
+    }
 
 
 }

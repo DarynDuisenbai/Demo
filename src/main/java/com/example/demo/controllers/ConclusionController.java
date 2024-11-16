@@ -125,7 +125,7 @@ public class ConclusionController {
     })
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody CreateConclusionRequest createConclusionRequest)
-            throws UserNotFoundException, RegionNotFoundException {
+            throws UserNotFoundException, RegionNotFoundException, CaseNotFound {
         conclusionService.saveConclusion(createConclusionRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Document successfully saved.");
     }
@@ -136,7 +136,7 @@ public class ConclusionController {
     })
     @PutMapping("/edit")
     public ResponseEntity<?> edit(@RequestBody EditSavedConclusionRequest editSavedConclusionRequest)
-            throws UserNotFoundException, RegionNotFoundException, NoTemporaryConclusionFound {
+            throws UserNotFoundException, RegionNotFoundException, NoTemporaryConclusionFound, CaseNotFound {
         conclusionService.editSavedConclusion(editSavedConclusionRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Document successfully edited.");
     }

@@ -1,6 +1,7 @@
 package com.example.demo.utils;
 
 import com.example.demo.models.Conclusion;
+import com.example.demo.models.TemporaryConclusion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -14,7 +15,8 @@ public class Generator {
     private final MongoTemplate mongoTemplate;
 
     public String generateUniqueNumber(){
-        long count = mongoTemplate.count(new Query(), Conclusion.class);
-        return PREFIX + String.format("%03d", count + 1);
+        long countConc = mongoTemplate.count(new Query(), Conclusion.class);
+        long countTemp = mongoTemplate.count(new Query(), TemporaryConclusion.class);
+        return PREFIX + String.format("%03d", countConc + countTemp + 1);
     }
 }

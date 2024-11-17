@@ -28,4 +28,13 @@ public class FilterUserRepoImpl implements FilterUserRepo {
 
         return mongoTemplate.find(query, User.class);
     }
+
+    @Override
+    public User findAnalystByDepartment(String department) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("jobTitle.name").is("Аналитик СД"));
+        query.addCriteria(Criteria.where("department.name").is(department));
+
+        return mongoTemplate.findOne(query, User.class);
+    }
 }

@@ -58,12 +58,12 @@ public class AdminController {
     }
 
 
-    @Operation(summary = "Get all agreeements")
+    @Operation(summary = "Get all agreements")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All agreements returned"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @GetMapping("/allConclusions")
+    @GetMapping("/allAgreements")
     public ResponseEntity<List<AgreementDto>> getAllAgreements(){
         List<Agreement> agreements = agreementService.getAll();
         List<AgreementDto> agreementDtos = agreementMapper.toDtoList(agreements);

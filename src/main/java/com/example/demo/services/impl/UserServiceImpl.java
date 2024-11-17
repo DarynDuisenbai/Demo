@@ -216,9 +216,6 @@ public class UserServiceImpl implements UserService {
         if (editProfileRequest.getSurname() != null) {
             user.setSecondName(editProfileRequest.getSurname());
         }
-        if (editProfileRequest.getEmail() != null && validator.isValidEmail(editProfileRequest.getEmail())) {
-            user.setEmail(editProfileRequest.getEmail());
-        }
 
         userRepository.save(user);
     }

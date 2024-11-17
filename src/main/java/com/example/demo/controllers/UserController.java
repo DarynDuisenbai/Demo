@@ -108,13 +108,11 @@ public class UserController {
     })
     @PutMapping("/editProfile")
     public ResponseEntity<?> editProfiled(@RequestParam String IIN,
-                                          @RequestParam(required = false) String email,
                                           @RequestParam(required = false) String name,
                                           @RequestParam(required = false) String surname)
             throws UserNotFoundException {
         EditProfileRequest editProfileRequest = new EditProfileRequest();
         editProfileRequest.setIIN(IIN);
-        editProfileRequest.setEmail(email);
         editProfileRequest.setName(name);
         editProfileRequest.setSurname(surname);
         userService.editProfile(editProfileRequest);

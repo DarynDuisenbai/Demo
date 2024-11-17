@@ -28,9 +28,9 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @GetMapping("/profile")
-    public ResponseEntity<UserDto> profile(@RequestParam String email)
+    public ResponseEntity<UserDto> profile(@RequestParam String IIN)
             throws UserNotFoundException {
-        UserDto userProf = userService.getProfile(email);
+        UserDto userProf = userService.getProfile(IIN);
         return ResponseEntity.status(HttpStatus.OK).body(userProf);
     }
 
@@ -76,7 +76,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "All names retrieved")
     })
     @GetMapping("/allNames")
-    public ResponseEntity<List<String>> allNames(){
+    public ResponseEntity<List<String>> allNames() {
         List<String> allNames = userService.allNames();
         return ResponseEntity.ok(allNames);
     }
@@ -86,7 +86,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "All users retrieved")
     })
     @GetMapping("/depRelated")
-    public ResponseEntity<List<UserDto>> depRelated(@RequestParam String department){
+    public ResponseEntity<List<UserDto>> depRelated(@RequestParam String department) {
         List<UserDto> allUsers = userService.getAllWithinDep(department);
         return ResponseEntity.ok(allUsers);
     }
@@ -96,7 +96,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "All users retrieved")
     })
     @GetMapping("/jobRelated")
-    public ResponseEntity<List<UserDto>> jobRelated(@RequestParam String jobTitle){
+    public ResponseEntity<List<UserDto>> jobRelated(@RequestParam String jobTitle) {
         List<UserDto> allUsers = userService.getAllWithinJob(jobTitle);
         return ResponseEntity.ok(allUsers);
     }
@@ -107,8 +107,16 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PutMapping("/editProfile")
-    public ResponseEntity<?> editProfiled(@RequestBody EditProfileRequest editProfileRequest)
+    public ResponseEntity<?> editProfiled(@RequestParam String IIN,
+                                          @RequestParam(required = false) String email,
+                                          @RequestParam(required = false) String name,
+                                          @RequestParam(required = false) String surname)
             throws UserNotFoundException {
+        EditProfileRequest editProfileRequest = new EditProfileRequest();
+        editProfileRequest.setIIN(IIN);
+        editProfileRequest.setEmail(email);
+        editProfileRequest.setName(name);
+        editProfileRequest.setSurname(surname);
         userService.editProfile(editProfileRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Profile has successfully edited.");
     }
@@ -118,7 +126,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "All users retrieved")
     })
     @GetMapping("/allUsers")
-    public ResponseEntity<List<UserDto>> getAllUsers(){
+    public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> userDtos = userService.getAllUsers();
         return ResponseEntity.ok(userDtos);
     }

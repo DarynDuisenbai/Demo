@@ -114,14 +114,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getProfile(String email) throws UserNotFoundException {
-        if (!isPresent(email)) {
-            LOGGER.warn("User not found...");
-            throw new UserNotFoundException("User not found.");
-        }
+    public UserDto getProfile(String IIN) throws UserNotFoundException {
+        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
         LOGGER.debug("Retrieving a user...");
-        User user = userRepository.findByEmail(email).get();
-        LOGGER.warn("USER IS " + user);
         return userMapper.toUserDto(user);
     }
 
@@ -221,7 +216,7 @@ public class UserServiceImpl implements UserService {
         if (editProfileRequest.getSurname() != null) {
             user.setSecondName(editProfileRequest.getSurname());
         }
-        if (editProfileRequest.getEmail() != null) {
+        if (editProfileRequest.getEmail() != null && validator.isValidEmail(editProfileRequest.getEmail())) {
             user.setEmail(editProfileRequest.getEmail());
         }
 

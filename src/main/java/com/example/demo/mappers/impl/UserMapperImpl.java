@@ -9,8 +9,10 @@ import com.example.demo.mappers.ConclusionMapper;
 import com.example.demo.mappers.TempMapper;
 import com.example.demo.mappers.UserMapper;
 import com.example.demo.models.Department;
+import com.example.demo.models.JobTitle;
 import com.example.demo.models.User;
 import com.example.demo.repository.DepartmentRepository;
+import com.example.demo.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,7 @@ public class UserMapperImpl implements UserMapper {
     private final ConclusionMapper conclusionMapper;
     private final TempMapper tempMapper;
     private final DepartmentRepository departmentRepository;
+    private final JobRepository jobRepository;
     private final AgreementMapper agreementMapper;
 
     @Override
@@ -58,6 +61,9 @@ public class UserMapperImpl implements UserMapper {
         userDto.setReceivedConclusionDtos(conclusionMapper.toDtoList(user.getReceivedConclusions()));
         userDto.setAgreementDtos(agreementMapper.toDtoList(user.getAgreements()));
         userDto.setIIN(user.getIIN());
+
+        JobTitle jobTitle = jobRepository.findJobTitleByName(user.getJob().getName());
+        userDto.setJobTitle(jobTitle);
         return userDto;
     }
 

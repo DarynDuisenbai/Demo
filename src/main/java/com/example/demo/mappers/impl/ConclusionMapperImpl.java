@@ -6,6 +6,7 @@ import com.example.demo.dtos.responces.ConclusionDto;
 import com.example.demo.dtos.responces.TempConclusionDto;
 import com.example.demo.exceptions.RegionNotFoundException;
 import com.example.demo.mappers.ConclusionMapper;
+import com.example.demo.mappers.TempMapper;
 import com.example.demo.models.Conclusion;
 import com.example.demo.models.Region;
 import com.example.demo.models.Status;
@@ -22,6 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConclusionMapperImpl implements ConclusionMapper {
     private final RegionRepository regionRepository;
+    private final TempMapper tempMapper;
+
     @Override
     public Conclusion fromCreateToConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException {
         Conclusion conclusion = new Conclusion();
@@ -86,7 +89,6 @@ public class ConclusionMapperImpl implements ConclusionMapper {
 
         return dtos;
     }
-
     @Override
     public Conclusion fromTempToConclusion(TemporaryConclusion tempConclusionDto) {
         Conclusion conclusion = new Conclusion();
@@ -117,5 +119,15 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setResult(tempConclusionDto.getResult());
 
         return conclusion;
+    }
+
+    @Override
+    public List<Conclusion> fromTempListToConclusionList(List<TemporaryConclusion> tempConclusions) {
+        List<Conclusion> conclusions = new ArrayList<>();
+        for(TemporaryConclusion temporaryConclusion : tempConclusions){
+            conclusions.add(fromTempToConclusion(temporaryConclusion));
+        }
+
+        return conclusions;
     }
 }

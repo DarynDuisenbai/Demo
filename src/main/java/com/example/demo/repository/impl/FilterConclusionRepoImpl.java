@@ -16,7 +16,7 @@ public class FilterConclusionRepoImpl implements FilterConclusionRepo {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public List<Conclusion> filterConclusions(FilterRequest filterRequest) {
+    public List<Conclusion> filterAllConclusions(FilterRequest filterRequest) {
         Query query = new Query();
 
         if (filterRequest.getRegistrationNumber() != null) {
@@ -45,5 +45,34 @@ public class FilterConclusionRepoImpl implements FilterConclusionRepo {
     }
 
 
+    @Override
+    public List<Conclusion> filterSomeConclusions(List<Conclusion> conclusions, FilterRequest filterRequest) {
+        return conclusions.stream()
+                .filter(conclusion ->
+                        (filterRequest.getRegistrationNumber() == null ||
+                                filterRequest.getRegistrationNumber().equals(conclusion.getRegistrationNumber()))
+                                &&
+                                (filterRequest.getStatus() == null ||
+                                        (conclusion.getStatus() != null && filterRequest.getStatus().equals(conclusion.getStatus().getName())))
+                                &&
+                                (filterRequest.getRegion() == null ||
+                                        (conclusion.getRegion() != null && filterRequest.getRegion().equals(conclusion.getRegion().getName())))
+                                &&
+                                (filterRequest.getFrom() == null || filterRequest.getTo() == null ||
+                                        (conclusion.getCreationDate() != null &&
+                                                !conclusion.getCreationDate().isBefore(filterRequest.getFrom()) &&
+                                                !conclusion.getCreationDate().isAfter(filterRequest.getTo())))
+                                &&
+                                (filterRequest.getIIN() == null ||
+                                        filterRequest.getIIN().equals(conclusion.getIINofCalled()))
+                                &&
+                                (filterRequest.getUD() == null ||
+                                        filterRequest.getUD().equals(conclusion.getUD()))
+                                &&
+                                (filterRequest.getFullName() == null ||
+                                        filterRequest.getFullName().equals(conclusion.getFullNameOfDefender()))
+                )
+                .toList();
+    }
 
 }

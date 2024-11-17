@@ -113,7 +113,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("Profile has successfully edited.");
     }
 
-
+    @Operation(summary = "All users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All users retrieved")
+    })
+    @GetMapping("/allUsers")
+    public ResponseEntity<List<UserDto>> getAllUsers(){
+        List<UserDto> userDtos = userService.getAllUsers();
+        return ResponseEntity.ok(userDtos);
+    }
 
 
 }

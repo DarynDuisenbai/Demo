@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ConclusionRepository extends MongoRepository<Conclusion, String>, FilterConclusionRepo {
     Optional<Conclusion> findConclusionByRegistrationNumber(String registrationNumber);
+
 }

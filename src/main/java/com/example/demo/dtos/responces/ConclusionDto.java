@@ -2,6 +2,7 @@ package com.example.demo.dtos.responces;
 
 import com.example.demo.models.Region;
 import com.example.demo.models.Status;
+import com.example.demo.models.User;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +30,7 @@ public class ConclusionDto {
     private String plannedInvestigativeActions;
     private LocalDateTime eventDateTime;
     private String eventPlace;
-    private String investigator;
+    private User investigator;
     private String status;
     private String relationToEvent;
     private String investigationTypes;

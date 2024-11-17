@@ -20,16 +20,21 @@ import org.springframework.stereotype.Service;
 import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class ConclusionServiceImpl implements ConclusionService {
     private final String DEFAULT_STATUS = "На согласовании";
     private final String SAVED = "В работе";
+    private final String EMPLOYEE = "Сотрудник СУ";
+    private final String ANALYST = "Аналитик СД";
+    private final String MODERATOR = "Модератор";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConclusionServiceImpl.class);
     private final ConclusionRepository conclusionRepository;
     private final CaseRepository caseRepository;
@@ -37,6 +42,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final UserRepository userRepository;
     private final StatusRepository statusRepository;
     private final RegionRepository regionRepository;
+    private final AgreementRepository agreementRepository;
     private final ConclusionMapper conclusionMapper;
     private final TempMapper tempMapper;
     private final AgreementMapper agreementMapper;
@@ -67,8 +73,13 @@ public class ConclusionServiceImpl implements ConclusionService {
         conclusion.setDecision(relatedCase.getDecision());
         conclusion.setPlot(relatedCase.getSummary());
 
+
         conclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIIN()));
         conclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
+
+        User investigator = userRepository.findByIIN(createConclusionRequest.getIINOfInvestigator()).
+                orElseThrow(()-> new UserNotFoundException("User not found."));
+        conclusion.setInvestigator(investigator);
 
         sendConclusion(conclusion, createConclusionRequest.getIINDefender());
 
@@ -203,19 +214,35 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
-    public List<ConclusionDto> filter(FilterRequest filterRequest){
+    public List<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException {
         LOGGER.debug("Filtering...");
-        List<Conclusion> filteredConclusions = conclusionRepository.filterConclusions(filterRequest);
+        User user = userRepository.findByIIN(filterRequest.getIIN()).orElseThrow(() -> new UserNotFoundException());
+        List<Conclusion> filteredConclusions;
+        if (user.getJob().equals(EMPLOYEE)) {
+            List<TemporaryConclusion> AllTempConclusionsOfUser = user.getTemporaryConclusions();
+            List<Conclusion> AllConclusionsOfUser = user.getConclusions();
+
+            List<Conclusion> fromTempToPermanent = conclusionMapper.fromTempListToConclusionList(AllTempConclusionsOfUser);
+            List<Conclusion> allUserConclusions = Stream.concat(
+                    fromTempToPermanent.stream(),
+                    AllConclusionsOfUser.stream()
+            ).toList();
+
+            filteredConclusions = conclusionRepository.filterSomeConclusions(allUserConclusions, filterRequest);
+        } else if (user.getJob().equals(ANALYST)) {
+            List<User> users = userRepository.findByDepartment(user.getDepartment().getName());
+            List<Conclusion> conclusionsFormDep = users.stream()
+                    .flatMap(deptUser -> deptUser.getConclusions().stream())
+                    .toList();
+
+            conclusionsFormDep.addAll(user.getConclusions());
+
+            filteredConclusions = conclusionRepository.filterSomeConclusions(conclusionsFormDep, filterRequest);
+        } else {
+            filteredConclusions = conclusionRepository.filterAllConclusions(filterRequest);
+        }
         return conclusionMapper.toDtoList(filteredConclusions);
     }
-
-    /*@Override
-    public List<AgreementDto> agreement() throws UserNotFoundException {
-
-        User user = userRepository.findByEmail(agreementDto.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found."));
-        return conclusionMapper.toShortDto(user.getConclusions());
-    }*/
-
     @Override
     public List<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user conclusions...");

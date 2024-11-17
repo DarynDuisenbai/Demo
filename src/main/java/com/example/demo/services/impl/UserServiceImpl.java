@@ -234,5 +234,9 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public User getAnalystOfDepartment(String department) {
+        return userRepository.findAnalystByDepartment(department);
+    }
 }
 

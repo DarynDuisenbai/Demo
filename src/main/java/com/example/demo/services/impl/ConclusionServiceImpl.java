@@ -73,7 +73,6 @@ public class ConclusionServiceImpl implements ConclusionService {
         conclusion.setDecision(relatedCase.getDecision());
         conclusion.setPlot(relatedCase.getSummary());
 
-
         conclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIIN()));
         conclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
 
@@ -81,7 +80,8 @@ public class ConclusionServiceImpl implements ConclusionService {
                 orElseThrow(()-> new UserNotFoundException("User not found."));
         conclusion.setInvestigator(investigator);
 
-        sendConclusion(conclusion, createConclusionRequest.getIINDefender());
+        User analystOfDep = userRepository.findAnalystByDepartment(investigator.getDepartment().getName());
+        sendConclusion(conclusion,analystOfDep.getIIN());
 
         String userIIN = createConclusionRequest.getIIN();
         LOGGER.warn("IIN IS " + userIIN);
@@ -201,15 +201,17 @@ public class ConclusionServiceImpl implements ConclusionService {
         Conclusion conclusion = conclusionMapper.fromTempToConclusion(tempConclusion);
         conclusionRepository.save(conclusion);
 
-        User user = userRepository.findByIIN(tempConclusion.getIINofCalled()).orElseThrow(() -> new UserNotFoundException("User not found."));
-        user.getTemporaryConclusions().removeIf(temporaryConclusion ->
+        User investigator = userRepository.findByIIN(tempConclusion.getInvestigator().getIIN()).
+                orElseThrow(() -> new UserNotFoundException("User not found."));
+        investigator.getTemporaryConclusions().removeIf(temporaryConclusion ->
                 temporaryConclusion.getRegistrationNumber().equals(tempConclusion.getRegistrationNumber())
         );
-        user.getConclusions().add(conclusion);
+        investigator.getConclusions().add(conclusion);
 
-        sendConclusion(conclusion, conclusion.getIINDefender());
+        User analystOfDep = userRepository.findAnalystByDepartment(investigator.getDepartment().getName());
+        sendConclusion(conclusion,analystOfDep.getIIN());
 
-        userRepository.save(user);
+        userRepository.save(investigator);
         temporaryConclusionRepository.delete(tempConclusion);
     }
 

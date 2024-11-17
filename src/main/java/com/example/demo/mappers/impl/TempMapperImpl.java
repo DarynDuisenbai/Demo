@@ -3,12 +3,15 @@ package com.example.demo.mappers.impl;
 import com.example.demo.dtos.requests.CreateConclusionRequest;
 import com.example.demo.dtos.responces.TempConclusionDto;
 import com.example.demo.exceptions.RegionNotFoundException;
+import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.mappers.TempMapper;
 import com.example.demo.models.Region;
 import com.example.demo.models.Status;
 import com.example.demo.models.TemporaryConclusion;
+import com.example.demo.models.User;
 import com.example.demo.repository.RegionRepository;
 import com.example.demo.repository.StatusRepository;
+import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +23,7 @@ import java.util.List;
 public class TempMapperImpl implements TempMapper {
     private final RegionRepository regionRepository;
     private final StatusRepository statusRepository;
+    private final UserRepository userRepository;
     @Override
     public TemporaryConclusion fromCreateToTemp(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException {
         TemporaryConclusion tempConclusion = new TemporaryConclusion();
@@ -64,7 +68,7 @@ public class TempMapperImpl implements TempMapper {
         dto.setPlannedInvestigativeActions(temporaryConclusion.getPlannedActions());
         dto.setEventDateTime(temporaryConclusion.getEventTime());
         dto.setEventPlace(temporaryConclusion.getEventPlace());
-        dto.setInvestigator(temporaryConclusion.getInvestigator());
+        dto.setInvestigator(temporaryConclusion.getInvestigator().getName() + " " + temporaryConclusion.getInvestigator().getSecondName());
         dto.setStatus(temporaryConclusion.getStatus().getName());
         dto.setRelationToEvent(temporaryConclusion.getRelation());
         dto.setInvestigationTypes(temporaryConclusion.getInvestigation());
@@ -88,7 +92,7 @@ public class TempMapperImpl implements TempMapper {
     }
 
     @Override
-    public TemporaryConclusion formDtoToTempConclusion(TempConclusionDto tempConclusionDto) {
+    public TemporaryConclusion formDtoToTempConclusion(TempConclusionDto tempConclusionDto) throws UserNotFoundException {
         TemporaryConclusion temporaryConclusion = new TemporaryConclusion();
 
         temporaryConclusion.setRegistrationNumber(tempConclusionDto.getRegistrationNumber());
@@ -111,7 +115,10 @@ public class TempMapperImpl implements TempMapper {
         temporaryConclusion.setPlannedActions(tempConclusionDto.getPlannedInvestigativeActions());
         temporaryConclusion.setEventTime(tempConclusionDto.getEventDateTime());
         temporaryConclusion.setEventPlace(tempConclusionDto.getEventPlace());
-        temporaryConclusion.setInvestigator(tempConclusionDto.getInvestigator());
+
+        String[] name = tempConclusionDto.getInvestigator().split(" ");
+        User investigator = userRepository.findByNameAndSecondName(name[1], name[2]).orElseThrow(() -> new UserNotFoundException("User not found."));
+        temporaryConclusion.setInvestigator(investigator);
 
         Status status =  statusRepository.findByName(tempConclusionDto.getStatus());
         temporaryConclusion.setStatus(status);

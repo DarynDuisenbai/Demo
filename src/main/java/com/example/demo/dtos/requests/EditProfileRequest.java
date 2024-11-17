@@ -17,7 +17,4 @@ public class EditProfileRequest {
 
     @Nullable
     private String surname;
-
-    @Nullable
-    private String email;
 }

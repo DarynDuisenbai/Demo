@@ -20,6 +20,7 @@ public class CreateConclusionRequest {
     private String relation;
     private String investigationType;
     private Boolean relatesToBusiness;
+    private String IINOfInvestigator;
     private String IINDefender;
     private String justification;
     private String result;

@@ -17,4 +17,6 @@ public class AgreementServiceImpl implements AgreementService {
     public List<Agreement> getAll() {
         return agreementRepository.findAll();
     }
+
+    
 }

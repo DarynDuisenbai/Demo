@@ -221,5 +221,12 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
     }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+        return userMapper.toDtoList(userRepository.findAll());
+    }
+
+
 }
 

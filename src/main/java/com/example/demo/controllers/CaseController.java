@@ -27,4 +27,7 @@ public class CaseController {
         List<Case> cases = caseService.allCases();
         return ResponseEntity.status(HttpStatus.OK).body(cases);
     }
+
+
+
 }

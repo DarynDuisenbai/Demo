@@ -15,6 +15,7 @@ public interface ConclusionMapper {
     ConclusionDto  toConclusionDto(Conclusion conclusion);
     List<ConclusionDto> toDtoList(List<Conclusion> conclusions);
     Conclusion fromTempToConclusion(TemporaryConclusion tempConclusion);
+    List<Conclusion> fromTempListToConclusionList(List<TemporaryConclusion> tempConclusionDtos);
 
 
 }

@@ -83,7 +83,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         User analystOfDep = userRepository.findAnalystByDepartment(investigator.getDepartment().getName());
         sendConclusion(conclusion,analystOfDep.getIIN());
 
-        String userIIN = createConclusionRequest.getIIN();
+        String userIIN = createConclusionRequest.getIINOfInvestigator();
         LOGGER.warn("IIN IS " + userIIN);
         User user = userRepository.findByIIN(userIIN).orElseThrow(() -> new UserNotFoundException("User not found."));
 

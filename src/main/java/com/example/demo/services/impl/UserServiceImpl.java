@@ -6,11 +6,11 @@ import com.example.demo.exceptions.*;
 import com.example.demo.mappers.UserMapper;
 import com.example.demo.models.JobTitle;
 import com.example.demo.models.User;
-import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.JobRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.services.UserService;
 import com.example.demo.utils.EmailSender;
+import com.example.demo.utils.UTCFormatter;
 import com.example.demo.utils.Validator;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -22,25 +22,21 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final String EMPLOYEE = "Сотрудник СУ";
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private BCryptPasswordEncoder passwordEncoder;
     private final Validator validator;
     private final UserMapper userMapper;
     private final EmailSender emailSender;
+    private final UTCFormatter utcFormatter;
     @Autowired
     public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -99,7 +95,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Creating a new user...");
         User user = userMapper.fromRegisterToUser(createUserRequest);
         user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
-        user.setRegistrationDate(LocalDateTime.now());
+        user.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(LocalDateTime.now()));
 
         JobTitle jobTitle = jobRepository.findJobTitleByName(EMPLOYEE);
         user.setJob(jobTitle);

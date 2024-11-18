@@ -64,11 +64,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Password reset link sent to email"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest)
+    @PutMapping("/reset-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email)
             throws UserNotFoundException {
-        userService.forgotPassword(forgotPasswordRequest);
-        return ResponseEntity.status(HttpStatus.OK).body("Password reset link sent to your email.");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.forgotPassword(email));
     }
 
     @Operation(summary = "All names")

@@ -111,6 +111,7 @@ public class ConclusionServiceImpl implements ConclusionService {
             throws RegionNotFoundException, UserNotFoundException, CaseNotFound {
         LOGGER.debug("Saving a temporary conclusion.");
         TemporaryConclusion temporaryConclusion = tempMapper.fromCreateToTemp(createConclusionRequest);
+
         temporaryConclusion.setRegistrationNumber(generator.generateUniqueNumber());
         temporaryConclusion.setCreationDate(LocalDateTime.now());
 
@@ -127,15 +128,19 @@ public class ConclusionServiceImpl implements ConclusionService {
         temporaryConclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIIN()));
         temporaryConclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
 
-        String investigatorIIN = createConclusionRequest.getIINOfInvestigator();
-        LOGGER.warn("IIN IS " + investigatorIIN);
-        User user = userRepository.findByIIN(investigatorIIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+        User investigator = userRepository.findByIIN(createConclusionRequest.getIINOfInvestigator()).
+                orElseThrow(()-> new UserNotFoundException("User not found."));
+        temporaryConclusion.setInvestigator(investigator);
 
-        List<TemporaryConclusion> userConclusions = user.getTemporaryConclusions();
-        userConclusions.add(temporaryConclusion);
+        String userIIN = createConclusionRequest.getIINOfInvestigator();
+        LOGGER.warn("IIN IS " + userIIN);
+        User user = userRepository.findByIIN(userIIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        List<TemporaryConclusion> temporaryConclusions = user.getTemporaryConclusions();
+        temporaryConclusions.add(temporaryConclusion);
 
         temporaryConclusionRepository.save(temporaryConclusion);
-        userRepository.save(user);
+        userRepository.save(temporaryConclusion.getInvestigator());
         LOGGER.debug("Temporary conclusion saved.");
     }
 

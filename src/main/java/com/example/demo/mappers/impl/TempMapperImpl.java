@@ -25,10 +25,8 @@ public class TempMapperImpl implements TempMapper {
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
     @Override
-    public TemporaryConclusion fromCreateToTemp(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException {
+    public TemporaryConclusion fromCreateToTemp(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException {
         TemporaryConclusion tempConclusion = new TemporaryConclusion();
-        tempConclusion.setUD(createConclusionRequest.getUD());
-        tempConclusion.setIINofCalled(createConclusionRequest.getIIN());
         tempConclusion.setBINorIINOfCalled(createConclusionRequest.getBIN_IIN());
         tempConclusion.setJobTitleOfCalled(createConclusionRequest.getJobTitle());
 

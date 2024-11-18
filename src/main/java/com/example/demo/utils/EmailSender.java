@@ -12,14 +12,17 @@ import org.springframework.stereotype.Component;
 public class EmailSender {
     private final JavaMailSender mailSender;
 
-    public void sendEmail(String to, String subject, String text) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
+    public void sendSetPasswordEmail(String email) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        mimeMessageHelper.setTo(email);
+        mimeMessageHelper.setSubject("Set Password");
+        mimeMessageHelper.setText("""
+        <div>
+          <a href="http://localhost:5002/password?email=%s" target="_blank">click link to set password</a>
+        </div>
+        """.formatted(email), true);
 
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(text, true);
-
-        mailSender.send(message);
+        mailSender.send(mimeMessage);
     }
 }

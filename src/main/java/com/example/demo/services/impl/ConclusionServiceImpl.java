@@ -140,7 +140,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         temporaryConclusions.add(temporaryConclusion);
 
         temporaryConclusionRepository.save(temporaryConclusion);
-        userRepository.save(temporaryConclusion.getInvestigator());
+        userRepository.save(user);
         LOGGER.debug("Temporary conclusion saved.");
     }
 
@@ -351,4 +351,9 @@ public class ConclusionServiceImpl implements ConclusionService {
         userRepository.save(investigator);
     }
 
+    @Override
+    public ConclusionDto getSpecific(String regNumber) throws NoConclusionException {
+        return conclusionMapper.toConclusionDto(conclusionRepository.
+                findConclusionByRegistrationNumber(regNumber).orElseThrow(()->new NoConclusionException()));
+    }
 }

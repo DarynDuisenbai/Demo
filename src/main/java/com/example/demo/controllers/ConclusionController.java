@@ -120,6 +120,16 @@ public class ConclusionController {
         return ResponseEntity.ok(conclusions);
     }
 
+    @Operation(summary = "Get specific document", description = "All information about specific document")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Conclusions retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Conclusion not found.")
+    })
+    @GetMapping("/fullConclusion")
+    public ResponseEntity<?> getSpecificConclusion(@RequestParam String regNumber) throws NoConclusionException {
+        ConclusionDto conclusionDto = conclusionService.getSpecific(regNumber);
+        return ResponseEntity.ok(conclusionDto);
+    }
 
     @Operation(summary = "Get all UD", description = "Retrieves a list of UD's")
     @ApiResponses(value = {

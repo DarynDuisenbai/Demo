@@ -1,0 +1,39 @@
+@Override
+    public void createConclusion(CreateConclusionRequest createConclusionRequest) throws UserNotFoundException, RegionNotFoundException, CaseNotFound {
+        LOGGER.debug("Creating a new conclusion");
+        Conclusion conclusion = conclusionMapper.fromCreateToConclusion(createConclusionRequest);
+
+        conclusion.setRegistrationNumber(generator.generateUniqueNumber());
+        conclusion.setCreationDate(LocalDateTime.now());
+
+        Status status = statusRepository.findByName(DEFAULT_STATUS);
+        conclusion.setStatus(status);
+
+        Case relatedCase = assignCase(createConclusionRequest.getUD());
+        conclusion.setRegistrationDate(relatedCase.getRegistrationDate());
+        conclusion.setUD(relatedCase.getUD());
+        conclusion.setArticle(relatedCase.getArticle());
+        conclusion.setDecision(relatedCase.getDecision());
+        conclusion.setPlot(relatedCase.getSummary());
+
+        conclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIIN()));
+        conclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
+
+        User investigator = userRepository.findByIIN(createConclusionRequest.getIINOfInvestigator()).
+                orElseThrow(()-> new UserNotFoundException("User not found."));
+        conclusion.setInvestigator(investigator);
+
+        User analystOfDep = userRepository.findAnalystByDepartment(investigator.getDepartment().getName());
+        sendConclusion(conclusion,analystOfDep.getIIN());
+
+        String userIIN = createConclusionRequest.getIINOfInvestigator();
+        LOGGER.warn("IIN IS " + userIIN);
+        User user = userRepository.findByIIN(userIIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        List<Conclusion> userConclusions = user.getConclusions();
+        userConclusions.add(conclusion);
+
+        conclusionRepository.save(conclusion);
+        userRepository.save(user);
+
+    }

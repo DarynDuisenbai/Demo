@@ -154,24 +154,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) throws UserNotFoundException {
-        if(!isPresent(forgotPasswordRequest.getEmail())){
+    public String forgotPassword(String email) throws UserNotFoundException {
+        if(!isPresent(email)){
             LOGGER.warn("User not found...");
             throw new UserNotFoundException("User not found.");
         }
-
-
-        String resetLink = "http://localhost:5002/reset-password?email=" + forgotPasswordRequest.getEmail();
-        String emailContent = "<p>To reset your password, click the link below:</p>"
-                + "<a href=\"" + resetLink + "\">Reset Password</a>";
-
-        try{
-            LOGGER.debug("Sending an email...");
-            emailSender.sendEmail(forgotPasswordRequest.getEmail(), "Password Reset Request", emailContent);
-        } catch (MessagingException e){
-            LOGGER.warn("Error while sending email...");
-            throw new RuntimeException("Failed to send email.");
+        try {
+            emailSender.sendSetPasswordEmail(email);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send set password email, please try again");
         }
+        return "Please check your email to set new password to your account.";
     }
 
     @Override

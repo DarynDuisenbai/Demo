@@ -24,8 +24,8 @@ public class AgreementMapperImpl implements AgreementMapper {
         AgreementDto agreementDto = new AgreementDto();
         agreementDto.setJobTitle(agreement.getJobTitle());
         agreementDto.setFullName(agreement.getFullName());
-        agreementDto.setStatus(agreementDto.getStatus());
-        agreementDto.setReason(agreementDto.getReason());
+        agreementDto.setStatus(agreement.getStatus().getName());
+        agreementDto.setReason(agreement.getReason());
         agreementDto.setDate(agreement.getDate());
 
         return agreementDto;

@@ -287,6 +287,12 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
+    public List<AgreementDto> userAgreements(String IIN) throws UserNotFoundException {
+        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+        return agreementMapper.toDtoList(user.getAgreements());
+    }
+
+    @Override
     public List<TempConclusionDto> userSavedConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user saved conclusions...");
         User user = userRepository.findByIIN(IIN).orElseThrow(()-> new UserNotFoundException("User not found."));
@@ -305,22 +311,44 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     public AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException {
-        AgreementDto agreementDto = new AgreementDto();
+        Agreement agreement = new Agreement();
 
-        User user = userRepository.findByIIN(decisionRequest.getIIN()).orElseThrow(() -> new UserNotFoundException("User not found."));
-        agreementDto.setFullName(user.getName() + " " + user.getSecondName());
-        agreementDto.setJobTitle(user.getJob().getName());
+        User receiver = userRepository.findByIIN(decisionRequest.getIIN()).orElseThrow(() -> new UserNotFoundException("User not found."));
+        agreement.setFullName(receiver.getName() + " " + receiver.getSecondName());
+        agreement.setJobTitle(receiver.getJob().getName());
 
         Conclusion conclusion = conclusionRepository.findConclusionByRegistrationNumber(decisionRequest.getRegistrationNumber()).
                 orElseThrow(()-> new NoConclusionException("Conclusion not found."));
 
+        User investigator = userRepository.findByIIN(conclusion.getInvestigator().getIIN()).
+                orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        investigator.getConclusions().stream()
+                .filter(c -> c.getRegistrationNumber().equals(conclusion.getRegistrationNumber()))
+                .findFirst()
+                .ifPresent(c -> c.setStatus(statusRepository.findByName(decisionRequest.getStatus())));
+
+
         Status status = statusRepository.findByName(decisionRequest.getStatus());
         conclusion.setStatus(status);
-        agreementDto.setDate(conclusion.getEventTime());
-        agreementDto.setReason(decisionRequest.getReason());
+        agreement.setDate(conclusion.getEventTime());
+        agreement.setReason(decisionRequest.getReason());
+        agreement.setStatus(status);
 
-        user.getAgreements().add(agreementMapper.fromDtoToAgreement(agreementDto));
-        userRepository.save(user);
-        return agreementDto;
+        sendAgreement(agreement, conclusion.getInvestigator().getIIN());
+
+        receiver.getAgreements().add(agreement);
+        userRepository.save(receiver);
+        agreementRepository.save(agreement);
+        conclusionRepository.save(conclusion);
+        return agreementMapper.toAgreementDto(agreement);
     }
+
+    @Override
+    public void sendAgreement(Agreement agreement, String IIN) throws UserNotFoundException {
+        User investigator = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+        investigator.getAgreements().add(agreement);
+        userRepository.save(investigator);
+    }
+
 }

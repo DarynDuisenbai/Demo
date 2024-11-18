@@ -97,6 +97,18 @@ public class ConclusionController {
         return ResponseEntity.ok(conclusions);
     }
 
+    @Operation(summary = "All user's agreements")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All user's agreements retrieved"),
+            @ApiResponse(responseCode = "404", description = "User not found.")
+    })
+    @GetMapping("/usersAgreements")
+    public ResponseEntity<?> myAgreements(@RequestParam String IIN) throws UserNotFoundException {
+        List<AgreementDto> agreements = conclusionService.userAgreements(IIN);
+        return ResponseEntity.ok(agreements);
+    }
+
+
     @Operation(summary = "Get user's temporary conclusions", description = "Retrieves a list of temporary conclusions associated with a specific user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Conclusions retrieved successfully"),

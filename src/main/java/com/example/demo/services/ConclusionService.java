@@ -18,9 +18,11 @@ public interface ConclusionService {
     List<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException;
     List<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException;
     List<TempConclusionDto> userSavedConclusions(String IIN) throws UserNotFoundException;
+    List<AgreementDto> userAgreements(String IIN) throws UserNotFoundException;
     List<String> allUD();
     List<Conclusion> getAllConclusions();
 
     void sendConclusion(Conclusion conclusion, String IIN) throws UserNotFoundException;
+    void sendAgreement(Agreement agreement, String IIN) throws UserNotFoundException;
     AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException;
 }

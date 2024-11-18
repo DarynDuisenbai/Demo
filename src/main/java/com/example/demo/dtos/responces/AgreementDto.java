@@ -1,5 +1,6 @@
 package com.example.demo.dtos.responces;
 
+import com.example.demo.models.Status;
 import lombok.Getter;
 import lombok.Setter;
 

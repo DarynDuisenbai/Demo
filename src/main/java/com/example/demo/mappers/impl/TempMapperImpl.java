@@ -12,6 +12,7 @@ import com.example.demo.models.User;
 import com.example.demo.repository.RegionRepository;
 import com.example.demo.repository.StatusRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.utils.UTCFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,7 @@ public class TempMapperImpl implements TempMapper {
     private final RegionRepository regionRepository;
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
+    private final UTCFormatter utcFormatter;
     @Override
     public TemporaryConclusion fromCreateToTemp(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException {
         TemporaryConclusion tempConclusion = new TemporaryConclusion();
@@ -35,7 +37,7 @@ public class TempMapperImpl implements TempMapper {
 
         tempConclusion.setRegion(region);
         tempConclusion.setPlannedActions(createConclusionRequest.getPlannedActions());
-        tempConclusion.setEventTime(createConclusionRequest.getEventDateTime());
+        tempConclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(createConclusionRequest.getEventDateTime()));
         tempConclusion.setEventPlace(createConclusionRequest.getEventPlace());
         tempConclusion.setRelation(createConclusionRequest.getRelation());
         tempConclusion.setInvestigation(createConclusionRequest.getInvestigationType());
@@ -51,9 +53,9 @@ public class TempMapperImpl implements TempMapper {
     public TempConclusionDto toTempConclusionDto(TemporaryConclusion temporaryConclusion) {
         TempConclusionDto dto = new TempConclusionDto();
         dto.setRegistrationNumber(temporaryConclusion.getRegistrationNumber());
-        dto.setCreationDate(temporaryConclusion.getCreationDate());
+        dto.setCreationDate(utcFormatter.convertUTCToUTCPlus5(temporaryConclusion.getCreationDate()));
         dto.setUdNumber(temporaryConclusion.getUD());
-        dto.setRegistrationDate(temporaryConclusion.getRegistrationDate());
+        dto.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(temporaryConclusion.getRegistrationDate()));
         dto.setArticle(temporaryConclusion.getArticle());
         dto.setDecision(temporaryConclusion.getDecision());
         dto.setSummary(temporaryConclusion.getDecision());
@@ -64,7 +66,7 @@ public class TempMapperImpl implements TempMapper {
         dto.setWorkPlace(temporaryConclusion.getEventPlace());
         dto.setRegion(temporaryConclusion.getRegion());
         dto.setPlannedInvestigativeActions(temporaryConclusion.getPlannedActions());
-        dto.setEventDateTime(temporaryConclusion.getEventTime());
+        dto.setEventDateTime(utcFormatter.convertUTCToUTCPlus5(temporaryConclusion.getEventTime()));
         dto.setEventPlace(temporaryConclusion.getEventPlace());
         dto.setInvestigator(temporaryConclusion.getInvestigator().getName() + " " + temporaryConclusion.getInvestigator().getSecondName());
         dto.setStatus(temporaryConclusion.getStatus().getName());
@@ -94,9 +96,9 @@ public class TempMapperImpl implements TempMapper {
         TemporaryConclusion temporaryConclusion = new TemporaryConclusion();
 
         temporaryConclusion.setRegistrationNumber(tempConclusionDto.getRegistrationNumber());
-        temporaryConclusion.setCreationDate(tempConclusionDto.getCreationDate());
+        temporaryConclusion.setCreationDate(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getCreationDate()));
         temporaryConclusion.setUD(tempConclusionDto.getUdNumber());
-        temporaryConclusion.setRegistrationDate(tempConclusionDto.getRegistrationDate());
+        temporaryConclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getRegistrationDate()));
         temporaryConclusion.setArticle(tempConclusionDto.getArticle());
         temporaryConclusion.setDecision(tempConclusionDto.getDecision());
         temporaryConclusion.setPlot(tempConclusionDto.getSummary());
@@ -111,7 +113,7 @@ public class TempMapperImpl implements TempMapper {
         temporaryConclusion.setRegion(tempConclusionDto.getRegion());
 
         temporaryConclusion.setPlannedActions(tempConclusionDto.getPlannedInvestigativeActions());
-        temporaryConclusion.setEventTime(tempConclusionDto.getEventDateTime());
+        temporaryConclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getEventDateTime()));
         temporaryConclusion.setEventPlace(tempConclusionDto.getEventPlace());
 
         String[] name = tempConclusionDto.getInvestigator().split(" ");

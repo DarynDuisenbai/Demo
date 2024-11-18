@@ -12,17 +12,14 @@ import com.example.demo.models.*;
 import com.example.demo.repository.*;
 import com.example.demo.services.ConclusionService;
 import com.example.demo.utils.Generator;
+import com.example.demo.utils.UTCFormatter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,6 +44,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final TempMapper tempMapper;
     private final AgreementMapper agreementMapper;
     private final Generator generator;
+    private final UTCFormatter utcFormatter;
 
     @Override
     public void sendConclusion(Conclusion conclusion, String IIN) throws UserNotFoundException {
@@ -61,7 +59,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         Conclusion conclusion = conclusionMapper.fromCreateToConclusion(createConclusionRequest);
 
         conclusion.setRegistrationNumber(generator.generateUniqueNumber());
-        conclusion.setCreationDate(LocalDateTime.now());
+        conclusion.setCreationDate(utcFormatter.convertUTCToUTCPlus5(LocalDateTime.now()));
 
         Status status = statusRepository.findByName(DEFAULT_STATUS);
         conclusion.setStatus(status);
@@ -223,28 +221,34 @@ public class ConclusionServiceImpl implements ConclusionService {
     @Override
     public List<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException {
         LOGGER.debug("Filtering...");
-        User user = userRepository.findByIIN(filterRequest.getIIN()).orElseThrow(() -> new UserNotFoundException());
+        User user = userRepository.findByIIN(filterRequest.getIIN()).orElseThrow(UserNotFoundException::new);
         List<Conclusion> filteredConclusions;
         if (user.getJob().equals(EMPLOYEE)) {
             List<TemporaryConclusion> AllTempConclusionsOfUser = user.getTemporaryConclusions();
-            List<Conclusion> AllConclusionsOfUser = user.getConclusions();
+            List<Conclusion> AllDocsOfUser = user.getConclusions();
 
             List<Conclusion> fromTempToPermanent = conclusionMapper.fromTempListToConclusionList(AllTempConclusionsOfUser);
             List<Conclusion> allUserConclusions = Stream.concat(
                     fromTempToPermanent.stream(),
-                    AllConclusionsOfUser.stream()
+                    AllDocsOfUser.stream()
             ).toList();
-
+            LOGGER.warn("SIZE OF ARRAY: " + allUserConclusions.size());
             filteredConclusions = conclusionRepository.filterSomeConclusions(allUserConclusions, filterRequest);
         } else if (user.getJob().equals(ANALYST)) {
             List<User> users = userRepository.findByDepartment(user.getDepartment().getName());
+            List<Conclusion> receivedConclusions = user.getReceivedConclusions();
             List<Conclusion> conclusionsFormDep = users.stream()
                     .flatMap(deptUser -> deptUser.getConclusions().stream())
                     .toList();
 
             conclusionsFormDep.addAll(user.getConclusions());
 
-            filteredConclusions = conclusionRepository.filterSomeConclusions(conclusionsFormDep, filterRequest);
+            List<Conclusion> allUserConclusions = Stream.concat(
+                    conclusionsFormDep.stream(),
+                    receivedConclusions.stream()
+            ).toList();
+            LOGGER.warn("SIZE OF ARRAY: " + allUserConclusions.size());
+            filteredConclusions = conclusionRepository.filterSomeConclusions(allUserConclusions, filterRequest);
         } else {
             filteredConclusions = conclusionRepository.filterAllConclusions(filterRequest);
         }
@@ -354,6 +358,6 @@ public class ConclusionServiceImpl implements ConclusionService {
     @Override
     public ConclusionDto getSpecific(String regNumber) throws NoConclusionException {
         return conclusionMapper.toConclusionDto(conclusionRepository.
-                findConclusionByRegistrationNumber(regNumber).orElseThrow(()->new NoConclusionException()));
+                findConclusionByRegistrationNumber(regNumber).orElseThrow(NoConclusionException::new));
     }
 }

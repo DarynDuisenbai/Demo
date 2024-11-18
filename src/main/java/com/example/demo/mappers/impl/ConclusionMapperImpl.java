@@ -1,18 +1,15 @@
 package com.example.demo.mappers.impl;
 
 import com.example.demo.dtos.requests.CreateConclusionRequest;
-import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
-import com.example.demo.dtos.responces.TempConclusionDto;
 import com.example.demo.exceptions.RegionNotFoundException;
 import com.example.demo.mappers.ConclusionMapper;
 import com.example.demo.mappers.TempMapper;
 import com.example.demo.models.Conclusion;
 import com.example.demo.models.Region;
-import com.example.demo.models.Status;
 import com.example.demo.models.TemporaryConclusion;
 import com.example.demo.repository.RegionRepository;
-import com.example.demo.repository.StatusRepository;
+import com.example.demo.utils.UTCFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +21,7 @@ import java.util.List;
 public class ConclusionMapperImpl implements ConclusionMapper {
     private final RegionRepository regionRepository;
     private final TempMapper tempMapper;
+    private final UTCFormatter utcFormatter;
 
     @Override
     public Conclusion fromCreateToConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException {
@@ -36,7 +34,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
 
         conclusion.setRegion(region);
         conclusion.setPlannedActions(createConclusionRequest.getPlannedActions());
-        conclusion.setEventTime(createConclusionRequest.getEventDateTime());
+        conclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(createConclusionRequest.getEventDateTime()));
         conclusion.setEventPlace(createConclusionRequest.getEventPlace());
         conclusion.setRelation(createConclusionRequest.getRelation());
         conclusion.setInvestigation(createConclusionRequest.getInvestigationType());
@@ -52,9 +50,9 @@ public class ConclusionMapperImpl implements ConclusionMapper {
     public ConclusionDto toConclusionDto(Conclusion conclusion) {
         ConclusionDto dto = new ConclusionDto();
         dto.setRegistrationNumber(conclusion.getRegistrationNumber());
-        dto.setCreationDate(conclusion.getCreationDate());
+        dto.setCreationDate(utcFormatter.convertUTCToUTCPlus5(conclusion.getCreationDate()));
         dto.setUdNumber(conclusion.getUD());
-        dto.setRegistrationDate(conclusion.getRegistrationDate());
+        dto.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(conclusion.getRegistrationDate()));
         dto.setArticle(conclusion.getArticle());
         dto.setDecision(conclusion.getDecision());
         dto.setSummary(conclusion.getDecision());
@@ -65,7 +63,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         dto.setWorkPlace(conclusion.getEventPlace());
         dto.setRegion(conclusion.getRegion());
         dto.setPlannedInvestigativeActions(conclusion.getPlannedActions());
-        dto.setEventDateTime(conclusion.getEventTime());
+        dto.setEventDateTime(utcFormatter.convertUTCToUTCPlus5(conclusion.getEventTime()));
         dto.setEventPlace(conclusion.getEventPlace());
         dto.setInvestigator(conclusion.getInvestigator());
         dto.setStatus(conclusion.getStatus().getName());
@@ -93,9 +91,9 @@ public class ConclusionMapperImpl implements ConclusionMapper {
     public Conclusion fromTempToConclusion(TemporaryConclusion tempConclusionDto) {
         Conclusion conclusion = new Conclusion();
         conclusion.setRegistrationNumber(tempConclusionDto.getRegistrationNumber());
-        conclusion.setCreationDate(tempConclusionDto.getCreationDate());
+        conclusion.setCreationDate(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getCreationDate()));
         conclusion.setUD(tempConclusionDto.getUD());
-        conclusion.setRegistrationDate(tempConclusionDto.getRegistrationDate());
+        conclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getRegistrationDate()));
         conclusion.setArticle(tempConclusionDto.getArticle());
         conclusion.setDecision(tempConclusionDto.getDecision());
         conclusion.setPlot(tempConclusionDto.getDecision());
@@ -106,7 +104,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setEventPlace(tempConclusionDto.getEventPlace());
         conclusion.setRegion(tempConclusionDto.getRegion());
         conclusion.setPlannedActions(tempConclusionDto.getPlannedActions());
-        conclusion.setEventTime(tempConclusionDto.getEventTime());
+        conclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getEventTime()));
         conclusion.setEventPlace(tempConclusionDto.getEventPlace());
         conclusion.setInvestigator(tempConclusionDto.getInvestigator());
         conclusion.setStatus(tempConclusionDto.getStatus());

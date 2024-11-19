@@ -127,6 +127,4 @@ public class UserController {
         List<UserDto> userDtos = userService.getAllUsers();
         return ResponseEntity.ok(userDtos);
     }
-
-
 }

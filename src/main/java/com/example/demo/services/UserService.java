@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.dtos.requests.*;
+import com.example.demo.dtos.responces.History;
 import com.example.demo.dtos.responces.UserDto;
 import com.example.demo.exceptions.*;
 import com.example.demo.models.User;
@@ -24,5 +25,4 @@ public interface UserService extends UserDetailsService {
     void editProfile(EditProfileRequest editProfileRequest) throws UserNotFoundException;
     List<UserDto> getAllUsers();
     User getAnalystOfDepartment(String department);
-
 }

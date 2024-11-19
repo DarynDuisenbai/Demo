@@ -1,6 +1,7 @@
 package com.example.demo.services.impl;
 
 import com.example.demo.dtos.requests.*;
+import com.example.demo.dtos.responces.History;
 import com.example.demo.dtos.responces.UserDto;
 import com.example.demo.exceptions.*;
 import com.example.demo.mappers.UserMapper;
@@ -219,5 +220,7 @@ public class UserServiceImpl implements UserService {
     public User getAnalystOfDepartment(String department) {
         return userRepository.findAnalystByDepartment(department);
     }
+
+
 }
 

@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 
 @Service
@@ -46,7 +47,7 @@ public class ExportServiceImpl implements ExportService {
                 cell.setCellStyle(createHeaderStyle(workbook));
             }
 
-            List<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
+            Set<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
             int rowIndex = 1;
             for (ConclusionDto conclusion : conclusions) {
                 Row row = sheet.createRow(rowIndex++);
@@ -133,7 +134,7 @@ public class ExportServiceImpl implements ExportService {
             }
 
             com.itextpdf.text.Font dataFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 9);
-            List<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
+            Set<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
             boolean alternate = false;
 
             for (ConclusionDto conclusion : conclusions) {

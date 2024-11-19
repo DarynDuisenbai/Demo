@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -128,5 +130,14 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         }
 
         return conclusions;
+    }
+
+    @Override
+    public Set<ConclusionDto> toDtoSet(Set<Conclusion> conclusions) {
+        Set<ConclusionDto> conclusionDtos = new HashSet<>();
+        for(Conclusion conclusion : conclusions){
+            conclusionDtos.add(toConclusionDto(conclusion));
+        }
+        return conclusionDtos;
     }
 }

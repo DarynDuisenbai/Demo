@@ -40,6 +40,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setInvestigation(createConclusionRequest.getInvestigationType());
         conclusion.setBusiness(createConclusionRequest.getRelatesToBusiness() != null ? createConclusionRequest.getRelatesToBusiness() : false);
         conclusion.setIINDefender(createConclusionRequest.getIINDefender());
+        conclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
         conclusion.setJustification(createConclusionRequest.getJustification());
         conclusion.setResult(createConclusionRequest.getResult());
 

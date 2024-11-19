@@ -3,10 +3,12 @@ package com.example.demo.services.impl;
 import com.example.demo.dtos.requests.*;
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
+import com.example.demo.dtos.responces.History;
 import com.example.demo.dtos.responces.TempConclusionDto;
 import com.example.demo.exceptions.*;
 import com.example.demo.mappers.AgreementMapper;
 import com.example.demo.mappers.ConclusionMapper;
+import com.example.demo.mappers.HistoryMapper;
 import com.example.demo.mappers.TempMapper;
 import com.example.demo.models.*;
 import com.example.demo.repository.*;
@@ -19,8 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +44,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final ConclusionMapper conclusionMapper;
     private final TempMapper tempMapper;
     private final AgreementMapper agreementMapper;
+    private final HistoryMapper historyMapper;
     private final Generator generator;
     private final UTCFormatter utcFormatter;
 
@@ -73,7 +75,7 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         conclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIINOfCalled()));
         conclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
-
+        conclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
 
 
         User investigator = userRepository.findByIIN(createConclusionRequest.getIINOfInvestigator()).
@@ -127,6 +129,7 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         temporaryConclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIINOfCalled()));
         temporaryConclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
+
 
         User investigator = userRepository.findByIIN(createConclusionRequest.getIINOfInvestigator()).
                 orElseThrow(()-> new UserNotFoundException("User not found."));
@@ -248,30 +251,33 @@ public class ConclusionServiceImpl implements ConclusionService {
         return conclusionMapper.toDtoList(filteredConclusions);
     }
     @Override
-    public List<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
+    public Set<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user conclusions...");
-        User user = userRepository.findByIIN(IIN).orElseThrow(()-> new UserNotFoundException("User not found."));
+        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
         Department userDep = user.getDepartment();
         String job = user.getJob().getName();
-        List<Conclusion> conclusions;
+        Set<Conclusion> conclusions;
 
-        if(job.equals("Сотрудник СУ")) {
-            conclusions = user.getConclusions();
-        } else if(job.equals("Аналитик СД")) {
+        if (job.equals("Сотрудник СУ")) {
+            conclusions = user.getConclusions().stream().collect(Collectors.toSet());
+        } else if (job.equals("Аналитик СД")) {
             List<User> users = userRepository.findByDepartment(userDep.getName());
             conclusions = users.stream()
                     .flatMap(deptUser -> deptUser.getConclusions().stream())
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
             conclusions.addAll(user.getConclusions());
         } else {
-            conclusions = getAllConclusions();
+            conclusions = new HashSet<>(getAllConclusions());
         }
-        conclusions.addAll(0, user.getReceivedConclusions());
-        conclusions.sort(Comparator.comparingInt(conclusion -> getStatusOrder(conclusion.getStatus().getName())));
 
-        List<ConclusionDto> conclusionDtos = conclusionMapper.toDtoList(conclusions);
-        return conclusionDtos;
+        Set<Conclusion> sortedConclusions = new TreeSet<>(
+                Comparator.comparingInt(conclusion -> getStatusOrder(conclusion.getStatus().getName()))
+        );
+        sortedConclusions.addAll(conclusions);
+
+        return conclusionMapper.toDtoSet(sortedConclusions);
     }
+
     private int getStatusOrder(String status) {
         switch (status) {
             case "На согласовании": return 1;
@@ -353,5 +359,13 @@ public class ConclusionServiceImpl implements ConclusionService {
     public ConclusionDto getSpecific(String regNumber) throws NoConclusionException {
         return conclusionMapper.toConclusionDto(conclusionRepository.
                 findConclusionByRegistrationNumber(regNumber).orElseThrow(NoConclusionException::new));
+    }
+
+    @Override
+    public History history(String iinOfCalled, String goal) throws UserNotFoundException {
+        User user = userRepository.findByIIN(iinOfCalled).orElseThrow(UserNotFoundException::new);
+
+        List<Agreement> agreements = agreementRepository.getAgreementsByIInOfCalled(user.getIIN());
+        return historyMapper.toHistory(agreements, goal);
     }
 }

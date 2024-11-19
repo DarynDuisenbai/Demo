@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.dtos.requests.*;
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
+import com.example.demo.dtos.responces.History;
 import com.example.demo.dtos.responces.TempConclusionDto;
 import com.example.demo.exceptions.*;
 import com.example.demo.models.Region;
@@ -27,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -92,8 +94,8 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @GetMapping("/usersDocs")
-    public ResponseEntity<List<ConclusionDto>> myConclusions(@RequestParam String IIN) throws UserNotFoundException {
-        List<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
+    public ResponseEntity<Set<ConclusionDto>> myConclusions(@RequestParam String IIN) throws UserNotFoundException {
+        Set<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
         return ResponseEntity.ok(conclusions);
     }
 
@@ -175,4 +177,14 @@ public class ConclusionController {
     }
 
 
+    @Operation(summary = "History call")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "History retrieved")
+    })
+    @GetMapping("/history")
+    public ResponseEntity<History> history(@RequestParam String iinOfCalled,
+                                           @RequestParam String goal) throws UserNotFoundException {
+        History history = conclusionService.history(iinOfCalled, goal);
+        return ResponseEntity.ok(history);
+    }
 }

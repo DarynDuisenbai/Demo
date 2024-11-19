@@ -43,6 +43,7 @@ public class TempMapperImpl implements TempMapper {
         tempConclusion.setInvestigation(createConclusionRequest.getInvestigationType());
         tempConclusion.setBusiness(createConclusionRequest.getRelatesToBusiness() != null ? createConclusionRequest.getRelatesToBusiness() : false);
         tempConclusion.setIINDefender(createConclusionRequest.getIINDefender());
+        tempConclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
         tempConclusion.setJustification(createConclusionRequest.getJustification());
         tempConclusion.setResult(createConclusionRequest.getResult());
 

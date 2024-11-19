@@ -70,7 +70,7 @@ public class ConclusionController {
                                                       @RequestParam(required = false) String region,
                                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime from,
                                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime to,
-                                                      @RequestParam(required = false) String iin,
+                                                      @RequestParam String iin,
                                                       @RequestParam(required = false) String ud,
                                                       @RequestParam(required = false) String fullName) throws UserNotFoundException {
         FilterRequest filterRequest = new FilterRequest();

@@ -65,13 +65,13 @@ public class ConclusionServiceImpl implements ConclusionService {
         conclusion.setStatus(status);
 
         Case relatedCase = assignCase(createConclusionRequest.getUD());
-        conclusion.setRegistrationDate(relatedCase.getRegistrationDate());
+        conclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(relatedCase.getRegistrationDate()));
         conclusion.setUD(relatedCase.getUD());
         conclusion.setArticle(relatedCase.getArticle());
         conclusion.setDecision(relatedCase.getDecision());
         conclusion.setPlot(relatedCase.getSummary());
 
-        conclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIIN()));
+        conclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIINOfCalled()));
         conclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
 
         User investigator = userRepository.findByIIN(createConclusionRequest.getIINOfInvestigator()).
@@ -117,13 +117,13 @@ public class ConclusionServiceImpl implements ConclusionService {
         temporaryConclusion.setStatus(status);
 
         Case relatedCase = assignCase(createConclusionRequest.getUD());
-        temporaryConclusion.setRegistrationDate(relatedCase.getRegistrationDate());
+        temporaryConclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(relatedCase.getRegistrationDate()));
         temporaryConclusion.setUD(relatedCase.getUD());
         temporaryConclusion.setArticle(relatedCase.getArticle());
         temporaryConclusion.setDecision(relatedCase.getDecision());
         temporaryConclusion.setPlot(relatedCase.getSummary());
 
-        temporaryConclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIIN()));
+        temporaryConclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIINOfCalled()));
         temporaryConclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
 
         User investigator = userRepository.findByIIN(createConclusionRequest.getIINOfInvestigator()).
@@ -146,9 +146,9 @@ public class ConclusionServiceImpl implements ConclusionService {
     public void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest)
             throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound {
         LOGGER.debug("Editing a temporary conclusion.");
-        String userIIN = editSavedConclusionRequest.getCreateConclusionRequest().getIIN();
-        LOGGER.warn("IIN IS " + userIIN);
-        User user = userRepository.findByIIN(userIIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+        String investigatorIIN = editSavedConclusionRequest.getCreateConclusionRequest().getIINOfInvestigator();
+        LOGGER.warn("IIN IS " + investigatorIIN);
+        User user = userRepository.findByIIN(investigatorIIN).orElseThrow(() -> new UserNotFoundException("User not found."));
         user.getTemporaryConclusions().removeIf(temporaryConclusion ->
                 temporaryConclusion.getRegistrationNumber().equals(editSavedConclusionRequest.getRegistrationNumber())
         );
@@ -160,16 +160,16 @@ public class ConclusionServiceImpl implements ConclusionService {
         CreateConclusionRequest request = editSavedConclusionRequest.getCreateConclusionRequest();
 
         Case relatedCase = assignCase(request.getUD());
-        temporaryConclusion.setRegistrationDate(relatedCase.getRegistrationDate());
+        temporaryConclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(relatedCase.getRegistrationDate()));
         temporaryConclusion.setUD(relatedCase.getUD());
         temporaryConclusion.setArticle(relatedCase.getArticle());
         temporaryConclusion.setDecision(relatedCase.getDecision());
         temporaryConclusion.setPlot(relatedCase.getSummary());
 
-        temporaryConclusion.setFullNameOfCalled(fetchFullNameByIIN(request.getIIN()));
+        temporaryConclusion.setFullNameOfCalled(fetchFullNameByIIN(request.getIINOfCalled()));
         temporaryConclusion.setFullNameOfDefender(fetchFullNameByIIN(request.getIINDefender()));
 
-        temporaryConclusion.setIINofCalled(request.getIIN());
+        temporaryConclusion.setIINofCalled(request.getIINOfCalled());
         temporaryConclusion.setBINorIINOfCalled(request.getBIN_IIN());
         temporaryConclusion.setJobTitleOfCalled(request.getJobTitle());
         Region region = regionRepository.findRegionByName(request.getRegion()).
@@ -223,23 +223,15 @@ public class ConclusionServiceImpl implements ConclusionService {
         LOGGER.debug("Filtering...");
         User user = userRepository.findByIIN(filterRequest.getIIN()).orElseThrow(UserNotFoundException::new);
         List<Conclusion> filteredConclusions;
-        if (user.getJob().equals(EMPLOYEE)) {
-            List<TemporaryConclusion> AllTempConclusionsOfUser = user.getTemporaryConclusions();
+        if (user.getJob().getName().equals(EMPLOYEE)) {
             List<Conclusion> AllDocsOfUser = user.getConclusions();
-
-            List<Conclusion> fromTempToPermanent = conclusionMapper.fromTempListToConclusionList(AllTempConclusionsOfUser);
-            List<Conclusion> allUserConclusions = Stream.concat(
-                    fromTempToPermanent.stream(),
-                    AllDocsOfUser.stream()
-            ).toList();
-            LOGGER.warn("SIZE OF ARRAY: " + allUserConclusions.size());
-            filteredConclusions = conclusionRepository.filterSomeConclusions(allUserConclusions, filterRequest);
-        } else if (user.getJob().equals(ANALYST)) {
+            filteredConclusions = conclusionRepository.filterSomeConclusions(AllDocsOfUser, filterRequest);
+        } else if (user.getJob().getName().equals(ANALYST)) {
             List<User> users = userRepository.findByDepartment(user.getDepartment().getName());
             List<Conclusion> receivedConclusions = user.getReceivedConclusions();
-            List<Conclusion> conclusionsFormDep = users.stream()
+            List<Conclusion> conclusionsFormDep = new java.util.ArrayList<>(users.stream()
                     .flatMap(deptUser -> deptUser.getConclusions().stream())
-                    .toList();
+                    .toList());
 
             conclusionsFormDep.addAll(user.getConclusions());
 
@@ -247,7 +239,6 @@ public class ConclusionServiceImpl implements ConclusionService {
                     conclusionsFormDep.stream(),
                     receivedConclusions.stream()
             ).toList();
-            LOGGER.warn("SIZE OF ARRAY: " + allUserConclusions.size());
             filteredConclusions = conclusionRepository.filterSomeConclusions(allUserConclusions, filterRequest);
         } else {
             filteredConclusions = conclusionRepository.filterAllConclusions(filterRequest);
@@ -318,6 +309,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         Agreement agreement = new Agreement();
 
         User receiver = userRepository.findByIIN(decisionRequest.getIIN()).orElseThrow(() -> new UserNotFoundException("User not found."));
+        agreement.setRegNumber(decisionRequest.getRegistrationNumber());
         agreement.setFullName(receiver.getName() + " " + receiver.getSecondName());
         agreement.setJobTitle(receiver.getJob().getName());
 

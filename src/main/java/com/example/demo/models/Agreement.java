@@ -17,6 +17,9 @@ public class Agreement {
     @Id
     private String _id;
 
+    @Field("registrationNumber")
+    private String regNumber;
+
     @Field("fullname")
     private String fullName;
 

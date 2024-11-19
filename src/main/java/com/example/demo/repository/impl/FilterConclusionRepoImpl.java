@@ -32,7 +32,7 @@ public class FilterConclusionRepoImpl implements FilterConclusionRepo {
             query.addCriteria(Criteria.where("creationDate").gte(filterRequest.getFrom()).lte(filterRequest.getTo()));
         }
         if (filterRequest.getIIN() != null) {
-            query.addCriteria(Criteria.where("IINOfCalled").is(filterRequest.getIIN()));
+            query.addCriteria(Criteria.where("investigator.IIN").is(filterRequest.getIIN()));
         }
         if (filterRequest.getUD() != null) {
             query.addCriteria(Criteria.where("UD").is(filterRequest.getUD()));
@@ -64,7 +64,7 @@ public class FilterConclusionRepoImpl implements FilterConclusionRepo {
                                                 !conclusion.getCreationDate().isAfter(filterRequest.getTo())))
                                 &&
                                 (filterRequest.getIIN() == null ||
-                                        filterRequest.getIIN().equals(conclusion.getIINofCalled()))
+                                        filterRequest.getIIN().equals(conclusion.getInvestigator().getIIN()))
                                 &&
                                 (filterRequest.getUD() == null ||
                                         filterRequest.getUD().equals(conclusion.getUD()))

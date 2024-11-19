@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 public class CreateConclusionRequest {
     private String UD;
-    private String IIN;
+    private String IINOfCalled;
     private String BIN_IIN;
     private String jobTitle;
     private String region;

@@ -1,5 +1,6 @@
 package com.example.demo.dtos.requests;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
@@ -20,7 +21,8 @@ public class FilterRequest {
     private LocalDateTime from;
     @Nullable
     private LocalDateTime to;
-    @Nullable
+
+    @NotNull
     private String IIN;
     @Nullable
     private String UD;

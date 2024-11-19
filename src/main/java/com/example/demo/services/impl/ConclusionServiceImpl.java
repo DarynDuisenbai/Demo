@@ -74,6 +74,8 @@ public class ConclusionServiceImpl implements ConclusionService {
         conclusion.setFullNameOfCalled(fetchFullNameByIIN(createConclusionRequest.getIINOfCalled()));
         conclusion.setFullNameOfDefender(fetchFullNameByIIN(createConclusionRequest.getIINDefender()));
 
+
+
         User investigator = userRepository.findByIIN(createConclusionRequest.getIINOfInvestigator()).
                 orElseThrow(()-> new UserNotFoundException("User not found."));
         conclusion.setInvestigator(investigator);

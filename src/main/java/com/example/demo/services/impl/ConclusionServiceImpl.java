@@ -343,6 +343,7 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         receiver.getAgreements().add(agreement);
         userRepository.save(receiver);
+        userRepository.save(investigator);
         agreementRepository.save(agreement);
         conclusionRepository.save(conclusion);
         return agreementMapper.toAgreementDto(agreement);

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class AgreementDto {
+    private String registrationNumber;
     private String jobTitle;
     private String fullName;
     private String status;

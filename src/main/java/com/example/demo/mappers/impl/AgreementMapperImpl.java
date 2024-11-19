@@ -22,6 +22,7 @@ public class AgreementMapperImpl implements AgreementMapper {
     @Override
     public AgreementDto toAgreementDto(Agreement agreement) {
         AgreementDto agreementDto = new AgreementDto();
+        agreementDto.setRegistrationNumber(agreement.getRegNumber());
         agreementDto.setJobTitle(agreement.getJobTitle());
         agreementDto.setFullName(agreement.getFullName());
         agreementDto.setStatus(agreement.getStatus().getName());
@@ -34,6 +35,7 @@ public class AgreementMapperImpl implements AgreementMapper {
     @Override
     public Agreement fromDtoToAgreement(AgreementDto agreementDto) {
         Agreement agreement = new Agreement();
+        agreement.setRegNumber(agreementDto.getRegistrationNumber());
         agreement.setJobTitle(agreementDto.getJobTitle());
         agreement.setFullName(agreementDto.getFullName());
 

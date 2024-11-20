@@ -19,11 +19,14 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +35,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final String SAVED = "В работе";
     private final String EMPLOYEE = "Сотрудник СУ";
     private final String ANALYST = "Аналитик СД";
-    private final String MODERATOR = "Модератор";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConclusionServiceImpl.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(ConclusionServiceImpl.class);
     private final ConclusionRepository conclusionRepository;
     private final CaseRepository caseRepository;
     private final TemporaryConclusionRepository temporaryConclusionRepository;
@@ -56,6 +58,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
+    @Transactional
     public void createConclusion(CreateConclusionRequest createConclusionRequest) throws UserNotFoundException, RegionNotFoundException, CaseNotFound {
         LOGGER.debug("Creating a new conclusion");
         Conclusion conclusion = conclusionMapper.fromCreateToConclusion(createConclusionRequest);
@@ -83,6 +86,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         conclusion.setInvestigator(investigator);
 
         User analystOfDep = userRepository.findAnalystByDepartment(investigator.getDepartment().getName());
+
         sendConclusion(conclusion,analystOfDep.getIIN());
 
         String userIIN = createConclusionRequest.getIINOfInvestigator();
@@ -109,6 +113,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
+    @Transactional
     public void saveConclusion(CreateConclusionRequest createConclusionRequest)
             throws RegionNotFoundException, UserNotFoundException, CaseNotFound {
         LOGGER.debug("Saving a temporary conclusion.");
@@ -148,6 +153,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
+    @Transactional
     public void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest)
             throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound {
         LOGGER.debug("Editing a temporary conclusion.");
@@ -202,6 +208,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
+    @Transactional
     public void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound {
         TemporaryConclusion tempConclusion = temporaryConclusionRepository.findTemporaryConclusionByRegistrationNumber(registrationNumber).
                 orElseThrow(()-> new NoTemporaryConclusionFound("No temporary conclusion found."));
@@ -224,19 +231,26 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
-    public List<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException {
+    public Set<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException {
         LOGGER.debug("Filtering...");
-        User user = userRepository.findByIIN(filterRequest.getIIN()).orElseThrow(UserNotFoundException::new);
+
+        User user = userRepository.findByIIN(filterRequest.getIIN())
+                .orElseThrow(UserNotFoundException::new);
+
         List<Conclusion> filteredConclusions;
+
         if (user.getJob().getName().equals(EMPLOYEE)) {
-            List<Conclusion> AllDocsOfUser = user.getConclusions();
-            filteredConclusions = conclusionRepository.filterSomeConclusions(AllDocsOfUser, filterRequest);
+            List<Conclusion> allDocsOfUser = user.getConclusions();
+            filteredConclusions = conclusionRepository.filterSomeConclusions(allDocsOfUser, filterRequest);
         } else if (user.getJob().getName().equals(ANALYST)) {
-            List<User> users = userRepository.findByDepartment(user.getDepartment().getName());
-            List<Conclusion> receivedConclusions = user.getReceivedConclusions();
-            List<Conclusion> conclusionsFormDep = new java.util.ArrayList<>(users.stream()
+            String departmentName = user.getDepartment().getName();
+            List<User> usersInDepartment = userRepository.findByDepartment(departmentName);
+
+            List<Conclusion> conclusionsFormDep = new java.util.ArrayList<>(usersInDepartment.stream()
                     .flatMap(deptUser -> deptUser.getConclusions().stream())
                     .toList());
+
+            List<Conclusion> receivedConclusions = user.getReceivedConclusions();
 
             conclusionsFormDep.addAll(user.getConclusions());
 
@@ -244,38 +258,38 @@ public class ConclusionServiceImpl implements ConclusionService {
                     conclusionsFormDep.stream(),
                     receivedConclusions.stream()
             ).toList();
+
             filteredConclusions = conclusionRepository.filterSomeConclusions(allUserConclusions, filterRequest);
         } else {
             filteredConclusions = conclusionRepository.filterAllConclusions(filterRequest);
         }
-        return conclusionMapper.toDtoList(filteredConclusions);
+
+        return conclusionMapper.toDtoSet(filteredConclusions);
     }
+
+
     @Override
     public Set<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user conclusions...");
         User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
         Department userDep = user.getDepartment();
         String job = user.getJob().getName();
-        Set<Conclusion> conclusions;
+        List<Conclusion> conclusions;
 
         if (job.equals("Сотрудник СУ")) {
-            conclusions = user.getConclusions().stream().collect(Collectors.toSet());
+            conclusions = user.getConclusions();
         } else if (job.equals("Аналитик СД")) {
             List<User> users = userRepository.findByDepartment(userDep.getName());
             conclusions = users.stream()
                     .flatMap(deptUser -> deptUser.getConclusions().stream())
-                    .collect(Collectors.toSet());
+                    .collect(toList());
             conclusions.addAll(user.getConclusions());
         } else {
-            conclusions = new HashSet<>(getAllConclusions());
+            conclusions = getAllConclusions();
         }
 
-        Set<Conclusion> sortedConclusions = new TreeSet<>(
-                Comparator.comparingInt(conclusion -> getStatusOrder(conclusion.getStatus().getName()))
-        );
-        sortedConclusions.addAll(conclusions);
-
-        return conclusionMapper.toDtoSet(sortedConclusions);
+        conclusions.sort(Comparator.comparingInt(conclusion -> getStatusOrder(conclusion.getStatus().getName())));
+        return conclusionMapper.toDtoSet(conclusions);
     }
 
     private int getStatusOrder(String status) {
@@ -304,7 +318,7 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     public List<String> allUD() {
-        return conclusionRepository.findAll().stream().map(Conclusion::getUD).toList();
+        return caseRepository.findAll().stream().map(Case::getUD).toList();
     }
 
     @Override

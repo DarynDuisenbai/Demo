@@ -133,6 +133,15 @@ public class ConclusionMapperImpl implements ConclusionMapper {
     }
 
     @Override
+    public Set<ConclusionDto> toDtoSet(List<Conclusion> conclusions) {
+        Set<ConclusionDto> conclusionDtos = new HashSet<>();
+        for(Conclusion conclusion : conclusions){
+            conclusionDtos.add(toConclusionDto(conclusion));
+        }
+        return conclusionDtos;
+    }
+
+    @Override
     public Set<ConclusionDto> toDtoSet(Set<Conclusion> conclusions) {
         Set<ConclusionDto> conclusionDtos = new HashSet<>();
         for(Conclusion conclusion : conclusions){

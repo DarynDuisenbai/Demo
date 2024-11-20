@@ -67,7 +67,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @GetMapping("/filter")
-    public ResponseEntity<List<ConclusionDto>> filter(@RequestParam(required = false) String registrationNumber,
+    public ResponseEntity<Set<ConclusionDto>> filter(@RequestParam(required = false) String registrationNumber,
                                                       @RequestParam(required = false) String status,
                                                       @RequestParam(required = false) String region,
                                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime from,
@@ -84,7 +84,7 @@ public class ConclusionController {
         filterRequest.setIIN(iin);
         filterRequest.setUD(ud);
         filterRequest.setFullName(fullName);
-        List<ConclusionDto> results = conclusionService.filter(filterRequest);
+        Set<ConclusionDto> results = conclusionService.filter(filterRequest);
         return ResponseEntity.ok(results);
     }
 

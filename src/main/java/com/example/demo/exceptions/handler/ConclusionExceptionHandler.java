@@ -1,9 +1,6 @@
 package com.example.demo.exceptions.handler;
 
-import com.example.demo.exceptions.CaseNotFound;
-import com.example.demo.exceptions.InvalidUDFormat;
-import com.example.demo.exceptions.NoConclusionException;
-import com.example.demo.exceptions.RegionNotFoundException;
+import com.example.demo.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -32,5 +29,9 @@ public class ConclusionExceptionHandler {
     }
 
 
+    @ExceptionHandler(AnalystAlreadyExistsException.class)
+    public ResponseEntity<String> handleAnalystAlreadyExistsException(AnalystAlreadyExistsException analystAlreadyExistsException){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Analyst already exists.");
+    }
 
 }

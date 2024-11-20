@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.dtos.responces.AgreementDto;
 import com.example.demo.dtos.responces.ConclusionDto;
+import com.example.demo.exceptions.AnalystAlreadyExistsException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.mappers.AgreementMapper;
 import com.example.demo.mappers.ConclusionMapper;
@@ -41,7 +42,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PatchMapping("/promote")
-    public ResponseEntity<?> promote(@RequestParam String IIN) throws UserNotFoundException {
+    public ResponseEntity<?> promote(@RequestParam String IIN) throws UserNotFoundException, AnalystAlreadyExistsException {
         userService.promote(IIN);
         return ResponseEntity.status(HttpStatus.OK).body("User successfully promoted.");
     }

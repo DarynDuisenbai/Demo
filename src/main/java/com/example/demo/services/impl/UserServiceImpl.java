@@ -13,6 +13,7 @@ import com.example.demo.services.UserService;
 import com.example.demo.utils.EmailSender;
 import com.example.demo.utils.UTCFormatter;
 import com.example.demo.utils.Validator;
+import com.fasterxml.jackson.annotation.OptBoolean;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -183,11 +185,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void promote(String IIN) throws UserNotFoundException {
+    public void promote(String IIN) throws UserNotFoundException, AnalystAlreadyExistsException {
         User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
         String job = user.getJob().getName();
         if(job.equals("Сотрудник СУ")){
             JobTitle analyticJob = jobRepository.findJobTitleByName("Аналитик СД");
+            User optAnalyst = userRepository.findAnalystByDepartment(user.getDepartment().getName());
+
+            if(optAnalyst != null){
+                throw new AnalystAlreadyExistsException("Analyst in this department already exists.");
+            }
             user.setJob(analyticJob);
         }else if(job.equals("Аналитик СД")){
             JobTitle moderatorJob = jobRepository.findJobTitleByName("Модератор");

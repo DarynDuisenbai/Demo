@@ -243,23 +243,8 @@ public class ConclusionServiceImpl implements ConclusionService {
             List<Conclusion> allDocsOfUser = user.getConclusions();
             filteredConclusions = conclusionRepository.filterSomeConclusions(allDocsOfUser, filterRequest);
         } else if (user.getJob().getName().equals(ANALYST)) {
-            String departmentName = user.getDepartment().getName();
-            List<User> usersInDepartment = userRepository.findByDepartment(departmentName);
-
-            List<Conclusion> conclusionsFormDep = new java.util.ArrayList<>(usersInDepartment.stream()
-                    .flatMap(deptUser -> deptUser.getConclusions().stream())
-                    .toList());
-
             List<Conclusion> receivedConclusions = user.getReceivedConclusions();
-
-            conclusionsFormDep.addAll(user.getConclusions());
-
-            List<Conclusion> allUserConclusions = Stream.concat(
-                    conclusionsFormDep.stream(),
-                    receivedConclusions.stream()
-            ).toList();
-
-            filteredConclusions = conclusionRepository.filterSomeConclusions(allUserConclusions, filterRequest);
+            filteredConclusions = conclusionRepository.filterSomeConclusions(receivedConclusions, filterRequest);
         } else {
             filteredConclusions = conclusionRepository.filterAllConclusions(filterRequest);
         }

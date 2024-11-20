@@ -13,6 +13,7 @@ public interface ConclusionMapper {
     Conclusion fromCreateToConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException;
     ConclusionDto  toConclusionDto(Conclusion conclusion);
     List<ConclusionDto> toDtoList(List<Conclusion> conclusions);
+    Set<ConclusionDto> toDtoSet(List<Conclusion> conclusions);
     Set<ConclusionDto> toDtoSet(Set<Conclusion> conclusions);
     Conclusion fromTempToConclusion(TemporaryConclusion tempConclusion);
     List<Conclusion> fromTempListToConclusionList(List<TemporaryConclusion> tempConclusionDtos);

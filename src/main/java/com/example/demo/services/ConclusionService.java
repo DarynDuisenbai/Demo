@@ -17,7 +17,7 @@ public interface ConclusionService {
     void saveConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException, CaseNotFound;
     void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound;
     void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound;
-    List<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException;
+    Set<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException;
     Set<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException;
     List<TempConclusionDto> userSavedConclusions(String IIN) throws UserNotFoundException;
     List<AgreementDto> userAgreements(String IIN) throws UserNotFoundException;

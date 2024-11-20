@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class FilterConclusionRepoImpl implements FilterConclusionRepo {
@@ -71,8 +73,7 @@ public class FilterConclusionRepoImpl implements FilterConclusionRepo {
                                 &&
                                 (filterRequest.getFullName() == null ||
                                         filterRequest.getFullName().equals(conclusion.getFullNameOfDefender()))
-                )
-                .toList();
+                ).toList();
     }
 
 }

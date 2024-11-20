@@ -326,6 +326,10 @@ public class ConclusionServiceImpl implements ConclusionService {
                 .findFirst()
                 .ifPresent(c -> c.setStatus(statusRepository.findByName(decisionRequest.getStatus())));
 
+        receiver.getReceivedConclusions().stream()
+                .filter(c -> c.getRegistrationNumber().equals(conclusion.getRegistrationNumber()))
+                .findFirst()
+                .ifPresent(c -> c.setStatus(statusRepository.findByName(decisionRequest.getStatus())));
 
         Status status = statusRepository.findByName(decisionRequest.getStatus());
         conclusion.setStatus(status);

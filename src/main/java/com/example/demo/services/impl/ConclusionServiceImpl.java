@@ -257,18 +257,13 @@ public class ConclusionServiceImpl implements ConclusionService {
     public Set<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user conclusions...");
         User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
-        Department userDep = user.getDepartment();
         String job = user.getJob().getName();
         List<Conclusion> conclusions;
 
         if (job.equals("Сотрудник СУ")) {
             conclusions = user.getConclusions();
         } else if (job.equals("Аналитик СД")) {
-            List<User> users = userRepository.findByDepartment(userDep.getName());
-            conclusions = users.stream()
-                    .flatMap(deptUser -> deptUser.getConclusions().stream())
-                    .collect(toList());
-            conclusions.addAll(user.getConclusions());
+            conclusions = user.getReceivedConclusions();
         } else {
             conclusions = getAllConclusions();
         }

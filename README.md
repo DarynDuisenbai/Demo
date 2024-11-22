@@ -119,14 +119,17 @@ spring:
 1. Clone the repository
    ```bash
    git clone https://github.com/your-repo/your-project.git
-   cd your-project```
+   cd your-project
+   ```
 2. Set up the database connection in application.yml.
 3. Build the project:
    ```bash
-   mvn clean install```
+   mvn clean install
+   ```
 4. Run the application:
    ```bash
-  java -jar target/your-application.jar```
+  java -jar target/your-application.jar
+  ```
 
 ## Usage 
 1. Access the application at http://localhost:8080 after starting the server.

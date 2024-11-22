@@ -117,19 +117,19 @@ spring:
 
 ## Installation
 1. Clone the repository
-   ```bash
-   git clone https://github.com/your-repo/your-project.git
-   cd your-project
-   ```
+```bash
+git clone https://github.com/your-repo/your-project.git
+cd your-project
+```
 2. Set up the database connection in application.yml.
 3. Build the project:
-   ```bash
-   mvn clean install
-   ```
+```bash
+mvn clean install
+```
 4. Run the application:
-   ```bash
-  java -jar target/your-application.jar
-  ```
+```bash
+java -jar target/your-application.jar
+```
 
 ## Usage 
 1. Access the application at http://localhost:8080 after starting the server.
@@ -144,10 +144,10 @@ spring:
 
 ## Build and Deployment
 1. Build and Deployment
-   ```bash
-   docker build -t your-application.
-   ```
+```bash
+docker build -t your-application.
+```
 2. Run the application using Docker:
-   ```bash
-   docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=prod your-application
-   ```
+```bash
+docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=prod your-application
+```

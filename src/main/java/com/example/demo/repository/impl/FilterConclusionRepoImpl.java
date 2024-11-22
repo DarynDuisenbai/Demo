@@ -1,16 +1,14 @@
 package com.example.demo.repository.impl;
 
-import com.example.demo.dtos.requests.FilterRequest;
-import com.example.demo.models.Conclusion;
-import com.example.demo.repository.FilterConclusionRepo;
+import com.example.demo.dto.request.conclusion.FilterRequest;
+import com.example.demo.domain.Conclusion;
+import com.example.demo.repository.spec.FilterConclusionRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class FilterConclusionRepoImpl implements FilterConclusionRepo {

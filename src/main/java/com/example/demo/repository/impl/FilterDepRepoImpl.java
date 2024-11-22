@@ -1,7 +1,7 @@
 package com.example.demo.repository.impl;
 
-import com.example.demo.models.Department;
-import com.example.demo.repository.FilterDepRepo;
+import com.example.demo.domain.Department;
+import com.example.demo.repository.spec.FilterDepRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

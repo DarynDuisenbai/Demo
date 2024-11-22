@@ -1,7 +1,7 @@
 package com.example.demo.repository.impl;
 
-import com.example.demo.models.Agreement;
-import com.example.demo.repository.FilterAgreementRepo;
+import com.example.demo.domain.Agreement;
+import com.example.demo.repository.spec.FilterAgreementRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;

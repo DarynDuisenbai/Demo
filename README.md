@@ -127,7 +127,7 @@ spring:
 4. Run the application:
     ```bash
   java -jar target/your-application.jar
-```
+   ```
 
 ## Usage 
 1. Navigate to the Login page and authenticate.

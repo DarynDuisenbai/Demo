@@ -142,7 +142,9 @@ spring:
 ## Build and Deployment
 1. Build and Deployment
    ```bash
-   docker build -t your-application .```
+   docker build -t your-application.
+   ```
 2. Run the application using Docker:
    ```bash
-   docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=prod your-application```
+   docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=prod your-application
+   ```

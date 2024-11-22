@@ -16,6 +16,8 @@ The **"Automation of Subpoenas and Summons"** module is part of a system designe
 5. [Database Configuration](#database-configuration)
 6. [Installation](#installation)
 7. [Usage](#usage)
+8. [API Documentation](#api-documentation)
+9. [Build and Deployment](#build-deployment)
 
 ---
 
@@ -117,23 +119,30 @@ spring:
 1. Clone the repository
    ```bash
    git clone https://github.com/your-repo/your-project.git
-   cd your-project
-   ```
+   cd your-project```
 2. Set up the database connection in application.yml.
 3. Build the project:
    ```bash
-   mvn clean install
-  ```
+   mvn clean install```
 4. Run the application:
-    ```bash
-  java -jar target/your-application.jar
-   ```
+   ```bash
+  java -jar target/your-application.jar```
 
 ## Usage 
-1. Navigate to the Login page and authenticate.
-2. Access various modules via the sidebar menu:
+1. Access the application at http://localhost:8080 after starting the server.
+2. Navigate to the Login page and authenticate.
+3. Access various modules via the sidebar menu:
    * Profile
    * Create new conclusions
    * View and manage records in the Journal.
 
+## API Documenatation
+* Swagger UI is available at http://localhost:8080/swagger-ui.html for API exploration and testing.
 
+## Build and Deployment
+1. Build and Deployment
+   ```bash
+   docker build -t your-application .```
+2. Run the application using Docker:
+   ```bash
+   docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=prod your-application```

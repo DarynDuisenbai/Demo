@@ -1,7 +1,7 @@
 package com.example.demo.repository.impl;
 
 import com.example.demo.domain.User;
-import com.example.demo.repository.spec.FilterUserRepo;
+import com.example.demo.repository.FilterUserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

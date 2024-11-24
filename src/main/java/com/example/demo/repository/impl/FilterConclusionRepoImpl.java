@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.dto.request.conclusion.FilterRequest;
 import com.example.demo.domain.Conclusion;
-import com.example.demo.repository.spec.FilterConclusionRepo;
+import com.example.demo.repository.FilterConclusionRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -64,14 +64,16 @@ public class FilterConclusionRepoImpl implements FilterConclusionRepo {
                                                 !conclusion.getCreationDate().isAfter(filterRequest.getTo())))
                                 &&
                                 (filterRequest.getIIN() == null ||
-                                        filterRequest.getIIN().equals(conclusion.getInvestigator().getIIN()))
+                                        filterRequest.getIIN().equals(conclusion.getInvestigatorIIN()))
                                 &&
                                 (filterRequest.getUD() == null ||
                                         filterRequest.getUD().equals(conclusion.getUD()))
                                 &&
                                 (filterRequest.getFullName() == null ||
                                         filterRequest.getFullName().equals(conclusion.getFullNameOfDefender()))
+                                &&
+                                (filterRequest.getIinOfCalled() == null ||
+                                        filterRequest.getIinOfCalled().equals(conclusion.getIINofCalled()))
                 ).toList();
     }
-
 }

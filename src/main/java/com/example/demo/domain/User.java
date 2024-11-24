@@ -18,9 +18,9 @@ import java.util.List;
 @Document(collection = "users")
 public class User {
     public User() {
-        this.conclusions = new ArrayList<>();
-        this.temporaryConclusions = new ArrayList<>();
-        this.receivedConclusions = new ArrayList<>();
+        this.conclusionsRegNumbers = new ArrayList<>();
+        this.temporaryConclusionsRegNumbers = new ArrayList<>();
+        this.receivedConclusionsRegNumbers = new ArrayList<>();
         this.agreements = new ArrayList<>();
     }
 
@@ -56,13 +56,13 @@ public class User {
     private Department department;
 
     @Field("docs")
-    private List<Conclusion> conclusions;
+    private List<String> conclusionsRegNumbers;
 
     @Field("tempDocs")
-    private List<TemporaryConclusion> temporaryConclusions;
+    private List<String> temporaryConclusionsRegNumbers;
 
     @Field("receivedDocs")
-    private List<Conclusion> receivedConclusions;
+    private List<String> receivedConclusionsRegNumbers;
 
     @Field("agreement")
     private List<Agreement> agreements;

@@ -20,8 +20,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class UserMapperImpl implements UserMapper {
-    private final ConclusionMapper conclusionMapper;
-    private final TempMapper tempMapper;
     private final DepartmentRepository departmentRepository;
     private final JobRepository jobRepository;
     private final AgreementMapper agreementMapper;
@@ -54,9 +52,9 @@ public class UserMapperImpl implements UserMapper {
         userDto.setRegistrationDate(user.getRegistrationDate());
         userDto.setDepartment(user.getDepartment());
 
-        userDto.setConclusions(conclusionMapper.toDtoList(user.getConclusions()));
-        userDto.setTempConclusionDtos(tempMapper.toDtoList(user.getTemporaryConclusions()));
-        userDto.setReceivedConclusionDtos(conclusionMapper.toDtoList(user.getReceivedConclusions()));
+        userDto.setConclusions(user.getConclusionsRegNumbers());
+        userDto.setTempConclusionDtos(user.getTemporaryConclusionsRegNumbers());
+        userDto.setReceivedConclusionDtos(user.getReceivedConclusionsRegNumbers());
         userDto.setAgreementDtos(agreementMapper.toDtoList(user.getAgreements()));
         userDto.setIIN(user.getIIN());
 

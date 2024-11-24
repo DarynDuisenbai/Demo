@@ -27,4 +27,6 @@ public class FilterRequest {
     private String UD;
     @Nullable
     private String fullName;
+    @Nullable
+    private String iinOfCalled;
 }

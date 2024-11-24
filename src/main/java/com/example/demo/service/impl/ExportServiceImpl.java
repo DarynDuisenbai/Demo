@@ -63,7 +63,7 @@ public class ExportServiceImpl implements ExportService {
                 row.createCell(13).setCellValue(conclusion.getPlannedInvestigativeActions());
                 row.createCell(14).setCellValue(conclusion.getEventDateTime());
                 row.createCell(15).setCellValue(conclusion.getEventPlace());
-                row.createCell(16).setCellValue(conclusion.getInvestigator().getName() + " " + conclusion.getInvestigator().getSecondName());
+                row.createCell(16).setCellValue(conclusion.getInvestigatorIIN());
                 row.createCell(17).setCellValue(conclusion.getStatus());
                 row.createCell(18).setCellValue(conclusion.getRelationToEvent());
                 row.createCell(19).setCellValue(conclusion.getInvestigationTypes());
@@ -154,7 +154,7 @@ public class ExportServiceImpl implements ExportService {
                         conclusion.getPlannedInvestigativeActions(),
                         conclusion.getEventDateTime().toString(),
                         conclusion.getEventPlace(),
-                        conclusion.getInvestigator().getName() + " " + conclusion.getInvestigator().getSecondName(),
+                        conclusion.getInvestigatorIIN(),
                         conclusion.getStatus(),
                         conclusion.getRelationToEvent(),
                         conclusion.getInvestigationTypes(),

@@ -72,7 +72,8 @@ public class ConclusionController {
                                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime to,
                                                       @RequestParam String iin,
                                                       @RequestParam(required = false) String ud,
-                                                      @RequestParam(required = false) String fullName) throws UserNotFoundException {
+                                                      @RequestParam(required = false) String fullName,
+                                                     @RequestParam(required = false) String iinOfCalled) throws UserNotFoundException {
         FilterRequest filterRequest = new FilterRequest();
         filterRequest.setRegistrationNumber(registrationNumber);
         filterRequest.setStatus(status);
@@ -82,6 +83,7 @@ public class ConclusionController {
         filterRequest.setIIN(iin);
         filterRequest.setUD(ud);
         filterRequest.setFullName(fullName);
+        filterRequest.setIinOfCalled(iinOfCalled);
         Set<ConclusionDto> results = conclusionService.filter(filterRequest);
         return ResponseEntity.ok(results);
     }
@@ -126,7 +128,8 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "Conclusion not found.")
     })
     @GetMapping("/fullConclusion")
-    public ResponseEntity<?> getSpecificConclusion(@RequestParam String regNumber) throws NoConclusionException {
+    public ResponseEntity<?> getSpecificConclusion(@RequestParam String regNumber) throws NoConclusionException,
+            UserNotFoundException {
         ConclusionDto conclusionDto = conclusionService.getSpecific(regNumber);
         return ResponseEntity.ok(conclusionDto);
     }

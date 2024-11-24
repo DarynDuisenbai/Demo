@@ -10,8 +10,6 @@ import java.util.List;
 
 public interface TempMapper {
     TemporaryConclusion fromCreateToTemp(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException;
-    TempConclusionDto toTempConclusionDto(TemporaryConclusion temporaryConclusion);
-    List<TempConclusionDto> toDtoList(List<TemporaryConclusion> temporaryConclusions);
-    TemporaryConclusion formDtoToTempConclusion(TempConclusionDto tempConclusionDto) throws UserNotFoundException;
-
+    TempConclusionDto toTempConclusionDto(TemporaryConclusion temporaryConclusion) throws UserNotFoundException;
+    List<TempConclusionDto> toDtoList(List<TemporaryConclusion> temporaryConclusions) throws UserNotFoundException;
 }

@@ -30,13 +30,5 @@ public class RegionController {
         return ResponseEntity.ok(allRegions);
     }
 
-    @Operation(summary = "All regions with same department")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "All regions retrieved"),
-    })
-    @GetMapping("/regInDep")
-    public ResponseEntity<Set<String>> allRegionsWithSameDepartment(@RequestParam String dep){
-        Set<String> allDepartments = regionService.allRegionsInDep(dep);
-        return ResponseEntity.ok(allDepartments);
-    }
+
 }

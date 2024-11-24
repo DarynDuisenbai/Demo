@@ -23,8 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TempMapperImpl implements TempMapper {
     private final RegionRepository regionRepository;
-    private final StatusRepository statusRepository;
-    private final UserRepository userRepository;
     private final UTCFormatter utcFormatter;
     @Override
     public TemporaryConclusion fromCreateToTemp(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException {
@@ -51,7 +49,7 @@ public class TempMapperImpl implements TempMapper {
     }
 
     @Override
-    public TempConclusionDto toTempConclusionDto(TemporaryConclusion temporaryConclusion) {
+    public TempConclusionDto toTempConclusionDto(TemporaryConclusion temporaryConclusion) throws UserNotFoundException {
         TempConclusionDto dto = new TempConclusionDto();
         dto.setRegistrationNumber(temporaryConclusion.getRegistrationNumber());
         dto.setCreationDate(utcFormatter.convertUTCToUTCPlus5(temporaryConclusion.getCreationDate()));
@@ -69,7 +67,7 @@ public class TempMapperImpl implements TempMapper {
         dto.setPlannedInvestigativeActions(temporaryConclusion.getPlannedActions());
         dto.setEventDateTime(utcFormatter.convertUTCToUTCPlus5(temporaryConclusion.getEventTime()));
         dto.setEventPlace(temporaryConclusion.getEventPlace());
-        dto.setInvestigator(temporaryConclusion.getInvestigator().getName() + " " + temporaryConclusion.getInvestigator().getSecondName());
+        dto.setInvestigatorIIN(temporaryConclusion.getInvestigatorIIN());
         dto.setStatus(temporaryConclusion.getStatus().getName());
         dto.setRelationToEvent(temporaryConclusion.getRelation());
         dto.setInvestigationTypes(temporaryConclusion.getInvestigation());
@@ -83,7 +81,7 @@ public class TempMapperImpl implements TempMapper {
     }
 
     @Override
-    public List<TempConclusionDto> toDtoList(List<TemporaryConclusion> temporaryConclusions) {
+    public List<TempConclusionDto> toDtoList(List<TemporaryConclusion> temporaryConclusions) throws UserNotFoundException {
         List<TempConclusionDto> dtos = new ArrayList<>();
         for(TemporaryConclusion conclusion : temporaryConclusions){
             dtos.add(toTempConclusionDto(conclusion));
@@ -91,49 +89,4 @@ public class TempMapperImpl implements TempMapper {
 
         return dtos;
     }
-
-    @Override
-    public TemporaryConclusion formDtoToTempConclusion(TempConclusionDto tempConclusionDto) throws UserNotFoundException {
-        TemporaryConclusion temporaryConclusion = new TemporaryConclusion();
-
-        temporaryConclusion.setRegistrationNumber(tempConclusionDto.getRegistrationNumber());
-        temporaryConclusion.setCreationDate(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getCreationDate()));
-        temporaryConclusion.setUD(tempConclusionDto.getUdNumber());
-        temporaryConclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getRegistrationDate()));
-        temporaryConclusion.setArticle(tempConclusionDto.getArticle());
-        temporaryConclusion.setDecision(tempConclusionDto.getDecision());
-        temporaryConclusion.setPlot(tempConclusionDto.getSummary());
-
-        temporaryConclusion.setIINofCalled(tempConclusionDto.getCalledPersonIIN());
-        temporaryConclusion.setFullNameOfCalled(tempConclusionDto.getCalledPersonFullName());
-        temporaryConclusion.setJobTitleOfCalled(tempConclusionDto.getCalledPersonPosition());
-        temporaryConclusion.setBINorIINOfCalled(tempConclusionDto.getCalledPersonBIN());
-
-        temporaryConclusion.setJobPlace(tempConclusionDto.getWorkPlace());
-
-        temporaryConclusion.setRegion(tempConclusionDto.getRegion());
-
-        temporaryConclusion.setPlannedActions(tempConclusionDto.getPlannedInvestigativeActions());
-        temporaryConclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getEventDateTime()));
-        temporaryConclusion.setEventPlace(tempConclusionDto.getEventPlace());
-
-        String[] name = tempConclusionDto.getInvestigator().split(" ");
-        User investigator = userRepository.findByNameAndSecondName(name[1], name[2]).orElseThrow(() -> new UserNotFoundException("User not found."));
-        temporaryConclusion.setInvestigator(investigator);
-
-        Status status =  statusRepository.findByName(tempConclusionDto.getStatus());
-        temporaryConclusion.setStatus(status);
-
-        temporaryConclusion.setRelation(tempConclusionDto.getRelationToEvent());
-        temporaryConclusion.setInvestigation(tempConclusionDto.getInvestigationTypes());
-        temporaryConclusion.setBusiness(tempConclusionDto.isRelatesToBusiness());
-
-        temporaryConclusion.setIINDefender(tempConclusionDto.getDefenseAttorneyIIN());
-        temporaryConclusion.setFullNameOfDefender(tempConclusionDto.getDefenseAttorneyFullName());
-        temporaryConclusion.setJustification(tempConclusionDto.getJustification());
-        temporaryConclusion.setResult(tempConclusionDto.getResult());
-
-        return temporaryConclusion;
-    }
-
 }

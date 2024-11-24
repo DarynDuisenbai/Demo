@@ -1,5 +1,6 @@
-package com.example.demo.repository.spec;
+package com.example.demo.repository;
 
+import com.example.demo.domain.Conclusion;
 import com.example.demo.domain.User;
 
 import java.util.List;

@@ -30,7 +30,7 @@ public interface ConclusionService {
     void sendConclusion(Conclusion conclusion, String IIN) throws UserNotFoundException;
     void sendAgreement(Agreement agreement, String IIN) throws UserNotFoundException;
     AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException;
-    ConclusionDto getSpecific(String regNumber) throws NoConclusionException;
+    ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException;
     History history(String iinInvestigator, String goal) throws UserNotFoundException;
 
 }

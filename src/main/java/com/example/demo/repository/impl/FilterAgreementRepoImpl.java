@@ -1,17 +1,15 @@
 package com.example.demo.repository.impl;
 
 import com.example.demo.domain.Agreement;
-import com.example.demo.repository.spec.FilterAgreementRepo;
+import com.example.demo.repository.FilterAgreementRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 @RequiredArgsConstructor
 public class FilterAgreementRepoImpl implements FilterAgreementRepo {
 

@@ -64,7 +64,7 @@ public class TemporaryConclusion {
     private String eventPlace;
 
     @Field("investigator")
-    private User investigator;
+    private String investigatorIIN;
 
     @Field("status")
     private Status status;

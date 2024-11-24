@@ -3,8 +3,8 @@ package com.example.demo.mapper.impl;
 import com.example.demo.dto.request.conclusion.CreateConclusionRequest;
 import com.example.demo.dto.responce.ConclusionDto;
 import com.example.demo.exception.RegionNotFoundException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.mapper.spec.ConclusionMapper;
-import com.example.demo.mapper.spec.TempMapper;
 import com.example.demo.domain.Conclusion;
 import com.example.demo.domain.Region;
 import com.example.demo.domain.TemporaryConclusion;
@@ -22,7 +22,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ConclusionMapperImpl implements ConclusionMapper {
     private final RegionRepository regionRepository;
-    private final TempMapper tempMapper;
     private final UTCFormatter utcFormatter;
 
     @Override
@@ -50,7 +49,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
     }
 
     @Override
-    public ConclusionDto toConclusionDto(Conclusion conclusion) {
+    public ConclusionDto toConclusionDto(Conclusion conclusion){
         ConclusionDto dto = new ConclusionDto();
         dto.setRegistrationNumber(conclusion.getRegistrationNumber());
         dto.setCreationDate(utcFormatter.convertUTCToUTCPlus5(conclusion.getCreationDate()));
@@ -68,7 +67,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         dto.setPlannedInvestigativeActions(conclusion.getPlannedActions());
         dto.setEventDateTime(utcFormatter.convertUTCToUTCPlus5(conclusion.getEventTime()));
         dto.setEventPlace(conclusion.getEventPlace());
-        dto.setInvestigator(conclusion.getInvestigator());
+        dto.setInvestigatorIIN(conclusion.getInvestigatorIIN());
         dto.setStatus(conclusion.getStatus().getName());
         dto.setRelationToEvent(conclusion.getRelation());
         dto.setInvestigationTypes(conclusion.getInvestigation());
@@ -82,7 +81,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
     }
 
     @Override
-    public List<ConclusionDto> toDtoList(List<Conclusion> conclusions) {
+    public List<ConclusionDto> toDtoList(List<Conclusion> conclusions) throws UserNotFoundException {
         List<ConclusionDto> dtos = new ArrayList<>();
         for(Conclusion conclusion : conclusions){
             dtos.add(toConclusionDto(conclusion));
@@ -109,7 +108,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setPlannedActions(tempConclusionDto.getPlannedActions());
         conclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getEventTime()));
         conclusion.setEventPlace(tempConclusionDto.getEventPlace());
-        conclusion.setInvestigator(tempConclusionDto.getInvestigator());
+        conclusion.setInvestigatorIIN(tempConclusionDto.getInvestigatorIIN());
         conclusion.setStatus(tempConclusionDto.getStatus());
         conclusion.setRelation(tempConclusionDto.getRelation());
         conclusion.setInvestigation(tempConclusionDto.getInvestigation());

@@ -88,7 +88,6 @@ public class JwtTokenUtil {
         claims.put("department", user.getDepartment());
         claims.put("IIN", user.getIIN());
         claims.put("job", user.getJob());
-        claims.put("role", user.getRole());
 
         return Jwts.builder()
                 .setClaims(claims)

@@ -1,4 +1,4 @@
-package com.example.demo.repository.spec;
+package com.example.demo.repository;
 
 import com.example.demo.dto.request.conclusion.FilterRequest;
 import com.example.demo.domain.Conclusion;

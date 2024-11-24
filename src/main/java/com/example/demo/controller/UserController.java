@@ -33,7 +33,7 @@ public class UserController {
     public ResponseEntity<UserDto> profile(@RequestParam String IIN)
             throws UserNotFoundException {
         UserDto userProf = userService.getProfile(IIN);
-        return ResponseEntity.status(HttpStatus.OK).body(userProf);
+        return ResponseEntity.ok(userProf);
     }
 
     @Operation(summary = "Change user password")
@@ -46,7 +46,7 @@ public class UserController {
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest)
             throws UserNotFoundException, InvalidPasswordException {
         userService.changePassword(changePasswordRequest);
-        return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully");
+        return ResponseEntity.ok("Password changed successfully");
     }
 
     @Operation(summary = "Delete user account")
@@ -117,7 +117,7 @@ public class UserController {
         editProfileRequest.setName(name);
         editProfileRequest.setSurname(surname);
         userService.editProfile(editProfileRequest);
-        return ResponseEntity.status(HttpStatus.OK).body("Profile has successfully edited.");
+        return ResponseEntity.ok("Profile has successfully edited.");
     }
 
     @Operation(summary = "All users")

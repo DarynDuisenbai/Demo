@@ -8,10 +8,10 @@ The **"Automation of Subpoenas and Summons"** module is part of a system designe
 1. [Overview](#overview)
 2. [Features](#features)
 3. [Module Structure](#module-structure)
-   - [Login Page](#login-page)
-   - [Profile Page](#profile-page)
-   - [Creating Cards](#creating-cards)
-   - [Journal of Conclusions](#journal-of-conclusions)
+    - [Login Page](#login-page)
+    - [Profile Page](#profile-page)
+    - [Creating Cards](#creating-cards)
+    - [Journal of Conclusions](#journal-of-conclusions)
 4. [Roles and Permissions](#roles-and-permissions)
 5. [Database Configuration](#database-configuration)
 6. [Installation](#installation)
@@ -55,14 +55,12 @@ Provides user authentication with the following:
 - Fields: Email/Username, Password.
 - Buttons: "Login".
 - Links: "Forgot Password?", "Register".
-- Validation: 
-  - Email format.
-  - Minimum 6 characters for the password.
+- Validation:
+    - Email format.
+    - Minimum 6 characters for the password.
 - Error Messages:
-  - Invalid credentials.
-  - Empty fields.
-
----
+    - Invalid credentials.
+    - Empty fields.
 
 ### Profile Page
 Enables users to manage their profiles:
@@ -76,32 +74,26 @@ Enables users to manage their profiles:
 Supports creating conclusion cards with the following features:
 - Automatic unique registration number (`Z001` format).
 - Auto-filling fields such as:
-  - Case details, defendant's information, and prior summons history.
+    - Case details, defendant's information, and prior summons history.
 - Mandatory fields:
-  - National ID (IIN, 12 digits), case details, and justification.
-
----
+    - National ID (IIN, 12 digits), case details, and justification.
 
 ### Journal of Conclusions
 Manages conclusion records in a tabular format with:
 - Filters for advanced searches (e.g., date range, region, status).
 - Role-based access:
-  - Employee: Access own records.
-  - Analyst: Access department records.
-  - Moderator: Full access.
+    - Employee: Access own records.
+    - Analyst: Access department records.
+    - Moderator: Full access.
 - Export options to Excel and PDF formats.
 
----
-
 ## Roles and Permissions
-- **Employee (SU Staff):** 
-  - Create and edit their own records.
+- **Employee (SU Staff):**
+    - Create and edit their own records.
 - **Analyst (SD):**
-  - View all records in their department and region.
+    - View all records in their department and region.
 - **Moderator:**
-  - Full read access to all records.
-
----
+    - Full read access to all records.
 
 ## Database Configuration
 
@@ -131,13 +123,13 @@ mvn clean install
 java -jar target/your-application.jar
 ```
 
-## Usage 
+## Usage
 1. Access the application at http://localhost:8080 after starting the server.
 2. Navigate to the Login page and authenticate.
 3. Access various modules via the sidebar menu:
-   * Profile
-   * Create new conclusions
-   * View and manage records in the Journal.
+    * Profile
+    * Create new conclusions
+    * View and manage records in the Journal.
 
 ## API Documenatation
 * Swagger UI is available at http://localhost:8080/swagger-ui.html for API exploration and testing.

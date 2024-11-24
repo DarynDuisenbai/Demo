@@ -53,7 +53,7 @@ public class AdminController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @GetMapping("/allConclusions")
-    public ResponseEntity<List<ConclusionDto>> getAllConclusions(){
+    public ResponseEntity<List<ConclusionDto>> getAllConclusions() throws UserNotFoundException {
         List<Conclusion> conclusions = conclusionService.getAllConclusions();
         List<ConclusionDto> conclusionDtos = conclusionMapper.toDtoList(conclusions);
 

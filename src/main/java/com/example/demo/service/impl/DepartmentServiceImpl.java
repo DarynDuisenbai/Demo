@@ -20,4 +20,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Set<String> getAllDepartments() {
        return departmentRepository.findAll().stream().map(Department::getName).collect(Collectors.toSet());
     }
+    @Override
+    public Set<String> allRegionsInDep(String dep) {
+        return departmentRepository.findDepartmentsByRegion(dep);
+    }
 }

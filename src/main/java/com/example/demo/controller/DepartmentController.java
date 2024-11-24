@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Set;
 
@@ -25,6 +26,16 @@ public class DepartmentController {
     @GetMapping("/allDepartments")
     public ResponseEntity<Set<String>> allDepartments(){
         Set<String> allDepartments = departmentService.getAllDepartments();
+        return ResponseEntity.ok(allDepartments);
+    }
+
+    @Operation(summary = "All regions with same department")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All regions retrieved"),
+    })
+    @GetMapping("/regInDep")
+    public ResponseEntity<Set<String>> allRegionsWithSameDepartment(@RequestParam String dep){
+        Set<String> allDepartments = departmentService.allRegionsInDep(dep);
         return ResponseEntity.ok(allDepartments);
     }
 }

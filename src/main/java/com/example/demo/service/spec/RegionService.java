@@ -5,5 +5,4 @@ import java.util.Set;
 
 public interface RegionService {
     List<String> allRegions();
-    Set<String> allRegionsInDep(String dep);
 }

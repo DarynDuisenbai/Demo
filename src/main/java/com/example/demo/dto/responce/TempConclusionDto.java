@@ -25,7 +25,7 @@ public class TempConclusionDto {
     private String plannedInvestigativeActions;
     private LocalDateTime eventDateTime;
     private String eventPlace;
-    private String investigator;
+    private String investigatorIIN;
     private String status;
     private String relationToEvent;
     private String investigationTypes;

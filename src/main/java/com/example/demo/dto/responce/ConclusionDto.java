@@ -26,7 +26,7 @@ public class ConclusionDto {
     private String plannedInvestigativeActions;
     private LocalDateTime eventDateTime;
     private String eventPlace;
-    private User investigator;
+    private String investigatorIIN;
     private String status;
     private String relationToEvent;
     private String investigationTypes;

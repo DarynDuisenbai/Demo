@@ -20,8 +20,5 @@ public class RegionServiceImpl implements RegionService {
         return regionRepository.findAll().stream().map(Region::getName).toList();
     }
 
-    @Override
-    public Set<String> allRegionsInDep(String dep) {
-        return regionRepository.findDepartmentsByRegion(dep);
-    }
+
 }

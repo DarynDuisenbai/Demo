@@ -62,8 +62,6 @@ Provides user authentication with the following:
     - Invalid credentials.
     - Empty fields.
 
----
-
 ### Profile Page
 Enables users to manage their profiles:
 - View: Name, Email, Registration Date, Profile Picture.
@@ -80,8 +78,6 @@ Supports creating conclusion cards with the following features:
 - Mandatory fields:
     - National ID (IIN, 12 digits), case details, and justification.
 
----
-
 ### Journal of Conclusions
 Manages conclusion records in a tabular format with:
 - Filters for advanced searches (e.g., date range, region, status).
@@ -91,8 +87,6 @@ Manages conclusion records in a tabular format with:
     - Moderator: Full access.
 - Export options to Excel and PDF formats.
 
----
-
 ## Roles and Permissions
 - **Employee (SU Staff):**
     - Create and edit their own records.
@@ -100,8 +94,6 @@ Manages conclusion records in a tabular format with:
     - View all records in their department and region.
 - **Moderator:**
     - Full read access to all records.
-
----
 
 ## Database Configuration
 

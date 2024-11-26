@@ -11,6 +11,7 @@ import com.example.demo.domain.JobTitle;
 import com.example.demo.domain.User;
 import com.example.demo.repository.spec.DepartmentRepository;
 import com.example.demo.repository.spec.JobRepository;
+import com.example.demo.repository.spec.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserMapperImpl implements UserMapper {
     private final DepartmentRepository departmentRepository;
+    private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final AgreementMapper agreementMapper;
 
@@ -38,6 +40,7 @@ public class UserMapperImpl implements UserMapper {
 
         user.setDepartment(department);
 
+
         return user;
 
     }
@@ -51,6 +54,7 @@ public class UserMapperImpl implements UserMapper {
         userDto.setProfileImage(user.getProfileImage());
         userDto.setRegistrationDate(user.getRegistrationDate());
         userDto.setDepartment(user.getDepartment());
+        userDto.setManager(userDto.getManager());
 
         userDto.setConclusions(user.getConclusionsRegNumbers());
         userDto.setTempConclusionDtos(user.getTemporaryConclusionsRegNumbers());

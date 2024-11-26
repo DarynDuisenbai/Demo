@@ -1,5 +1,7 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.constant.JobConstants;
+import com.example.demo.constant.StatusConstants;
 import com.example.demo.dto.request.conclusion.CreateConclusionRequest;
 import com.example.demo.dto.request.conclusion.EditSavedConclusionRequest;
 import com.example.demo.dto.request.conclusion.FilterRequest;
@@ -30,10 +32,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class ConclusionServiceImpl implements ConclusionService {
-    private final String DEFAULT_STATUS = "На согласовании";
-    private final String SAVED = "В работе";
-    private final String EMPLOYEE = "Сотрудник СУ";
-    private final String ANALYST = "Аналитик СД";
     private final Logger LOGGER = LoggerFactory.getLogger(ConclusionServiceImpl.class);
     private final ConclusionRepository conclusionRepository;
     private final CaseRepository caseRepository;
@@ -50,10 +48,11 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final UTCFormatter utcFormatter;
 
     @Override
-    public void sendConclusion(Conclusion conclusion, String IIN) throws UserNotFoundException {
-        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
-        user.getReceivedConclusionsRegNumbers().add(conclusion.getRegistrationNumber());
-        userRepository.save(user);
+    public void sendConclusion(Conclusion conclusion, List<User> managers) {
+        for (User user : managers) {
+            user.getReceivedConclusionsRegNumbers().add(conclusion.getRegistrationNumber());
+            userRepository.save(user);
+        }
     }
 
     @Override
@@ -65,7 +64,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         conclusion.setRegistrationNumber(generator.generateUniqueNumber());
         conclusion.setCreationDate(utcFormatter.convertUTCToUTCPlus5(LocalDateTime.now()));
 
-        Status status = statusRepository.findByName(DEFAULT_STATUS);
+        Status status = statusRepository.findByName(StatusConstants.TO_BE_AGREED.getLabel());
         conclusion.setStatus(status);
 
         Case relatedCase = assignCase(createConclusionRequest.getUD());
@@ -91,10 +90,8 @@ public class ConclusionServiceImpl implements ConclusionService {
         User investigator = userRepository.findByIIN(iinInvestigator).
                 orElseThrow(() -> new UserNotFoundException("User not found."));
 
-        User analystOfDep = userRepository.findAnalystByDepartment(
-                investigator.getDepartment().getName());
-
-        sendConclusion(conclusion, analystOfDep.getIIN());
+        List<User> managers = getAllManagers(investigator);
+        sendConclusion(conclusion, managers);
 
         List<String> userConclusions = investigator.getConclusionsRegNumbers();
         userConclusions.add(conclusion.getRegistrationNumber());
@@ -104,8 +101,22 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     }
 
+    private List<User> getAllManagers(User user) throws UserNotFoundException {
+        List<User> managers = new ArrayList<>();
+        String managerIIN = user.getManagerIIN();
+
+        while (managerIIN != null) {
+            User manager = userRepository.findByIIN(managerIIN)
+                    .orElseThrow(() -> new UserNotFoundException("User not found."));
+            managers.add(manager);
+            managerIIN = manager.getManagerIIN();
+        }
+
+        return managers;
+    }
+
     private Case assignCase(String UD) throws CaseNotFound {
-        return caseRepository.findCaseByUD(UD).orElseThrow(()-> new CaseNotFound("Case not found."));
+        return caseRepository.findCaseByUD(UD).orElseThrow(() -> new CaseNotFound("Case not found."));
     }
 
     @Override
@@ -118,7 +129,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         temporaryConclusion.setRegistrationNumber(generator.generateUniqueNumber());
         temporaryConclusion.setCreationDate(LocalDateTime.now());
 
-        Status status = statusRepository.findByName(SAVED);
+        Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
         temporaryConclusion.setStatus(status);
 
         Case relatedCase = assignCase(createConclusionRequest.getUD());
@@ -143,7 +154,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         temporaryConclusion.setInvestigatorIIN(iinInvestigator);
 
         User investigator = userRepository.findByIIN(iinInvestigator).
-                orElseThrow(()-> new UserNotFoundException("User not found."));
+                orElseThrow(() -> new UserNotFoundException("User not found."));
 
         List<String> temporaryConclusions = investigator.getTemporaryConclusionsRegNumbers();
         temporaryConclusions.add(temporaryConclusion.getRegistrationNumber());
@@ -196,7 +207,7 @@ public class ConclusionServiceImpl implements ConclusionService {
                 orElseThrow(() -> new RegionNotFoundException("Region not found."));
 
         temporaryConclusion.setRegion(region);
-        Status status = statusRepository.findByName(SAVED);
+        Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
         temporaryConclusion.setStatus(status);
 
         temporaryConclusion.setPlannedActions(request.getPlannedActions());
@@ -220,7 +231,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     @Transactional
     public void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound {
         TemporaryConclusion tempConclusion = temporaryConclusionRepository.findTemporaryConclusionByRegistrationNumber(registrationNumber).
-                orElseThrow(()-> new NoTemporaryConclusionFound("No temporary conclusion found."));
+                orElseThrow(() -> new NoTemporaryConclusionFound("No temporary conclusion found."));
 
         Conclusion conclusion = conclusionMapper.fromTempToConclusion(tempConclusion);
         conclusionRepository.save(conclusion);
@@ -233,8 +244,8 @@ public class ConclusionServiceImpl implements ConclusionService {
         );
         investigator.getConclusionsRegNumbers().add(conclusion.getRegistrationNumber());
 
-        User analystOfDep = userRepository.findAnalystByDepartment(investigator.getDepartment().getName());
-        sendConclusion(conclusion,analystOfDep.getIIN());
+        List<User> managers = getAllManagers(investigator);
+        sendConclusion(conclusion, managers);
 
         userRepository.save(investigator);
         temporaryConclusionRepository.delete(tempConclusion);
@@ -247,19 +258,21 @@ public class ConclusionServiceImpl implements ConclusionService {
         User user = userRepository.findByIIN(filterRequest.getIIN())
                 .orElseThrow(UserNotFoundException::new);
 
-        List<Conclusion> filteredConclusions;
+        List<Conclusion> filteredConclusions = new ArrayList<>();
 
-        if (user.getJob().getName().equals(EMPLOYEE)) {
+        if (user.getJob().getName().equals(JobConstants.EMPLOYEE.getLabel()) ||
+                user.getJob().getName().equals(JobConstants.CURATOR.getLabel()) ||
+                user.getJob().getName().equals(JobConstants.SPECIALIST.getLabel())) {
             List<Conclusion> allDocsOfUser = conclusionRepository.
                     findByRegistrationNumbers(user.getConclusionsRegNumbers());
             filteredConclusions = conclusionRepository.filterSomeConclusions(allDocsOfUser, filterRequest);
 
-        } else if (user.getJob().getName().equals(ANALYST)) {
+        } else if (user.getJob().getName().equals(JobConstants.ANALYST.getLabel())) {
             List<Conclusion> receivedConclusions = conclusionRepository.
                     findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers());
             filteredConclusions = conclusionRepository.filterSomeConclusions(receivedConclusions, filterRequest);
 
-        } else {
+        } else if (user.getJob().getName().equals(JobConstants.MODERATOR.getLabel())) {
             filteredConclusions = conclusionRepository.filterAllConclusions(filterRequest);
         }
 
@@ -271,15 +284,17 @@ public class ConclusionServiceImpl implements ConclusionService {
     public Set<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user conclusions...");
         User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
-        List<Conclusion> conclusions;
+        List<Conclusion> conclusions = new ArrayList<>();
 
-        if (user.getJob().getName().equals(EMPLOYEE)) {
+        if (user.getJob().getName().equals(JobConstants.EMPLOYEE.getLabel()) ||
+                user.getJob().getName().equals(JobConstants.CURATOR.getLabel()) ||
+                user.getJob().getName().equals(JobConstants.SPECIALIST.getLabel())) {
             conclusions = conclusionRepository.findByRegistrationNumbers(user.getConclusionsRegNumbers());
 
-        } else if (user.getJob().getName().equals(ANALYST)) {
+        } else if (user.getJob().getName().equals(JobConstants.ANALYST.getLabel())) {
             conclusions = conclusionRepository.findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers());
 
-        } else {
+        } else if (user.getJob().getName().equals(JobConstants.MODERATOR.getLabel())) {
             conclusions = getAllConclusions();
         }
 
@@ -288,14 +303,14 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     private int getStatusOrder(String status) {
-        switch (status) {
-            case "На согласовании": return 1;
-            case "Отправлено на доработку": return 2;
-            case "Согласовано": return 3;
-            case "Оставлено без рассмотрения": return 4;
-            case "Отказано": return 5;
-            default: return Integer.MAX_VALUE;
-        }
+        return switch (status) {
+            case "На согласовании" -> 1;
+            case "Отправлено на доработку" -> 2;
+            case "Согласовано" -> 3;
+            case "Оставлено без рассмотрения" -> 4;
+            case "Отказано" -> 5;
+            default -> Integer.MAX_VALUE;
+        };
     }
 
     @Override
@@ -308,7 +323,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     @Override
     public List<TempConclusionDto> userSavedConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user saved conclusions...");
-        User user = userRepository.findByIIN(IIN).orElseThrow(()-> new UserNotFoundException("User not found."));
+        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         return tempMapper.toDtoList(temporaryConclusionRepository.
                 findByRegistrationNumbers(user.getTemporaryConclusionsRegNumbers()));
@@ -334,43 +349,59 @@ public class ConclusionServiceImpl implements ConclusionService {
         agreement.setJobTitle(receiver.getJob().getName());
 
         Conclusion conclusion = conclusionRepository.findConclusionByRegistrationNumber(decisionRequest.getRegistrationNumber()).
-                orElseThrow(()-> new NoConclusionException("Conclusion not found."));
+                orElseThrow(() -> new NoConclusionException("Conclusion not found."));
 
-        User investigator = userRepository.findByIIN(conclusion.getInvestigatorIIN()).
-                orElseThrow(() -> new UserNotFoundException("User not found."));
-
-        String regNum = investigator.getConclusionsRegNumbers().stream()
-                .filter(c -> equals(conclusion.getRegistrationNumber()))
-                .findFirst().orElseThrow(NoConclusionException::new);
-
-        Conclusion doc = conclusionRepository.findConclusionByRegistrationNumber(regNum).
-                orElseThrow(NoConclusionException::new);
-        doc.setStatus(statusRepository.findByName(decisionRequest.getStatus()));
-
-
+        User investigator = userRepository.findByIIN(conclusion.getInvestigatorIIN()).orElseThrow(UserNotFoundException::new);
         Status status = statusRepository.findByName(decisionRequest.getStatus());
-        conclusion.setStatus(status);
+
         agreement.setDate(conclusion.getEventTime());
         agreement.setReason(decisionRequest.getReason());
         agreement.setStatus(status);
 
-        sendAgreement(agreement, conclusion.getInvestigatorIIN());
-
         receiver.getAgreements().add(agreement);
         userRepository.save(receiver);
-        userRepository.save(investigator);
         agreementRepository.save(agreement);
-        conclusionRepository.save(conclusion);
+
+        List<User> managers = getAllManagers(investigator);
+        if(isAllAnswered(agreement, managers)) {
+            updateConclusionStatusBasedOnAgreements(conclusion);
+            notifyInvestigator(agreement, conclusion.getInvestigatorIIN());
+        }
         return agreementMapper.toAgreementDto(agreement);
     }
 
-    @Override
-    public void sendAgreement(Agreement agreement, String IIN) throws UserNotFoundException {
-        User investigator = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
-        investigator.getAgreements().add(agreement);
-        userRepository.save(investigator);
+    private void updateConclusionStatusBasedOnAgreements(Conclusion conclusion) {
+        Set<Agreement> relatedAgreements = agreementRepository.findAgreementsByRegNumber(conclusion.getRegistrationNumber());
+        long uniqueStatusCount = relatedAgreements.stream()
+                .map(Agreement::getStatus)
+                .distinct()
+                .count();
+
+        if (uniqueStatusCount == 1) {
+            Status unanimousStatus = relatedAgreements.iterator().next().getStatus();
+            conclusion.setStatus(unanimousStatus);
+        } else {
+            Status refusedStatus = statusRepository.findByName(StatusConstants.REFUSED.getLabel());
+            conclusion.setStatus(refusedStatus);
+        }
+        conclusionRepository.save(conclusion);
     }
 
+    private void notifyInvestigator(Agreement agreement, String investigatorIIN) throws UserNotFoundException {
+        User user = userRepository.findByIIN(investigatorIIN).orElseThrow(UserNotFoundException::new);
+        user.getAgreements().add(agreement);
+        userRepository.save(user);
+    }
+
+    private boolean isAllAnswered(Agreement agreement, List<User> managers){
+        for(User user : managers){
+            List<Agreement> agreements = user.getAgreements();
+            if(!agreements.contains(agreement)){
+                return false;
+            }
+        }
+        return true;
+    }
     @Override
     public ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException {
         return conclusionMapper.toConclusionDto(conclusionRepository.

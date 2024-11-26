@@ -20,8 +20,10 @@ public class UserDto {
     private String IIN;
     private Department department;
     private JobTitle jobTitle;
+    private String manager;
     private List<String> conclusions;
     private List<String> tempConclusionDtos;
     private List<String> receivedConclusionDtos;
     private List<AgreementDto> agreementDtos;
+
 }

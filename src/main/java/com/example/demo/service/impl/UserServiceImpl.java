@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.constant.JobConstants;
 import com.example.demo.dto.request.user.*;
 import com.example.demo.dto.responce.UserDto;
 import com.example.demo.exception.*;
@@ -28,7 +29,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final String EMPLOYEE = "Сотрудник СУ";
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
@@ -97,9 +97,15 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
         user.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(LocalDateTime.now()));
 
-        JobTitle jobTitle = jobRepository.findJobTitleByName(EMPLOYEE);
+        JobTitle jobTitle = jobRepository.findJobTitleByName(JobConstants.EMPLOYEE.getLabel());
         user.setJob(jobTitle);
 
+        User manager = userRepository.getBoss(user);
+        if(manager == null) {
+            user.setManagerIIN("");
+        }else {
+            user.setManagerIIN(manager.getIIN());
+        }
         userRepository.save(user);
         return userMapper.toUserDto(user);
     }
@@ -185,16 +191,33 @@ public class UserServiceImpl implements UserService {
     public void promote(String IIN) throws UserNotFoundException, AnalystAlreadyExistsException {
         User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
         String job = user.getJob().getName();
-        if(job.equals("Сотрудник СУ")){
-            JobTitle analyticJob = jobRepository.findJobTitleByName("Аналитик СД");
+        if(job.equals(JobConstants.EMPLOYEE.getLabel())){
+            JobTitle curatorJob = jobRepository.findJobTitleByName(JobConstants.CURATOR.getLabel());
+            user.setJob(curatorJob);
+
+            User manager = userRepository.getBoss(user);
+            if(manager != null) {
+                user.setManagerIIN(manager.getManagerIIN());
+            }
+        } else if (job.equals(JobConstants.CURATOR.getLabel())) {
+            JobTitle specialistJob = jobRepository.findJobTitleByName(JobConstants.SPECIALIST.getLabel());
+            user.setJob(specialistJob);
+
+            User manager = userRepository.getBoss(user);
+            if(manager != null) {
+                user.setManagerIIN(manager.getManagerIIN());
+            }
+        } else if(job.equals(JobConstants.SPECIALIST.getLabel())){
+            JobTitle analystJob = jobRepository.findJobTitleByName(JobConstants.ANALYST.getLabel());
             User optAnalyst = userRepository.findAnalystByDepartment(user.getDepartment().getName());
 
             if(optAnalyst != null){
                 throw new AnalystAlreadyExistsException("Analyst in this department already exists.");
             }
-            user.setJob(analyticJob);
-        }else if(job.equals("Аналитик СД")){
-            JobTitle moderatorJob = jobRepository.findJobTitleByName("Модератор");
+            user.setJob(analystJob);
+            user.setManagerIIN("");
+        }else if (job.equals(JobConstants.ANALYST.getLabel())) {
+            JobTitle moderatorJob = jobRepository.findJobTitleByName(JobConstants.MODERATOR.getLabel());
             user.setJob(moderatorJob);
         }
 

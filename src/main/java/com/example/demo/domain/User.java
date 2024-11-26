@@ -3,6 +3,7 @@ package com.example.demo.domain;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -66,6 +67,9 @@ public class User {
 
     @Field("agreement")
     private List<Agreement> agreements;
+
+    @Field("manager")
+    private String managerIIN;
 
     @Field("role")
     private String role;

@@ -1,5 +1,6 @@
 package com.example.demo.service.spec;
 
+import com.example.demo.domain.User;
 import com.example.demo.dto.request.conclusion.CreateConclusionRequest;
 import com.example.demo.dto.request.conclusion.EditSavedConclusionRequest;
 import com.example.demo.dto.request.conclusion.FilterRequest;
@@ -27,8 +28,7 @@ public interface ConclusionService {
     List<String> allUD();
     List<Conclusion> getAllConclusions();
 
-    void sendConclusion(Conclusion conclusion, String IIN) throws UserNotFoundException;
-    void sendAgreement(Agreement agreement, String IIN) throws UserNotFoundException;
+    void sendConclusion(Conclusion conclusion, List<User> managers) throws UserNotFoundException;
     AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException;
     ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException;
     History history(String iinInvestigator, String goal) throws UserNotFoundException;

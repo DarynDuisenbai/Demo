@@ -16,7 +16,7 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must contain at least 6 characters, including uppercase, lowercase, digit, and special character.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
     @ExceptionHandler(DuplicateUserException.class)
     public ResponseEntity<String> handleDuplicateUserException(DuplicateUserException ex) {
@@ -24,7 +24,7 @@ public class AuthExceptionHandler {
     }
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(InvalidIINFormat.class)

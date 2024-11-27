@@ -15,17 +15,17 @@ public class ConclusionExceptionHandler {
     }
     @ExceptionHandler(RegionNotFoundException.class)
     public ResponseEntity<String> handleRegionNotFoundException(RegionNotFoundException regionNotFoundException){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Region not found.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(regionNotFoundException.getMessage());
     }
 
     @ExceptionHandler(CaseNotFound.class)
     public ResponseEntity<String> handleCaseNotFoundException(CaseNotFound caseNotFound){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Case not found.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(caseNotFound.getMessage());
     }
 
     @ExceptionHandler(NoConclusionException.class)
-    public ResponseEntity<String> handleConclusionNotFoundException(NoConclusionException caseNotFound){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Conclusion not found.");
+    public ResponseEntity<String> handleConclusionNotFoundException(NoConclusionException noConclusionException ){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(noConclusionException.getMessage());
     }
 
 

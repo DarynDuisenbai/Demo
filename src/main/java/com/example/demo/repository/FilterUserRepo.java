@@ -7,6 +7,6 @@ import java.util.List;
 public interface FilterUserRepo {
     List<User> findByDepartment(String department);
     List<User> findByJob(String job);
-    User getBoss(User user);
+    List<User> getBoss(User user);
     User findAnalystByDepartment(String department);
 }

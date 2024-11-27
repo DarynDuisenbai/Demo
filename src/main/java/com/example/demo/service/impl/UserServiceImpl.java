@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -100,11 +101,11 @@ public class UserServiceImpl implements UserService {
         JobTitle jobTitle = jobRepository.findJobTitleByName(JobConstants.EMPLOYEE.getLabel());
         user.setJob(jobTitle);
 
-        User manager = userRepository.getBoss(user);
-        if(manager == null) {
+        List<User> managers = userRepository.getBoss(user);
+        if(managers == null) {
             user.setManagerIIN("");
         }else {
-            user.setManagerIIN(manager.getIIN());
+            user.setManagerIIN(managers.get(new Random().nextInt(managers.size())).getIIN());
         }
         userRepository.save(user);
         return userMapper.toUserDto(user);
@@ -195,17 +196,17 @@ public class UserServiceImpl implements UserService {
             JobTitle curatorJob = jobRepository.findJobTitleByName(JobConstants.CURATOR.getLabel());
             user.setJob(curatorJob);
 
-            User manager = userRepository.getBoss(user);
-            if(manager != null) {
-                user.setManagerIIN(manager.getManagerIIN());
+            List<User> managers = userRepository.getBoss(user);
+            if(managers != null) {
+                user.setManagerIIN(managers.get(new Random().nextInt(managers.size())).getIIN());
             }
         } else if (job.equals(JobConstants.CURATOR.getLabel())) {
             JobTitle specialistJob = jobRepository.findJobTitleByName(JobConstants.SPECIALIST.getLabel());
             user.setJob(specialistJob);
 
-            User manager = userRepository.getBoss(user);
-            if(manager != null) {
-                user.setManagerIIN(manager.getManagerIIN());
+            List<User> managers = userRepository.getBoss(user);
+            if(managers != null) {
+                user.setManagerIIN(managers.get(new Random().nextInt(managers.size())).getIIN());
             }
         } else if(job.equals(JobConstants.SPECIALIST.getLabel())){
             JobTitle analystJob = jobRepository.findJobTitleByName(JobConstants.ANALYST.getLabel());

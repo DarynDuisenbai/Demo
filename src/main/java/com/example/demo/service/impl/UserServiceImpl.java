@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getProfile(String IIN) throws UserNotFoundException {
-        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User with IIN: " + IIN + " not found."));
         LOGGER.debug("Retrieving a user...");
         return userMapper.toUserDto(user);
     }
@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
     public void changePassword(ChangePasswordRequest changePasswordRequest) throws UserNotFoundException, InvalidPasswordException {
         if (!isPresent(changePasswordRequest.getEmail())) {
             LOGGER.warn("User not found...");
-            throw new UserNotFoundException("User not found.");
+            throw new UserNotFoundException("User with email: " + changePasswordRequest.getEmail() + " not found.");
         }
 
         User user = userRepository.findByEmail(changePasswordRequest.getEmail()).get();
@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
     public void deleteAccount(DeleteAccountRequest deleteAccountRequest) throws UserNotFoundException {
         if(!isPresent(deleteAccountRequest.getEmail())){
             LOGGER.warn("User not found...");
-            throw new UserNotFoundException("User not found.");
+            throw new UserNotFoundException("User with email: " + deleteAccountRequest.getEmail() + " not found.");
         }
         LOGGER.warn("Deleting a user...");
         User user = userRepository.findByEmail(deleteAccountRequest.getEmail()).get();
@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
     public String forgotPassword(String email) throws UserNotFoundException {
         if(!isPresent(email)){
             LOGGER.warn("User not found...");
-            throw new UserNotFoundException("User not found.");
+            throw new UserNotFoundException("User with email: " + email + " not found.");
         }
         try {
             emailSender.sendSetPasswordEmail(email);
@@ -189,7 +189,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void promote(String IIN) throws UserNotFoundException, AnalystAlreadyExistsException {
-        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User not found."));
+        User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User with IIN: " + IIN + " not found."));
         String job = user.getJob().getName();
         if(job.equals(JobConstants.EMPLOYEE.getLabel())){
             JobTitle curatorJob = jobRepository.findJobTitleByName(JobConstants.CURATOR.getLabel());
@@ -226,7 +226,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void editProfile(EditProfileRequest editProfileRequest) throws UserNotFoundException {
-        User user = userRepository.findByIIN(editProfileRequest.getIIN()).orElseThrow(() -> new UserNotFoundException("User not found."));
+        User user = userRepository.findByIIN(editProfileRequest.getIIN()).orElseThrow(() -> new UserNotFoundException("User with IIN: " + editProfileRequest.getIIN() + " not found."));
         if (editProfileRequest.getName() != null) {
             user.setName(editProfileRequest.getName());
         }

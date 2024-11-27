@@ -16,7 +16,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Case getCaseByUD(String UD) throws CaseNotFound {
-        return caseRepository.findCaseByUD(UD).orElseThrow(() -> new CaseNotFound("Case not found."));
+        return caseRepository.findCaseByUD(UD).orElseThrow(() -> new CaseNotFound("Case with UD: " +UD+" not found."));
     }
 
     @Override

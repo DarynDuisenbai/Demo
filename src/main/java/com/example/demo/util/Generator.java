@@ -20,6 +20,7 @@ import java.util.Random;
 public class Generator {
     private final String PREFIX = "Z";
     private final MongoTemplate mongoTemplate;
+
     public String generateUniqueNumber(){
         long countConc = mongoTemplate.count(new Query(), Conclusion.class);
         long countTemp = mongoTemplate.count(new Query(), TemporaryConclusion.class);

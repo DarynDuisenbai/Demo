@@ -32,7 +32,7 @@ public class FilterUserRepoImpl implements FilterUserRepo {
     }
 
     @Override
-    public User getBoss(User user) {
+    public List<User> getBoss(User user) {
         Query query = new Query();
         query.addCriteria(Criteria.where("department").is(user.getDepartment()));
 
@@ -48,7 +48,7 @@ public class FilterUserRepoImpl implements FilterUserRepo {
             throw new IllegalArgumentException("No boss found for this job");
         }
 
-        return mongoTemplate.findOne(query, User.class);
+        return mongoTemplate.find(query, User.class);
     }
 
     @Override

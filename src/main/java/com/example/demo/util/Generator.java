@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
@@ -19,8 +20,6 @@ import java.util.Random;
 public class Generator {
     private final String PREFIX = "Z";
     private final MongoTemplate mongoTemplate;
-    private final String NAMES_PATH = "src/main/resources/names.json";
-
     public String generateUniqueNumber(){
         long countConc = mongoTemplate.count(new Query(), Conclusion.class);
         long countTemp = mongoTemplate.count(new Query(), TemporaryConclusion.class);
@@ -32,8 +31,13 @@ public class Generator {
         Random random = new Random();
 
         try {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("names.json");
+            if (inputStream == null) {
+                throw new IOException("File not found in resources: names.json");
+            }
+
             List<String> names = objectMapper.readValue(
-                    Paths.get(NAMES_PATH).toFile(),
+                    inputStream,
                     new TypeReference<>() {
                     }
             );

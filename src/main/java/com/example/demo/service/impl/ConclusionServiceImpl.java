@@ -104,9 +104,10 @@ public class ConclusionServiceImpl implements ConclusionService {
     private List<User> getAllManagers(User user) throws UserNotFoundException {
         List<User> managers = new ArrayList<>();
         String managerIIN = user.getManagerIIN();
-
-        while (managerIIN != null) {
+        LOGGER.warn("MANAGER IIN: " + managerIIN);
+        while (!managerIIN.isEmpty()) {
             String finalManagerIIN = managerIIN;
+            LOGGER.warn("MANAGER COPPY: " + finalManagerIIN);
             User manager = userRepository.findByIIN(managerIIN)
                     .orElseThrow(() -> new UserNotFoundException("Manager with IIN: "+ finalManagerIIN + " not found."));
             managers.add(manager);

@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.exception.NoConclusionException;
 import com.example.demo.service.impl.ExportServiceImpl;
+import com.itextpdf.text.DocumentException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -12,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.io.IOException;
 
 @Controller
 @RequiredArgsConstructor
@@ -38,10 +42,10 @@ public class ExportController {
             @ApiResponse(responseCode = "200", description = "Pdf created successfully")
     })
     @GetMapping("/pdf")
-    public ResponseEntity<byte[]> exportToPdf(@RequestParam String IIN) {
-        byte[] data = exportService.exportToPdf(IIN).readAllBytes();
+    public ResponseEntity<byte[]> exportToPdf(@RequestParam String regNum) throws DocumentException, NoConclusionException, IOException {
+        byte[] data = exportService.exportToPdf(regNum).readAllBytes();
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=conclusions.pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=conclusion.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(data);
     }

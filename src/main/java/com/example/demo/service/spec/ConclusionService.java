@@ -19,7 +19,8 @@ import java.util.Set;
 public interface ConclusionService {
     void createConclusion(CreateConclusionRequest createConclusionRequest) throws UserNotFoundException, RegionNotFoundException, CaseNotFound;
     void saveConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException, CaseNotFound;
-    void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound;
+    void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws UserNotFoundException,
+            NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound;
     void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound, ConclusionNotReadyException;
     Set<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException;
     Set<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException;

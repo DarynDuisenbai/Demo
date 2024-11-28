@@ -415,14 +415,15 @@ public class ConclusionServiceImpl implements ConclusionService {
         userRepository.save(user);
     }
 
-    private boolean isAllAnswered(Agreement agreement, List<User> managers){
-        for(User user : managers){
-            List<Agreement> agreements = user.getAgreements();
-            if(!agreements.contains(agreement)){
-                return false;
-            }
-        }
-        return true;
+    private boolean isAllAnswered(Agreement agreement, List<User> managers) {
+        String registrationNumber = agreement.getRegNumber();
+
+        return managers.stream()
+                .allMatch(manager -> manager.getAgreements().stream()
+                        .filter(userAgreement -> userAgreement.getRegNumber().equals(registrationNumber))
+                        .max(Comparator.comparing(Agreement::getDate))
+                        .isPresent()
+                );
     }
     @Override
     public ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException {

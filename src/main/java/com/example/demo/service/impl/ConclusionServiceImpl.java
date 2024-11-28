@@ -232,6 +232,32 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
+    public void deleteConclusion(String registrationNumber)
+            throws UserNotFoundException, NoConclusionException {
+        LOGGER.debug("Удаление заключения...");
+
+        Conclusion conclusion = conclusionRepository
+                .findConclusionByRegistrationNumber(registrationNumber)
+                .orElseThrow(() -> new NoConclusionException(
+                        "Заключение с регистрационным номером: " + registrationNumber + " не найдено."));
+
+        conclusionRepository.delete(conclusion);
+
+        User user = userRepository.findByConclusionsRegNumbersContaining(registrationNumber)
+                .orElseThrow(() -> new UserNotFoundException(
+                        "Пользователь с регистрационным номером: " + registrationNumber + " не найден."));
+
+        boolean removed = user.getConclusionsRegNumbers().removeIf(regNum -> regNum.equals(registrationNumber));
+        if (removed) {
+            userRepository.save(user);
+            LOGGER.debug("Регистрационный номер удален из списка пользователя.");
+        } else {
+            LOGGER.warn("Регистрационный номер не найден в списке пользователя.");
+        }
+        LOGGER.debug("Заключение успешно удалено.");
+    }
+
+    @Override
     @Transactional
     public void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound, ConclusionNotReadyException {
         TemporaryConclusion tempConclusion = temporaryConclusionRepository.findTemporaryConclusionByRegistrationNumber(registrationNumber).

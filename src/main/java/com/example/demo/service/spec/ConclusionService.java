@@ -21,6 +21,7 @@ public interface ConclusionService {
     void saveConclusion(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException, CaseNotFound;
     void editSavedConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws UserNotFoundException,
             NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound;
+    void deleteConclusion(String registrationNumber) throws UserNotFoundException, ConclusionNotReadyException, NoConclusionException;
     void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound, ConclusionNotReadyException;
     Set<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException;
     Set<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException;
@@ -33,5 +34,6 @@ public interface ConclusionService {
     AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException;
     ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException;
     History history(String iinInvestigator, String goal) throws UserNotFoundException;
+
 
 }

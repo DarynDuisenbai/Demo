@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.dto.request.user.DeleteAccountRequest;
 import com.example.demo.dto.responce.AgreementDto;
 import com.example.demo.dto.responce.ConclusionDto;
-import com.example.demo.exception.AnalystAlreadyExistsException;
-import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.exception.*;
 import com.example.demo.mapper.spec.AgreementMapper;
 import com.example.demo.mapper.spec.ConclusionMapper;
 import com.example.demo.domain.Agreement;
@@ -72,5 +72,18 @@ public class AdminController {
         List<AgreementDto> agreementDtos = agreementMapper.toDtoList(agreements);
 
         return ResponseEntity.ok(agreementDtos);
+    }
+
+    @Operation(summary = "Delete conclusion by registration number")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Conclusion successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Conclusion or user not found"),
+            @ApiResponse(responseCode = "400", description = "Conclusion is not ready for deletion")
+    })
+    @DeleteMapping("/deleteConclusion")
+    public ResponseEntity<String> deleteConclusion(@RequestParam String registrationNumber)
+            throws UserNotFoundException, ConclusionNotReadyException, NoConclusionException {
+        conclusionService.deleteConclusion(registrationNumber);
+        return ResponseEntity.ok("Conclusion successfully deleted.");
     }
 }

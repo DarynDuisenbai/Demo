@@ -1,5 +1,7 @@
 package com.example.demo.util;
 
+import com.example.demo.domain.Conclusion;
+import com.example.demo.domain.TemporaryConclusion;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
@@ -38,6 +40,40 @@ public class Validator {
             return false;
         }
         return UD.chars().allMatch(Character::isDigit);
+    }
+
+    public boolean isValidConclusion(TemporaryConclusion conclusion){
+        if(conclusion.getUD().isEmpty() || conclusion.getUD() == null){
+            return false;
+        } if(conclusion.getInvestigatorIIN().isEmpty() || conclusion.getInvestigatorIIN() == null){
+            return false;
+        } if(conclusion.getIINofCalled().isEmpty() || conclusion.getIINofCalled() == null){
+            return false;
+        } if(conclusion.getJobTitleOfCalled().isEmpty() || conclusion.getJobTitleOfCalled() == null){
+            return false;
+        } if(conclusion.getJobPlace().isEmpty() || conclusion.getJobPlace() == null){
+            return false;
+        } if(conclusion.getPlannedActions().isEmpty() || conclusion.getPlannedActions() == null){
+            return false;
+        } if(conclusion.getEventPlace().isEmpty() || conclusion.getEventPlace() == null){
+            return false;
+        } if(conclusion.getEventTime() == null) {
+            return false;
+        } if(conclusion.getRelation().isEmpty() || conclusion.getRelation() == null){
+            return false;
+        } if(conclusion.getIINDefender().isEmpty() || conclusion.getIINDefender() == null){
+            return false;
+        } if(conclusion.getJustification().isEmpty() || conclusion.getJustification() == null){
+            return false;
+        } if(conclusion.getResult().isEmpty() || conclusion.getResult() == null){
+            return false;
+        } if(conclusion.getInvestigation().isEmpty() || conclusion.getInvestigation() == null){
+            return false;
+        } if(conclusion.getIsBusiness().isEmpty() || conclusion.getIsBusiness() == null){
+            return false;
+        }
+
+        return true;
     }
 }
 

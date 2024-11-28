@@ -76,7 +76,7 @@ public class TemporaryConclusion {
     private String investigation;
 
     @Field("isBusiness")
-    private boolean isBusiness;
+    private String isBusiness;
 
     @Field("BIN/IINPension")
     private String BINOrIINofBusiness;

@@ -75,8 +75,8 @@ public class Conclusion {
     @Field("investigation")
     private String investigation;
 
-    @Field("isBusiness")
-    private boolean isBusiness;
+    @Field("relatesToBusiness")
+    private String business;
 
     @Field("BIN/IINPension")
     private String BINOrIINofBusiness;

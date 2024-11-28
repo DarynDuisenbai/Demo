@@ -18,7 +18,7 @@ public class CreateConclusionRequest {
     private String eventPlace;
     private String relation;
     private String investigationType;
-    private Boolean relatesToBusiness;
+    private String relatesToBusiness;
     private String IINOfInvestigator;
     private String IINDefender;
     private String justification;

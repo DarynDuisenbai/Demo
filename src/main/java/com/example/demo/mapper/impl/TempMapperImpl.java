@@ -39,7 +39,7 @@ public class TempMapperImpl implements TempMapper {
         tempConclusion.setEventPlace(createConclusionRequest.getEventPlace());
         tempConclusion.setRelation(createConclusionRequest.getRelation());
         tempConclusion.setInvestigation(createConclusionRequest.getInvestigationType());
-        tempConclusion.setBusiness(createConclusionRequest.getRelatesToBusiness() != null ? createConclusionRequest.getRelatesToBusiness() : false);
+        tempConclusion.setIsBusiness(createConclusionRequest.getRelatesToBusiness());
         tempConclusion.setIINDefender(createConclusionRequest.getIINDefender());
         tempConclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
         tempConclusion.setJustification(createConclusionRequest.getJustification());
@@ -49,7 +49,7 @@ public class TempMapperImpl implements TempMapper {
     }
 
     @Override
-    public TempConclusionDto toTempConclusionDto(TemporaryConclusion temporaryConclusion) throws UserNotFoundException {
+    public TempConclusionDto toTempConclusionDto(TemporaryConclusion temporaryConclusion){
         TempConclusionDto dto = new TempConclusionDto();
         dto.setRegistrationNumber(temporaryConclusion.getRegistrationNumber());
         dto.setCreationDate(utcFormatter.convertUTCToUTCPlus5(temporaryConclusion.getCreationDate()));
@@ -71,7 +71,7 @@ public class TempMapperImpl implements TempMapper {
         dto.setStatus(temporaryConclusion.getStatus().getName());
         dto.setRelationToEvent(temporaryConclusion.getRelation());
         dto.setInvestigationTypes(temporaryConclusion.getInvestigation());
-        dto.setRelatesToBusiness(temporaryConclusion.isBusiness());
+        dto.setRelatesToBusiness(temporaryConclusion.getIsBusiness());
         dto.setDefenseAttorneyIIN(temporaryConclusion.getIINDefender());
         dto.setDefenseAttorneyFullName(temporaryConclusion.getFullNameOfDefender());
         dto.setJustification(temporaryConclusion.getJustification());

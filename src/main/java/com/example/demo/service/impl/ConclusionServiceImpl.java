@@ -296,10 +296,14 @@ public class ConclusionServiceImpl implements ConclusionService {
         User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User with IIN: " + IIN + " not found."));
         List<Conclusion> conclusions = new ArrayList<>();
 
-        if (user.getJob().getName().equals(JobConstants.EMPLOYEE.getLabel()) ||
-                user.getJob().getName().equals(JobConstants.CURATOR.getLabel()) ||
+        if (user.getJob().getName().equals(JobConstants.EMPLOYEE.getLabel())){
+            conclusions = conclusionRepository.findByRegistrationNumbers(user.getConclusionsRegNumbers());
+        }
+        else if(user.getJob().getName().equals(JobConstants.CURATOR.getLabel()) ||
                 user.getJob().getName().equals(JobConstants.SPECIALIST.getLabel())) {
             conclusions = conclusionRepository.findByRegistrationNumbers(user.getConclusionsRegNumbers());
+            List<Conclusion> receivedConclusions = conclusionRepository.findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers());
+            conclusions.addAll(receivedConclusions);
 
         } else if (user.getJob().getName().equals(JobConstants.ANALYST.getLabel())) {
             conclusions = conclusionRepository.findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers());

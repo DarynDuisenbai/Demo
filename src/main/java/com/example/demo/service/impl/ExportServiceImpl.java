@@ -1,17 +1,27 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.domain.Conclusion;
 import com.example.demo.dto.responce.ConclusionDto;
+import com.example.demo.exception.NoConclusionException;
 import com.example.demo.repository.spec.ConclusionRepository;
 import com.example.demo.service.spec.ConclusionService;
 import com.example.demo.service.spec.ExportService;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
+import java.io.*;
 import java.util.Set;
 
 
@@ -93,94 +103,50 @@ public class ExportServiceImpl implements ExportService {
     }
 
     @Override
-    public ByteArrayInputStream exportToPdf(String IIN) {
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            com.itextpdf.text.Document document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4.rotate());
-            com.itextpdf.text.pdf.PdfWriter.getInstance(document, out);
-            document.open();
+    public ByteArrayInputStream exportToPdf(String regNumber) throws NoConclusionException, IOException {
+        // Retrieve the conclusion data from the database
+        Conclusion conclusion = conclusionRepository.findConclusionByRegistrationNumber(regNumber)
+                .orElseThrow(NoConclusionException::new);
 
-            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 16, com.itextpdf.text.Font.BOLD);
-            document.add(new com.itextpdf.text.Paragraph("Conclusions Report", titleFont));
-            document.add(com.itextpdf.text.Chunk.NEWLINE);
+        // Create a new PDF document
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
 
-            com.itextpdf.text.pdf.PdfPTable table = new com.itextpdf.text.pdf.PdfPTable(26);
-            table.setWidthPercentage(100);
-            table.setSpacingBefore(10f);
-            table.setSpacingAfter(10f);
+        // Add content to the document
+        addConclusionDataToPdf(document, page, conclusion);
 
-            float[] columnWidths = new float[26];
-            Arrays.fill(columnWidths, 4f);
-            table.setWidths(columnWidths);
+        // Save the document to a byte array
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        document.save(out);
+        document.close();
 
-            com.itextpdf.text.Font headerFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10, com.itextpdf.text.Font.BOLD);
-            for (String column : new String[]{
-                    "Registration Number", "Creation Date", "UD", "Registration Date",
-                    "Article", "Decision", "Plot", "IIN of Called", "Full Name of Called",
-                    "Job Title of Called", "BIN/IIN of Called", "Job Place", "Region",
-                    "Planned Actions", "Event Time", "Event Place", "Investigator",
-                    "Status", "Relation", "Investigation", "Is Business",
-                    "BIN/IIN Pension", "IIN of Defender", "Full Name of Defender",
-                    "Justification", "Result"
-            }) {
-                com.itextpdf.text.pdf.PdfPCell headerCell = new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(column, headerFont));
-                headerCell.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
-                headerCell.setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
-                headerCell.setBackgroundColor(new com.itextpdf.text.BaseColor(200, 200, 200));
-                table.addCell(headerCell);
-            }
-
-            com.itextpdf.text.Font dataFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 9);
-            Set<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
-            boolean alternate = false;
-
-            for (ConclusionDto conclusion : conclusions) {
-                alternate = !alternate;
-                com.itextpdf.text.BaseColor rowColor = alternate ? new com.itextpdf.text.BaseColor(230, 230, 230) : com.itextpdf.text.BaseColor.WHITE;
-
-                for (String cellData : new String[]{
-                        conclusion.getRegistrationNumber(),
-                        conclusion.getCreationDate().toString(),
-                        conclusion.getUdNumber(),
-                        conclusion.getRegistrationDate().toString(),
-                        conclusion.getArticle(),
-                        conclusion.getDecision(),
-                        conclusion.getSummary(),
-                        conclusion.getCalledPersonIIN(),
-                        conclusion.getCalledPersonFullName(),
-                        conclusion.getCalledPersonPosition(),
-                        conclusion.getCalledPersonBIN(),
-                        conclusion.getWorkPlace(),
-                        conclusion.getRegion().getName(),
-                        conclusion.getPlannedInvestigativeActions(),
-                        conclusion.getEventDateTime().toString(),
-                        conclusion.getEventPlace(),
-                        conclusion.getInvestigatorIIN(),
-                        conclusion.getStatus(),
-                        conclusion.getRelationToEvent(),
-                        conclusion.getInvestigationTypes(),
-                        String.valueOf(conclusion.getRelatesToBusiness()),
-                        String.valueOf(conclusion.getCalledPersonBIN()),
-                        conclusion.getDefenseAttorneyIIN(),
-                        conclusion.getDefenseAttorneyFullName(),
-                        conclusion.getJustification(),
-                        conclusion.getResult()
-                }) {
-                    com.itextpdf.text.pdf.PdfPCell cell = new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(cellData, dataFont));
-                    cell.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
-                    cell.setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
-                    cell.setBackgroundColor(rowColor);
-                    table.addCell(cell);
-                }
-            }
-
-            document.add(table);
-            document.close();
-
-            return new ByteArrayInputStream(out.toByteArray());
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to export data to PDF: " + e.getMessage(), e);
-        }
+        return new ByteArrayInputStream(out.toByteArray());
     }
 
+    private void addConclusionDataToPdf(PDDocument document, PDPage page, Conclusion conclusion) throws IOException {
+        try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+            InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/Faberge-Regular.otf");
+            if (fontStream == null) {
+                throw new FileNotFoundException("Font file not found in resources");
+            }
 
+            PDType0Font font = PDType0Font.load(document, fontStream);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(50, 750);
+            contentStream.setFont(font, 12);
+            // Add text content to the document
+            contentStream.showText("Заявление");
+            contentStream.newLineAtOffset(0, -20);
+
+            contentStream.showText("Регистрационный номер: " + conclusion.getRegistrationNumber());
+            contentStream.newLineAtOffset(0, -20);
+
+            contentStream.showText("Статья: " + conclusion.getArticle());
+            contentStream.newLineAtOffset(0, -20);
+
+            contentStream.endText();
+        }
+    }
 }
+

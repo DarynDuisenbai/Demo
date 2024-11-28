@@ -67,8 +67,8 @@ public class ExportServiceImpl implements ExportService {
                 row.createCell(17).setCellValue(conclusion.getStatus());
                 row.createCell(18).setCellValue(conclusion.getRelationToEvent());
                 row.createCell(19).setCellValue(conclusion.getInvestigationTypes());
-                row.createCell(20).setCellValue(conclusion.isRelatesToBusiness());
-                row.createCell(21).setCellValue(conclusion.isRelatesToBusiness());
+                row.createCell(20).setCellValue(conclusion.getRelatesToBusiness());
+                row.createCell(21).setCellValue(conclusion.getCalledPersonBIN());
                 row.createCell(22).setCellValue(conclusion.getDefenseAttorneyIIN());
                 row.createCell(23).setCellValue(conclusion.getDefenseAttorneyFullName());
                 row.createCell(24).setCellValue(conclusion.getJustification());
@@ -158,8 +158,8 @@ public class ExportServiceImpl implements ExportService {
                         conclusion.getStatus(),
                         conclusion.getRelationToEvent(),
                         conclusion.getInvestigationTypes(),
-                        String.valueOf(conclusion.isRelatesToBusiness()),
-                        String.valueOf(conclusion.isRelatesToBusiness()),
+                        String.valueOf(conclusion.getRelatesToBusiness()),
+                        String.valueOf(conclusion.getCalledPersonBIN()),
                         conclusion.getDefenseAttorneyIIN(),
                         conclusion.getDefenseAttorneyFullName(),
                         conclusion.getJustification(),

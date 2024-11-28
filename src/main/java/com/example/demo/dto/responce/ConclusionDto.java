@@ -30,7 +30,7 @@ public class ConclusionDto {
     private String status;
     private String relationToEvent;
     private String investigationTypes;
-    private boolean relatesToBusiness;
+    private String relatesToBusiness;
     private String defenseAttorneyIIN;
     private String defenseAttorneyFullName;
     private String justification;

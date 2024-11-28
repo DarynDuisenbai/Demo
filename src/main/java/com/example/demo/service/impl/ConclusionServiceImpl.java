@@ -20,6 +20,7 @@ import com.example.demo.repository.spec.*;
 import com.example.demo.service.spec.ConclusionService;
 import com.example.demo.util.Generator;
 import com.example.demo.util.UTCFormatter;
+import com.example.demo.util.Validator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final HistoryMapper historyMapper;
     private final Generator generator;
     private final UTCFormatter utcFormatter;
+    private final Validator validator;
 
     @Override
     public void sendConclusion(Conclusion conclusion, List<User> managers) {
@@ -217,7 +219,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         temporaryConclusion.setEventPlace(request.getEventPlace());
         temporaryConclusion.setRelation(request.getRelation());
         temporaryConclusion.setInvestigation(request.getInvestigationType());
-        temporaryConclusion.setBusiness(request.getRelatesToBusiness() != null ? request.getRelatesToBusiness() : false);
+        temporaryConclusion.setIsBusiness(request.getRelatesToBusiness());
         temporaryConclusion.setJustification(request.getJustification());
         temporaryConclusion.setResult(request.getResult());
         temporaryConclusion.setInvestigatorIIN(investigatorIIN);
@@ -231,11 +233,17 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     @Transactional
-    public void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound {
+    public void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound, ConclusionNotReadyException {
         TemporaryConclusion tempConclusion = temporaryConclusionRepository.findTemporaryConclusionByRegistrationNumber(registrationNumber).
                 orElseThrow(() -> new NoTemporaryConclusionFound("Temporary conclusion with registration number: "+registrationNumber +" not found."));
 
+        if(!validator.isValidConclusion(tempConclusion)){
+            throw new ConclusionNotReadyException("Your conclusion is not ready!");
+        }
         Conclusion conclusion = conclusionMapper.fromTempToConclusion(tempConclusion);
+
+        Status status = statusRepository.findByName(StatusConstants.TO_BE_AGREED.getLabel());
+        conclusion.setStatus(status);
         conclusionRepository.save(conclusion);
 
         User investigator = userRepository.findByIIN(tempConclusion.getInvestigatorIIN()).

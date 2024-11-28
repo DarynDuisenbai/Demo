@@ -5,8 +5,11 @@ import com.example.demo.domain.TemporaryConclusion;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,10 +24,28 @@ public class Generator {
     private final String PREFIX = "Z";
     private final MongoTemplate mongoTemplate;
 
-    public String generateUniqueNumber(){
-        long countConc = mongoTemplate.count(new Query(), Conclusion.class);
-        long countTemp = mongoTemplate.count(new Query(), TemporaryConclusion.class);
-        return PREFIX + String.format("%03d", countConc + countTemp + 1);
+    public String generateUniqueNumber() {
+        int maxFromConclusions = findMaxNumberFromCollection(Conclusion.class);
+        int maxFromTemporary = findMaxNumberFromCollection(TemporaryConclusion.class);
+
+        int nextNumber = Math.max(maxFromConclusions, maxFromTemporary) + 1;
+        return PREFIX + String.format("%03d", nextNumber);
+    }
+
+    private <T> int findMaxNumberFromCollection(Class<T> entityClass) {
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("registrationNumber").regex("^" + PREFIX + "\\d+$")),
+                Aggregation.project()
+                        .andExpression("substr(registrationNumber, 1, -1)").as("numericPart"),
+                Aggregation.project()
+                        .andExpression("toInt(numericPart)").as("numericPartInt"),
+                Aggregation.group().max("numericPartInt").as("maxNumber")
+        );
+
+        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, entityClass, Document.class);
+
+        Document maxNumberResult = results.getUniqueMappedResult();
+        return maxNumberResult != null ? maxNumberResult.getInteger("maxNumber", 0) : 0;
     }
 
     public String generateNames(){

@@ -1,5 +1,6 @@
 package com.example.demo.mapper.impl;
 
+import com.example.demo.domain.Status;
 import com.example.demo.dto.request.conclusion.CreateConclusionRequest;
 import com.example.demo.dto.responce.ConclusionDto;
 import com.example.demo.exception.RegionNotFoundException;
@@ -9,6 +10,7 @@ import com.example.demo.domain.Conclusion;
 import com.example.demo.domain.Region;
 import com.example.demo.domain.TemporaryConclusion;
 import com.example.demo.repository.spec.RegionRepository;
+import com.example.demo.repository.spec.StatusRepository;
 import com.example.demo.util.UTCFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ConclusionMapperImpl implements ConclusionMapper {
     private final RegionRepository regionRepository;
+    private final StatusRepository statusRepository;
     private final UTCFormatter utcFormatter;
 
     @Override
@@ -39,7 +42,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setEventPlace(createConclusionRequest.getEventPlace());
         conclusion.setRelation(createConclusionRequest.getRelation());
         conclusion.setInvestigation(createConclusionRequest.getInvestigationType());
-        conclusion.setBusiness(createConclusionRequest.getRelatesToBusiness() != null ? createConclusionRequest.getRelatesToBusiness() : false);
+        conclusion.setBusiness(createConclusionRequest.getRelatesToBusiness());
         conclusion.setIINDefender(createConclusionRequest.getIINDefender());
         conclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
         conclusion.setJustification(createConclusionRequest.getJustification());
@@ -71,7 +74,7 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         dto.setStatus(conclusion.getStatus().getName());
         dto.setRelationToEvent(conclusion.getRelation());
         dto.setInvestigationTypes(conclusion.getInvestigation());
-        dto.setRelatesToBusiness(conclusion.isBusiness());
+        dto.setRelatesToBusiness(conclusion.getBusiness());
         dto.setDefenseAttorneyIIN(conclusion.getIINDefender());
         dto.setDefenseAttorneyFullName(conclusion.getFullNameOfDefender());
         dto.setJustification(conclusion.getJustification());
@@ -109,10 +112,9 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getEventTime()));
         conclusion.setEventPlace(tempConclusionDto.getEventPlace());
         conclusion.setInvestigatorIIN(tempConclusionDto.getInvestigatorIIN());
-        conclusion.setStatus(tempConclusionDto.getStatus());
         conclusion.setRelation(tempConclusionDto.getRelation());
         conclusion.setInvestigation(tempConclusionDto.getInvestigation());
-        conclusion.setBusiness(tempConclusionDto.isBusiness());
+        conclusion.setBusiness(tempConclusionDto.getIsBusiness());
         conclusion.setIINDefender(tempConclusionDto.getIINDefender());
         conclusion.setFullNameOfDefender(tempConclusionDto.getFullNameOfDefender());
         conclusion.setJustification(tempConclusionDto.getJustification());

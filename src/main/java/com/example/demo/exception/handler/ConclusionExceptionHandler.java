@@ -34,4 +34,9 @@ public class ConclusionExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Analyst already exists.");
     }
 
+
+    @ExceptionHandler(ConclusionNotReadyException.class)
+    public ResponseEntity<String> handleConclusionNotReadyException(ConclusionNotReadyException conclusionNotReadyException){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(conclusionNotReadyException.getMessage());
+    }
 }

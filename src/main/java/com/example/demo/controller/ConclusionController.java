@@ -52,7 +52,7 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = UserNotFoundException.class)))
     })
     @PostMapping("/turn")
-    public ResponseEntity<?> turnConclusion(@RequestParam String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound {
+    public ResponseEntity<?> turnConclusion(@RequestParam String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound, ConclusionNotReadyException {
         conclusionService.turnToPermanent(registrationNumber);
         return ResponseEntity.status(HttpStatus.OK).body("Document successfully created.");
     }

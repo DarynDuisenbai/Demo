@@ -63,9 +63,6 @@ public class FilterConclusionRepoImpl implements FilterConclusionRepo {
                                                 !conclusion.getCreationDate().isBefore(filterRequest.getFrom()) &&
                                                 !conclusion.getCreationDate().isAfter(filterRequest.getTo())))
                                 &&
-                                (filterRequest.getIIN() == null ||
-                                        filterRequest.getIIN().equals(conclusion.getInvestigatorIIN()))
-                                &&
                                 (filterRequest.getUD() == null ||
                                         filterRequest.getUD().equals(conclusion.getUD()))
                                 &&

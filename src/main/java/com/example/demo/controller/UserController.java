@@ -55,8 +55,10 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteAccount(@RequestBody DeleteAccountRequest deleteAccountRequest)
+    public ResponseEntity<?> deleteAccount(@RequestParam String email)
             throws UserNotFoundException {
+        DeleteAccountRequest deleteAccountRequest = new DeleteAccountRequest();
+        deleteAccountRequest.setEmail(email);
         userService.deleteAccount(deleteAccountRequest);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has successfully deleted.");
     }

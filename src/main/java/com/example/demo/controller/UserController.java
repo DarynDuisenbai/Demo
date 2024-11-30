@@ -60,7 +60,7 @@ public class UserController {
         DeleteAccountRequest deleteAccountRequest = new DeleteAccountRequest();
         deleteAccountRequest.setEmail(email);
         userService.deleteAccount(deleteAccountRequest);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has successfully deleted.");
+        return ResponseEntity.ok("User has successfully deleted.");
     }
 
     @Operation(summary = "Forgot password")

@@ -5,7 +5,8 @@ public enum StatusConstants {
     REFUSED("Отказано"),
     TO_BE_AGREED("На согласовании"),
     LEFT_WITHOUT_CONSIDERATION("Оставлено без рассмотрения"),
-    IN_PROGRESS("В работе");
+    IN_PROGRESS("В работе"),
+    FOR_REWORK("Отправлено на доработку");
 
     private final String label;
 

@@ -30,7 +30,7 @@ public interface ConclusionService {
     List<String> allUD();
     List<Conclusion> getAllConclusions();
 
-    void sendConclusion(Conclusion conclusion, List<User> managers) throws UserNotFoundException;
+    void sendConclusion(Conclusion conclusion, User manager) throws UserNotFoundException;
     AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException;
     ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException;
     History history(String iinInvestigator, String goal) throws UserNotFoundException;

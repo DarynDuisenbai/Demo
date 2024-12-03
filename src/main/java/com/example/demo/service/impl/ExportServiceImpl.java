@@ -22,6 +22,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.List;
 import java.util.Set;
 
 
@@ -53,7 +54,7 @@ public class ExportServiceImpl implements ExportService {
                 cell.setCellStyle(createHeaderStyle(workbook));
             }
 
-            Set<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
+            List<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
             int rowIndex = 1;
             for (ConclusionDto conclusion : conclusions) {
                 Row row = sheet.createRow(rowIndex++);

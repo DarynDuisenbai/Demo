@@ -328,37 +328,37 @@ public class ConclusionServiceImpl implements ConclusionService {
 
 
     @Override
-    public Set<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
+    public List<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException {
         LOGGER.debug("Retrieving user conclusions...");
         User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User with IIN: " + IIN + " not found."));
         List<Conclusion> conclusions = new ArrayList<>();
 
         if (user.getJob().getName().equals(JobConstants.EMPLOYEE.getLabel())) {
-            conclusions = conclusionRepository.findByRegistrationNumbers(user.getConclusionsRegNumbers());
+            conclusions = new ArrayList<>(conclusionRepository.findByRegistrationNumbers(user.getConclusionsRegNumbers()));
         } else if (user.getJob().getName().equals(JobConstants.CURATOR.getLabel()) ||
                 user.getJob().getName().equals(JobConstants.SPECIALIST.getLabel())) {
-            conclusions = conclusionRepository.findByRegistrationNumbers(user.getConclusionsRegNumbers());
-            List<Conclusion> receivedConclusions = conclusionRepository.findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers());
+            conclusions = new ArrayList<>(conclusionRepository.findByRegistrationNumbers(user.getConclusionsRegNumbers()));
+            List<Conclusion> receivedConclusions = new ArrayList<>(conclusionRepository.findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers()));
             conclusions.addAll(receivedConclusions);
 
         } else if (user.getJob().getName().equals(JobConstants.ANALYST.getLabel())) {
-            conclusions = conclusionRepository.findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers());
+            conclusions = new ArrayList<>(conclusionRepository.findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers()));
 
         } else if (user.getJob().getName().equals(JobConstants.MODERATOR.getLabel())) {
             conclusions = getAllConclusions();
         }
 
         conclusions.sort(Comparator.comparingInt(conclusion -> getStatusOrder(conclusion.getStatus().getName())));
-        return conclusionMapper.toDtoSet(conclusions);
+        return conclusionMapper.toDtoList(conclusions);
     }
 
     private int getStatusOrder(String status) {
         return switch (status) {
             case "На согласовании" -> 1;
             case "Отправлено на доработку" -> 2;
-            case "Согласовано" -> 3;
+            case "Отказано" -> 3;
             case "Оставлено без рассмотрения" -> 4;
-            case "Отказано" -> 5;
+            case "Согласовано" -> 5;
             default -> Integer.MAX_VALUE;
         };
     }
@@ -414,10 +414,9 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         if(status.getName().equals(StatusConstants.REFUSED.getLabel()) ||
                 status.getName().equals(StatusConstants.FOR_REWORK.getLabel())){
-            conclusion.setStatus(status);
 
-            investigator.getAgreements().add(agreement);
-            userRepository.save(investigator);
+            conclusion.setStatus(status);
+            notifyInvestigator(agreement, investigator.getIIN());
             conclusionRepository.save(conclusion);
 
             return agreementMapper.toAgreementDto(agreement);

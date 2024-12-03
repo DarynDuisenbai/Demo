@@ -60,8 +60,10 @@ public class FilterConclusionRepoImpl implements FilterConclusionRepo {
                                 &&
                                 (filterRequest.getFrom() == null || filterRequest.getTo() == null ||
                                         (conclusion.getCreationDate() != null &&
-                                                !conclusion.getCreationDate().isBefore(filterRequest.getFrom()) &&
-                                                !conclusion.getCreationDate().isAfter(filterRequest.getTo())))
+                                                !conclusion.getCreationDate().isBefore(
+                                                        filterRequest.getFrom().atStartOfDay()) &&
+                                                !conclusion.getCreationDate().isAfter(
+                                                        filterRequest.getTo().atTime(23, 59, 59, 999999))))
                                 &&
                                 (filterRequest.getUD() == null ||
                                         filterRequest.getUD().equals(conclusion.getUD()))

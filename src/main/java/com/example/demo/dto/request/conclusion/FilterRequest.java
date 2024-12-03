@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -17,9 +18,9 @@ public class FilterRequest {
     @Nullable
     private String region;
     @Nullable
-    private LocalDateTime from;
+    private LocalDate from;
     @Nullable
-    private LocalDateTime to;
+    private LocalDate to;
 
     @NotNull
     private String IIN;

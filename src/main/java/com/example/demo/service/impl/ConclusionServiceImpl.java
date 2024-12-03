@@ -301,22 +301,24 @@ public class ConclusionServiceImpl implements ConclusionService {
         List<Conclusion> filteredConclusions = new ArrayList<>();
 
         if (user.getJob().getName().equals(JobConstants.EMPLOYEE.getLabel())) {
-            List<Conclusion> allDocsOfUser = conclusionRepository.
-                    findByRegistrationNumbers(user.getConclusionsRegNumbers());
+            List<Conclusion> allDocsOfUser = new ArrayList<>(conclusionRepository.
+                    findByRegistrationNumbers(user.getConclusionsRegNumbers()));
             filteredConclusions = conclusionRepository.filterSomeConclusions(allDocsOfUser, filterRequest);
-        } else if (user.getJob().getName().equals(JobConstants.CURATOR.getLabel()) ||
+        }
+        else if (user.getJob().getName().equals(JobConstants.CURATOR.getLabel()) ||
                 user.getJob().getName().equals(JobConstants.SPECIALIST.getLabel())) {
-            List<Conclusion> allDocsOfUser = conclusionRepository.
-                    findByRegistrationNumbers(user.getConclusionsRegNumbers());
-            List<Conclusion> receivedConclusions = conclusionRepository.
-                    findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers());
+            List<Conclusion> allDocsOfUser = new ArrayList<>(conclusionRepository.
+                    findByRegistrationNumbers(user.getConclusionsRegNumbers()));
+            List<Conclusion> receivedConclusions = new ArrayList<>(conclusionRepository.
+                    findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers()));
 
             allDocsOfUser.addAll(receivedConclusions);
             filteredConclusions = conclusionRepository.filterSomeConclusions(allDocsOfUser, filterRequest);
 
-        } else if (user.getJob().getName().equals(JobConstants.ANALYST.getLabel())) {
-            List<Conclusion> receivedConclusions = conclusionRepository.
-                    findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers());
+        }
+        else if (user.getJob().getName().equals(JobConstants.ANALYST.getLabel())) {
+            List<Conclusion> receivedConclusions = new ArrayList<>(conclusionRepository.
+                    findByRegistrationNumbers(user.getReceivedConclusionsRegNumbers()));
             filteredConclusions = conclusionRepository.filterSomeConclusions(receivedConclusions, filterRequest);
 
         } else if (user.getJob().getName().equals(JobConstants.MODERATOR.getLabel())) {

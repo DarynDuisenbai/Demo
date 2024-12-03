@@ -39,4 +39,9 @@ public class ConclusionExceptionHandler {
     public ResponseEntity<String> handleConclusionNotReadyException(ConclusionNotReadyException conclusionNotReadyException){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(conclusionNotReadyException.getMessage());
     }
+
+    @ExceptionHandler(NoPermissionForUpdateException.class)
+    public ResponseEntity<String> handleNoPermissionForUpdateException(NoPermissionForUpdateException noPermissionForUpdateException){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(noPermissionForUpdateException.getMessage());
+    }
 }

@@ -175,7 +175,6 @@ public class ConclusionServiceImpl implements ConclusionService {
             throws UserNotFoundException, NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound {
         LOGGER.debug("Editing a temporary conclusion.");
         String investigatorIIN = editSavedConclusionRequest.getCreateConclusionRequest().getIINOfInvestigator();
-        LOGGER.warn("IIN IS " + investigatorIIN);
         User investigator = userRepository.findByIIN(investigatorIIN).orElseThrow(() -> new UserNotFoundException("Investigator with IIN:" + investigatorIIN + " not found."));
         investigator.getTemporaryConclusionsRegNumbers().removeIf(temporaryConclusionRegNumber ->
                 temporaryConclusionRegNumber.equals(editSavedConclusionRequest.getRegistrationNumber())
@@ -183,7 +182,9 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         TemporaryConclusion temporaryConclusion = temporaryConclusionRepository.
                 findTemporaryConclusionByRegistrationNumber(editSavedConclusionRequest.getRegistrationNumber()).
-                orElseThrow(() -> new NoTemporaryConclusionFound("Temporary conclusion with registration number: " + editSavedConclusionRequest.getRegistrationNumber() + " not found."));
+                orElseThrow(() -> new NoTemporaryConclusionFound(
+                        "Temporary conclusion with registration number: " + editSavedConclusionRequest.getRegistrationNumber() + " not found.")
+                );
 
         CreateConclusionRequest request = editSavedConclusionRequest.getCreateConclusionRequest();
 
@@ -260,7 +261,8 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     @Transactional
-    public void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound, ConclusionNotReadyException {
+    public void turnToPermanent(String registrationNumber)
+            throws UserNotFoundException, NoTemporaryConclusionFound, ConclusionNotReadyException {
         TemporaryConclusion tempConclusion = temporaryConclusionRepository.findTemporaryConclusionByRegistrationNumber(registrationNumber).
                 orElseThrow(() -> new NoTemporaryConclusionFound("Temporary conclusion with registration number: " + registrationNumber + " not found."));
 
@@ -289,6 +291,59 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         userRepository.save(investigator);
         temporaryConclusionRepository.delete(tempConclusion);
+    }
+
+    @Override
+    @Transactional
+    public void remakeConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws NoConclusionException, NoPermissionForUpdateException, CaseNotFound, RegionNotFoundException {
+        Conclusion conclusion = conclusionRepository.findConclusionByRegistrationNumber(editSavedConclusionRequest.getRegistrationNumber()).
+                orElseThrow(()-> new NoConclusionException(
+                        "Conclusion with registration number: " + editSavedConclusionRequest.getRegistrationNumber() + " not found.")
+                );
+
+        if(!conclusion.getStatus().getName().equals(StatusConstants.FOR_REWORK.getLabel())){
+            throw new NoPermissionForUpdateException("You have not permission for update this conclusion.");
+        }
+        CreateConclusionRequest request = editSavedConclusionRequest.getCreateConclusionRequest();
+        Case relatedCase = assignCase(request.getUD());
+        conclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(relatedCase.getRegistrationDate()));
+        conclusion.setUD(relatedCase.getUD());
+        conclusion.setArticle(relatedCase.getArticle());
+        conclusion.setDecision(relatedCase.getDecision());
+        conclusion.setPlot(relatedCase.getSummary());
+
+        String calledName = generator.generateNames();
+        String defenderName = generator.generateNames();
+
+        while (defenderName.equals(calledName)) {
+            defenderName = generator.generateNames();
+        }
+
+        conclusion.setFullNameOfCalled(calledName);
+        conclusion.setFullNameOfDefender(defenderName);
+        conclusion.setIINofCalled(request.getIINOfCalled());
+        conclusion.setIINDefender(request.getIINDefender());
+
+        conclusion.setBINorIINOfCalled(request.getBIN_IIN());
+        conclusion.setJobTitleOfCalled(request.getJobTitle());
+        Region region = regionRepository.findRegionByName(request.getRegion()).
+                orElseThrow(() -> new RegionNotFoundException("Region not found."));
+
+        conclusion.setRegion(region);
+        Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
+        conclusion.setStatus(status);
+
+        conclusion.setPlannedActions(request.getPlannedActions());
+        conclusion.setEventTime(request.getEventDateTime());
+        conclusion.setEventPlace(request.getEventPlace());
+        conclusion.setRelation(request.getRelation());
+        conclusion.setInvestigation(request.getInvestigationType());
+        conclusion.setBusiness(request.getRelatesToBusiness());
+        conclusion.setJustification(request.getJustification());
+        conclusion.setResult(request.getResult());
+        conclusion.setInvestigatorIIN(conclusion.getInvestigatorIIN());
+
+        conclusionRepository.save(conclusion);
     }
 
     @Override

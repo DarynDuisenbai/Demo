@@ -204,6 +204,52 @@ public class ConclusionController {
         return ResponseEntity.status(HttpStatus.OK).body("Document successfully edited.");
     }
 
+    @Operation(summary = "Remake a bad conclusion", description = "After getting a bad response from manager, user can change it.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Edited a conclusion")
+    })
+    @PutMapping("/remake")
+    public ResponseEntity<?> remake(@RequestParam String registrationNumber,
+                                  @RequestParam String UD,
+                                  @RequestParam(required = false) String iinOfCalled,
+                                  @RequestParam(required = false) String BIN,
+                                  @RequestParam(required = false) String jobTitle,
+                                  @RequestParam String region,
+                                  @RequestParam(required = false) String plannedActions,
+                                  @RequestParam LocalDateTime eventDateTime,
+                                  @RequestParam(required = false) String eventPlace,
+                                  @RequestParam(required = false) String relation,
+                                  @RequestParam(required = false) String investigationType,
+                                  @RequestParam(required = false) String relatesToBusiness,
+                                  @RequestParam String iinOfInvestigator,
+                                  @RequestParam(required = false) String iinDefender,
+                                  @RequestParam(required = false) String justification,
+                                  @RequestParam(required = false) String result)
+            throws NoConclusionException, NoPermissionForUpdateException, RegionNotFoundException, CaseNotFound {
+        CreateConclusionRequest createConclusionRequest = new CreateConclusionRequest();
+        createConclusionRequest.setUD(UD);
+        createConclusionRequest.setRegion(region);
+        createConclusionRequest.setIINOfCalled(iinOfCalled);
+        createConclusionRequest.setJobTitle(jobTitle);
+        createConclusionRequest.setBIN_IIN(BIN);
+        createConclusionRequest.setEventPlace(eventPlace);
+        createConclusionRequest.setJustification(justification);
+        createConclusionRequest.setEventDateTime(eventDateTime);
+        createConclusionRequest.setIINDefender(iinDefender);
+        createConclusionRequest.setResult(result);
+        createConclusionRequest.setIINOfInvestigator(iinOfInvestigator);
+        createConclusionRequest.setRelation(relation);
+        createConclusionRequest.setInvestigationType(investigationType);
+        createConclusionRequest.setPlannedActions(plannedActions);
+        createConclusionRequest.setRelatesToBusiness(relatesToBusiness);
+
+        EditSavedConclusionRequest editSavedConclusionRequest = new EditSavedConclusionRequest();
+        editSavedConclusionRequest.setRegistrationNumber(registrationNumber);
+        editSavedConclusionRequest.setCreateConclusionRequest(createConclusionRequest);
+
+        conclusionService.remakeConclusion(editSavedConclusionRequest);
+        return ResponseEntity.status(HttpStatus.OK).body("Document successfully edited.");
+    }
 
     @Operation(summary = "Making decision for conclusion", description = " «На согласовании», «Согласовано», «Отказано», «Оставлено без рассмотрения», «Отправлено на доработку».")
     @ApiResponses(value = {

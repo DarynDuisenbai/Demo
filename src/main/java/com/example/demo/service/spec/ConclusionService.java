@@ -23,6 +23,8 @@ public interface ConclusionService {
             NoTemporaryConclusionFound, RegionNotFoundException, CaseNotFound;
     void deleteConclusion(String registrationNumber) throws UserNotFoundException, ConclusionNotReadyException, NoConclusionException;
     void turnToPermanent(String registrationNumber) throws UserNotFoundException, NoTemporaryConclusionFound, ConclusionNotReadyException;
+    void remakeConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws NoConclusionException, NoPermissionForUpdateException, CaseNotFound, RegionNotFoundException;
+
     Set<ConclusionDto> filter(FilterRequest filterRequest) throws UserNotFoundException;
     List<ConclusionDto> userConclusions(String IIN) throws UserNotFoundException;
     List<TempConclusionDto> userSavedConclusions(String IIN) throws UserNotFoundException;

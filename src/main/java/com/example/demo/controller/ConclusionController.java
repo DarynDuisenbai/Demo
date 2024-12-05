@@ -169,7 +169,7 @@ public class ConclusionController {
                                   @RequestParam(required = false) String jobTitle,
                                   @RequestParam String region,
                                   @RequestParam(required = false) String plannedActions,
-                                  @RequestParam(required = false) LocalDateTime eventDateTime,
+                                  @RequestParam LocalDateTime eventDateTime,
                                   @RequestParam(required = false) String eventPlace,
                                   @RequestParam(required = false) String relation,
                                   @RequestParam(required = false) String investigationType,

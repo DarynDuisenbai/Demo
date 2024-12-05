@@ -187,13 +187,67 @@ public class ConclusionServiceImpl implements ConclusionService {
                 );
 
         CreateConclusionRequest request = editSavedConclusionRequest.getCreateConclusionRequest();
+        if (request.getUD() != null) {
+            Case relatedCase = assignCase(request.getUD());
+            temporaryConclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(relatedCase.getRegistrationDate()));
+            temporaryConclusion.setUD(relatedCase.getUD());
+            temporaryConclusion.setArticle(relatedCase.getArticle());
+            temporaryConclusion.setDecision(relatedCase.getDecision());
+            temporaryConclusion.setPlot(relatedCase.getSummary());
+        }
+        if (request.getIINOfCalled() != null) {
+            temporaryConclusion.setIINofCalled(request.getIINOfCalled());
+        }
 
-        Case relatedCase = assignCase(request.getUD());
-        temporaryConclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(relatedCase.getRegistrationDate()));
-        temporaryConclusion.setUD(relatedCase.getUD());
-        temporaryConclusion.setArticle(relatedCase.getArticle());
-        temporaryConclusion.setDecision(relatedCase.getDecision());
-        temporaryConclusion.setPlot(relatedCase.getSummary());
+        if (request.getIINDefender() != null) {
+            temporaryConclusion.setIINDefender(request.getIINDefender());
+        }
+
+        if (request.getBIN_IIN() != null) {
+            temporaryConclusion.setBINorIINOfCalled(request.getBIN_IIN());
+        }
+
+        if (request.getJobTitle() != null) {
+            temporaryConclusion.setJobTitleOfCalled(request.getJobTitle());
+        }
+
+        if (request.getRegion() != null) {
+            Region region = regionRepository.findRegionByName(request.getRegion())
+                    .orElseThrow(() -> new RegionNotFoundException("Region not found."));
+            temporaryConclusion.setRegion(region);
+        }
+
+        if (request.getPlannedActions() != null) {
+            temporaryConclusion.setPlannedActions(request.getPlannedActions());
+        }
+
+        if (request.getEventDateTime() != null) {
+            temporaryConclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(request.getEventDateTime()));
+        }
+
+        if (request.getEventPlace() != null) {
+            temporaryConclusion.setEventPlace(request.getEventPlace());
+        }
+
+        if (request.getRelation() != null) {
+            temporaryConclusion.setRelation(request.getRelation());
+        }
+
+        if (request.getInvestigationType() != null) {
+            temporaryConclusion.setInvestigation(request.getInvestigationType());
+        }
+
+        if (request.getRelatesToBusiness() != null) {
+            temporaryConclusion.setIsBusiness(request.getRelatesToBusiness());
+        }
+
+        if (request.getJustification() != null) {
+            temporaryConclusion.setJustification(request.getJustification());
+        }
+
+        if (request.getResult() != null) {
+            temporaryConclusion.setResult(request.getResult());
+        }
 
         String calledName = generator.generateNames();
         String defenderName = generator.generateNames();
@@ -204,27 +258,9 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         temporaryConclusion.setFullNameOfCalled(calledName);
         temporaryConclusion.setFullNameOfDefender(defenderName);
-        temporaryConclusion.setIINofCalled(request.getIINOfCalled());
-        temporaryConclusion.setIINDefender(request.getIINDefender());
 
-        temporaryConclusion.setBINorIINOfCalled(request.getBIN_IIN());
-        temporaryConclusion.setJobTitleOfCalled(request.getJobTitle());
-        Region region = regionRepository.findRegionByName(request.getRegion()).
-                orElseThrow(() -> new RegionNotFoundException("Region not found."));
-
-        temporaryConclusion.setRegion(region);
         Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
         temporaryConclusion.setStatus(status);
-
-        temporaryConclusion.setPlannedActions(request.getPlannedActions());
-        temporaryConclusion.setEventTime(request.getEventDateTime());
-        temporaryConclusion.setEventPlace(request.getEventPlace());
-        temporaryConclusion.setRelation(request.getRelation());
-        temporaryConclusion.setInvestigation(request.getInvestigationType());
-        temporaryConclusion.setIsBusiness(request.getRelatesToBusiness());
-        temporaryConclusion.setJustification(request.getJustification());
-        temporaryConclusion.setResult(request.getResult());
-        temporaryConclusion.setInvestigatorIIN(investigatorIIN);
 
         temporaryConclusionRepository.save(temporaryConclusion);
 
@@ -305,12 +341,67 @@ public class ConclusionServiceImpl implements ConclusionService {
             throw new NoPermissionForUpdateException("You have not permission for update this conclusion.");
         }
         CreateConclusionRequest request = editSavedConclusionRequest.getCreateConclusionRequest();
-        Case relatedCase = assignCase(request.getUD());
-        conclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(relatedCase.getRegistrationDate()));
-        conclusion.setUD(relatedCase.getUD());
-        conclusion.setArticle(relatedCase.getArticle());
-        conclusion.setDecision(relatedCase.getDecision());
-        conclusion.setPlot(relatedCase.getSummary());
+        if (request.getUD() != null) {
+            Case relatedCase = assignCase(request.getUD());
+            conclusion.setRegistrationDate(utcFormatter.convertUTCToUTCPlus5(relatedCase.getRegistrationDate()));
+            conclusion.setUD(relatedCase.getUD());
+            conclusion.setArticle(relatedCase.getArticle());
+            conclusion.setDecision(relatedCase.getDecision());
+            conclusion.setPlot(relatedCase.getSummary());
+        }
+        if (request.getIINOfCalled() != null) {
+            conclusion.setIINofCalled(request.getIINOfCalled());
+        }
+
+        if (request.getIINDefender() != null) {
+            conclusion.setIINDefender(request.getIINDefender());
+        }
+
+        if (request.getBIN_IIN() != null) {
+            conclusion.setBINorIINOfCalled(request.getBIN_IIN());
+        }
+
+        if (request.getJobTitle() != null) {
+            conclusion.setJobTitleOfCalled(request.getJobTitle());
+        }
+
+        if (request.getRegion() != null) {
+            Region region = regionRepository.findRegionByName(request.getRegion())
+                    .orElseThrow(() -> new RegionNotFoundException("Region not found."));
+            conclusion.setRegion(region);
+        }
+
+        if (request.getPlannedActions() != null) {
+            conclusion.setPlannedActions(request.getPlannedActions());
+        }
+
+        if (request.getEventDateTime() != null) {
+            conclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(request.getEventDateTime()));
+        }
+
+        if (request.getEventPlace() != null) {
+            conclusion.setEventPlace(request.getEventPlace());
+        }
+
+        if (request.getRelation() != null) {
+            conclusion.setRelation(request.getRelation());
+        }
+
+        if (request.getInvestigationType() != null) {
+            conclusion.setInvestigation(request.getInvestigationType());
+        }
+
+        if (request.getRelatesToBusiness() != null) {
+            conclusion.setBusiness(request.getRelatesToBusiness());
+        }
+
+        if (request.getJustification() != null) {
+            conclusion.setJustification(request.getJustification());
+        }
+
+        if (request.getResult() != null) {
+            conclusion.setResult(request.getResult());
+        }
 
         String calledName = generator.generateNames();
         String defenderName = generator.generateNames();
@@ -321,27 +412,9 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         conclusion.setFullNameOfCalled(calledName);
         conclusion.setFullNameOfDefender(defenderName);
-        conclusion.setIINofCalled(request.getIINOfCalled());
-        conclusion.setIINDefender(request.getIINDefender());
 
-        conclusion.setBINorIINOfCalled(request.getBIN_IIN());
-        conclusion.setJobTitleOfCalled(request.getJobTitle());
-        Region region = regionRepository.findRegionByName(request.getRegion()).
-                orElseThrow(() -> new RegionNotFoundException("Region not found."));
-
-        conclusion.setRegion(region);
         Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
         conclusion.setStatus(status);
-
-        conclusion.setPlannedActions(request.getPlannedActions());
-        conclusion.setEventTime(request.getEventDateTime());
-        conclusion.setEventPlace(request.getEventPlace());
-        conclusion.setRelation(request.getRelation());
-        conclusion.setInvestigation(request.getInvestigationType());
-        conclusion.setBusiness(request.getRelatesToBusiness());
-        conclusion.setJustification(request.getJustification());
-        conclusion.setResult(request.getResult());
-        conclusion.setInvestigatorIIN(conclusion.getInvestigatorIIN());
 
         conclusionRepository.save(conclusion);
     }

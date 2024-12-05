@@ -163,13 +163,13 @@ public class ConclusionController {
     })
     @PutMapping("/edit")
     public ResponseEntity<?> edit(@RequestParam String registrationNumber,
-                                  @RequestParam String UD,
+                                  @RequestParam(required = false) String UD,
                                   @RequestParam(required = false) String iinOfCalled,
                                   @RequestParam(required = false) String BIN,
                                   @RequestParam(required = false) String jobTitle,
-                                  @RequestParam String region,
+                                  @RequestParam(required = false) String region,
                                   @RequestParam(required = false) String plannedActions,
-                                  @RequestParam LocalDateTime eventDateTime,
+                                  @RequestParam(required = false) LocalDateTime eventDateTime,
                                   @RequestParam(required = false) String eventPlace,
                                   @RequestParam(required = false) String relation,
                                   @RequestParam(required = false) String investigationType,
@@ -210,13 +210,13 @@ public class ConclusionController {
     })
     @PutMapping("/remake")
     public ResponseEntity<?> remake(@RequestParam String registrationNumber,
-                                  @RequestParam String UD,
+                                  @RequestParam(required = false) String UD,
                                   @RequestParam(required = false) String iinOfCalled,
                                   @RequestParam(required = false) String BIN,
                                   @RequestParam(required = false) String jobTitle,
-                                  @RequestParam String region,
+                                  @RequestParam(required = false) String region,
                                   @RequestParam(required = false) String plannedActions,
-                                  @RequestParam LocalDateTime eventDateTime,
+                                  @RequestParam(required = false) LocalDateTime eventDateTime,
                                   @RequestParam(required = false) String eventPlace,
                                   @RequestParam(required = false) String relation,
                                   @RequestParam(required = false) String investigationType,

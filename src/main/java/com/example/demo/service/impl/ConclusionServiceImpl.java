@@ -601,13 +601,21 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
-    public ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException {
+    public ConclusionDto getSpecific(String regNumber, String iin) throws NoConclusionException, UserNotFoundException, AccessDeniedException {
+        User user = userRepository.findByIIN(iin).orElseThrow(() -> new UserNotFoundException("User with IIN: " + iin + " not found."));
+        if(!user.getConclusionsRegNumbers().contains(regNumber)){
+            throw new AccessDeniedException("You do not have permission for this operation");
+        }
         return conclusionMapper.toConclusionDto(conclusionRepository.
                 findConclusionByRegistrationNumber(regNumber).orElseThrow(() -> new NoConclusionException("Conclusion with registration number: " + regNumber + " not found")));
     }
 
     @Override
-    public TempConclusionDto getSpecificTemp(String regNumber) throws NoConclusionException, UserNotFoundException {
+    public TempConclusionDto getSpecificTemp(String regNumber, String iin) throws NoConclusionException, UserNotFoundException, AccessDeniedException {
+        User user = userRepository.findByIIN(iin).orElseThrow(() -> new UserNotFoundException("User with IIN: " + iin + " not found."));
+        if(!user.getTemporaryConclusionsRegNumbers().contains(regNumber)){
+            throw new AccessDeniedException("You do not have permission for this operation");
+        }
         return tempMapper.toTempConclusionDto(temporaryConclusionRepository.
                 findTemporaryConclusionByRegistrationNumber(regNumber).orElseThrow(() -> new NoConclusionException("Conclusion with registration number: " + regNumber + " not found")));
     }

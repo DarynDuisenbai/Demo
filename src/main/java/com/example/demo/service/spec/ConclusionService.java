@@ -34,8 +34,8 @@ public interface ConclusionService {
 
     void sendConclusion(Conclusion conclusion, User manager) throws UserNotFoundException;
     AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException;
-    ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException;
-    TempConclusionDto getSpecificTemp(String regNumber) throws NoConclusionException, UserNotFoundException;
+    ConclusionDto getSpecific(String regNumber, String iin) throws NoConclusionException, UserNotFoundException, AccessDeniedException;
+    TempConclusionDto getSpecificTemp(String regNumber, String iin) throws NoConclusionException, UserNotFoundException, AccessDeniedException;
     History history(String iinInvestigator, String goal) throws UserNotFoundException;
 
 

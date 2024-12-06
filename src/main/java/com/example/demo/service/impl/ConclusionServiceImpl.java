@@ -607,6 +607,12 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
+    public TempConclusionDto getSpecificTemp(String regNumber) throws NoConclusionException, UserNotFoundException {
+        return tempMapper.toTempConclusionDto(temporaryConclusionRepository.
+                findTemporaryConclusionByRegistrationNumber(regNumber).orElseThrow(() -> new NoConclusionException("Conclusion with registration number: " + regNumber + " not found")));
+    }
+
+    @Override
     public History history(String iinOfCalled, String goal) throws UserNotFoundException {
         User user = userRepository.findByIIN(iinOfCalled).orElseThrow(() -> new UserNotFoundException("User with IIN: " + iinOfCalled + " not found."));
 

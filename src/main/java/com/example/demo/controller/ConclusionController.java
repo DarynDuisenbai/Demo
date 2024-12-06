@@ -136,6 +136,18 @@ public class ConclusionController {
         return ResponseEntity.ok(conclusionDto);
     }
 
+
+    @Operation(summary = "Get specific temporary document", description = "All information about specific document")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Conclusions retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Conclusion not found.")
+    })
+    @GetMapping("/fullTempConclusion")
+    public ResponseEntity<?> getSpecificTempConclusion(@RequestParam String regNumber) throws NoConclusionException,
+            UserNotFoundException {
+        TempConclusionDto conclusionDto = conclusionService.getSpecificTemp(regNumber);
+        return ResponseEntity.ok(conclusionDto);
+    }
     @Operation(summary = "Get all UD", description = "Retrieves a list of UD's")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All UD's retrieved")

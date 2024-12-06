@@ -70,4 +70,26 @@ public class Generator {
             return "Error: Unable to generate names.";
         }
     }
+    public String generateJobPlaces(){
+        ObjectMapper objectMapper = new ObjectMapper();
+        Random random = new Random();
+
+        try {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("jobPlaces.json");
+            if (inputStream == null) {
+                throw new IOException("File not found in resources: names.json");
+            }
+
+            List<String> jobPlaces = objectMapper.readValue(
+                    inputStream,
+                    new TypeReference<>() {
+                    }
+            );
+            return jobPlaces.get(random.nextInt(jobPlaces.size()));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error: Unable to generate names.";
+        }
+    }
 }

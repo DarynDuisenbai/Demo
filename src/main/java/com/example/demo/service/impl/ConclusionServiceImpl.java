@@ -74,16 +74,6 @@ public class ConclusionServiceImpl implements ConclusionService {
         conclusion.setDecision(relatedCase.getDecision());
         conclusion.setPlot(relatedCase.getSummary());
 
-        String calledName = generator.generateNames();
-        String defenderName = generator.generateNames();
-
-        while (defenderName.equals(calledName)) {
-            defenderName = generator.generateNames();
-        }
-
-        conclusion.setFullNameOfCalled(calledName);
-        conclusion.setFullNameOfDefender(defenderName);
-
         String iinInvestigator = createConclusionRequest.getIINOfInvestigator();
         conclusion.setInvestigatorIIN(iinInvestigator);
 
@@ -144,17 +134,6 @@ public class ConclusionServiceImpl implements ConclusionService {
         temporaryConclusion.setDecision(relatedCase.getDecision());
         temporaryConclusion.setPlot(relatedCase.getSummary());
 
-        String calledName = generator.generateNames();
-        String defenderName = generator.generateNames();
-
-        while (defenderName.equals(calledName)) {
-            defenderName = generator.generateNames();
-        }
-
-        temporaryConclusion.setFullNameOfCalled(calledName);
-        temporaryConclusion.setFullNameOfDefender(defenderName);
-
-
         String iinInvestigator = createConclusionRequest.getIINOfInvestigator();
         temporaryConclusion.setInvestigatorIIN(iinInvestigator);
 
@@ -197,14 +176,17 @@ public class ConclusionServiceImpl implements ConclusionService {
         }
         if (request.getIINOfCalled() != null) {
             temporaryConclusion.setIINofCalled(request.getIINOfCalled());
+            temporaryConclusion.setFullNameOfCalled(generator.generateNames());
         }
 
         if (request.getIINDefender() != null) {
             temporaryConclusion.setIINDefender(request.getIINDefender());
+            temporaryConclusion.setFullNameOfDefender(generator.generateNames());
         }
 
         if (request.getBIN_IIN() != null) {
             temporaryConclusion.setBINorIINOfCalled(request.getBIN_IIN());
+            temporaryConclusion.setJobPlace(generator.generateJobPlaces());
         }
 
         if (request.getJobTitle() != null) {
@@ -248,16 +230,6 @@ public class ConclusionServiceImpl implements ConclusionService {
         if (request.getResult() != null) {
             temporaryConclusion.setResult(request.getResult());
         }
-
-        String calledName = generator.generateNames();
-        String defenderName = generator.generateNames();
-
-        while (defenderName.equals(calledName)) {
-            defenderName = generator.generateNames();
-        }
-
-        temporaryConclusion.setFullNameOfCalled(calledName);
-        temporaryConclusion.setFullNameOfDefender(defenderName);
 
         Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
         temporaryConclusion.setStatus(status);
@@ -331,7 +303,8 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     @Transactional
-    public void remakeConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws NoConclusionException, NoPermissionForUpdateException, CaseNotFound, RegionNotFoundException {
+    public void remakeConclusion(EditSavedConclusionRequest editSavedConclusionRequest)
+            throws NoConclusionException, NoPermissionForUpdateException, CaseNotFound, RegionNotFoundException {
         Conclusion conclusion = conclusionRepository.findConclusionByRegistrationNumber(editSavedConclusionRequest.getRegistrationNumber()).
                 orElseThrow(()-> new NoConclusionException(
                         "Conclusion with registration number: " + editSavedConclusionRequest.getRegistrationNumber() + " not found.")
@@ -351,14 +324,17 @@ public class ConclusionServiceImpl implements ConclusionService {
         }
         if (request.getIINOfCalled() != null) {
             conclusion.setIINofCalled(request.getIINOfCalled());
+            conclusion.setFullNameOfCalled(generator.generateNames());
         }
 
         if (request.getIINDefender() != null) {
             conclusion.setIINDefender(request.getIINDefender());
+            conclusion.setFullNameOfDefender(generator.generateNames());
         }
 
         if (request.getBIN_IIN() != null) {
             conclusion.setBINorIINOfCalled(request.getBIN_IIN());
+            conclusion.setJobPlace(generator.generateJobPlaces());
         }
 
         if (request.getJobTitle() != null) {
@@ -402,16 +378,6 @@ public class ConclusionServiceImpl implements ConclusionService {
         if (request.getResult() != null) {
             conclusion.setResult(request.getResult());
         }
-
-        String calledName = generator.generateNames();
-        String defenderName = generator.generateNames();
-
-        while (defenderName.equals(calledName)) {
-            defenderName = generator.generateNames();
-        }
-
-        conclusion.setFullNameOfCalled(calledName);
-        conclusion.setFullNameOfDefender(defenderName);
 
         Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
         conclusion.setStatus(status);

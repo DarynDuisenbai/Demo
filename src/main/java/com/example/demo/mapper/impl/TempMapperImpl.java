@@ -12,6 +12,7 @@ import com.example.demo.domain.User;
 import com.example.demo.repository.spec.RegionRepository;
 import com.example.demo.repository.spec.StatusRepository;
 import com.example.demo.repository.spec.UserRepository;
+import com.example.demo.util.Generator;
 import com.example.demo.util.UTCFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ import java.util.List;
 public class TempMapperImpl implements TempMapper {
     private final RegionRepository regionRepository;
     private final UTCFormatter utcFormatter;
+    private final Generator generator;
     @Override
     public TemporaryConclusion fromCreateToTemp(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException {
         TemporaryConclusion tempConclusion = new TemporaryConclusion();
@@ -45,6 +47,17 @@ public class TempMapperImpl implements TempMapper {
         tempConclusion.setJustification(createConclusionRequest.getJustification());
         tempConclusion.setResult(createConclusionRequest.getResult());
 
+        tempConclusion.setJobPlace(generator.generateJobPlaces());
+
+        String calledName = generator.generateNames();
+        String defenderName = generator.generateNames();
+
+        while (defenderName.equals(calledName)) {
+            defenderName = generator.generateNames();
+        }
+
+        tempConclusion.setFullNameOfCalled(calledName);
+        tempConclusion.setFullNameOfDefender(defenderName);
         return tempConclusion;
     }
 

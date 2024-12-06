@@ -31,6 +31,8 @@ public class ConclusionDto {
     private String relationToEvent;
     private String investigationTypes;
     private String relatesToBusiness;
+    private String BINOrIINofBusiness;
+    private String workPlaceBusiness;
     private String defenseAttorneyIIN;
     private String defenseAttorneyFullName;
     private String justification;

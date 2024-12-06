@@ -45,6 +45,9 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setRelation(createConclusionRequest.getRelation());
         conclusion.setInvestigation(createConclusionRequest.getInvestigationType());
         conclusion.setBusiness(createConclusionRequest.getRelatesToBusiness());
+        conclusion.setBINOrIINofBusiness(generator.generateBIN());
+        conclusion.setWorkPlaceBusiness(generator.generateWorkPlaceBusiness());
+
         conclusion.setIINDefender(createConclusionRequest.getIINDefender());
         conclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
         conclusion.setJustification(createConclusionRequest.getJustification());
@@ -79,7 +82,9 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         dto.setCalledPersonFullName(conclusion.getFullNameOfCalled());
         dto.setCalledPersonPosition(conclusion.getJobTitleOfCalled());
         dto.setCalledPersonBIN(conclusion.getBINorIINOfCalled());
-        dto.setWorkPlace(conclusion.getEventPlace());
+        dto.setWorkPlace(conclusion.getJobPlace());
+        dto.setBINOrIINofBusiness(conclusion.getBINOrIINofBusiness());
+        dto.setWorkPlaceBusiness(conclusion.getWorkPlaceBusiness());
         dto.setRegion(conclusion.getRegion());
         dto.setPlannedInvestigativeActions(conclusion.getPlannedActions());
         dto.setEventDateTime(utcFormatter.convertUTCToUTCPlus5(conclusion.getEventTime()));
@@ -122,6 +127,8 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setBINorIINOfCalled(tempConclusionDto.getBINorIINOfCalled());
         conclusion.setJobPlace(tempConclusionDto.getJobPlace());
         conclusion.setRegion(tempConclusionDto.getRegion());
+        conclusion.setBINOrIINofBusiness(tempConclusionDto.getBINOrIINofBusiness());
+        conclusion.setWorkPlaceBusiness(tempConclusionDto.getWorkPlaceBusiness());
         conclusion.setPlannedActions(tempConclusionDto.getPlannedActions());
         conclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getEventTime()));
         conclusion.setEventPlace(tempConclusionDto.getEventPlace());
@@ -149,15 +156,6 @@ public class ConclusionMapperImpl implements ConclusionMapper {
 
     @Override
     public Set<ConclusionDto> toDtoSet(List<Conclusion> conclusions) {
-        Set<ConclusionDto> conclusionDtos = new HashSet<>();
-        for(Conclusion conclusion : conclusions){
-            conclusionDtos.add(toConclusionDto(conclusion));
-        }
-        return conclusionDtos;
-    }
-
-    @Override
-    public Set<ConclusionDto> toDtoSet(Set<Conclusion> conclusions) {
         Set<ConclusionDto> conclusionDtos = new HashSet<>();
         for(Conclusion conclusion : conclusions){
             conclusionDtos.add(toConclusionDto(conclusion));

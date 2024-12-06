@@ -77,7 +77,7 @@ public class Generator {
         try {
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("jobPlaces.json");
             if (inputStream == null) {
-                throw new IOException("File not found in resources: names.json");
+                throw new IOException("File not found in resources: jobPlaces.json");
             }
 
             List<String> jobPlaces = objectMapper.readValue(
@@ -92,4 +92,65 @@ public class Generator {
             return "Error: Unable to generate names.";
         }
     }
+
+    public String generateWorkPlaceBusiness(){
+        ObjectMapper objectMapper = new ObjectMapper();
+        Random random = new Random();
+
+        try {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("pension.json");
+            if (inputStream == null) {
+                throw new IOException("File not found in resources: pension.json");
+            }
+
+            List<String> workPlaceBusiness = objectMapper.readValue(
+                    inputStream,
+                    new TypeReference<>() {
+                    }
+            );
+            return workPlaceBusiness.get(random.nextInt(workPlaceBusiness.size()));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error: Unable to generate names.";
+        }
+    }
+
+    public String generateBIN() {
+        Random random = new Random();
+        StringBuilder binBuilder = new StringBuilder();
+
+        for (int i = 0; i < 11; i++) {
+            int digit = random.nextInt(10);
+            binBuilder.append(digit);
+        }
+
+        int checksum = calculateLuhnChecksum(binBuilder.toString());
+
+        binBuilder.append(checksum);
+
+        return binBuilder.toString();
+    }
+
+    private int calculateLuhnChecksum(String digits) {
+        int sum = 0;
+        boolean alternate = false;
+
+        for (int i = digits.length() - 1; i >= 0; i--) {
+            int digit = Character.getNumericValue(digits.charAt(i));
+
+            if (alternate) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+
+            sum += digit;
+            alternate = !alternate;
+        }
+
+        return (10 - (sum % 10)) % 10;
+    }
+
 }

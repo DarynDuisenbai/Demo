@@ -221,6 +221,8 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         if (request.getRelatesToBusiness() != null) {
             temporaryConclusion.setIsBusiness(request.getRelatesToBusiness());
+            temporaryConclusion.setBINOrIINofBusiness(generator.generateBIN());
+            temporaryConclusion.setWorkPlaceBusiness(generator.generateWorkPlaceBusiness());
         }
 
         if (request.getJustification() != null) {
@@ -369,6 +371,8 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         if (request.getRelatesToBusiness() != null) {
             conclusion.setBusiness(request.getRelatesToBusiness());
+            conclusion.setWorkPlaceBusiness(generator.generateWorkPlaceBusiness());
+            conclusion.setBINOrIINofBusiness(generator.generateBIN());
         }
 
         if (request.getJustification() != null) {

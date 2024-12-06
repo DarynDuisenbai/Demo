@@ -78,8 +78,11 @@ public class Conclusion {
     @Field("relatesToBusiness")
     private String business;
 
-    @Field("BIN/IINPension")
+    @Field("BINBusiness")
     private String BINOrIINofBusiness;
+
+    @Field("workPlaceBusiness")
+    private String workPlaceBusiness;
 
     @Field("IINofDefender")
     private String IINDefender;

@@ -42,6 +42,8 @@ public class TempMapperImpl implements TempMapper {
         tempConclusion.setRelation(createConclusionRequest.getRelation());
         tempConclusion.setInvestigation(createConclusionRequest.getInvestigationType());
         tempConclusion.setIsBusiness(createConclusionRequest.getRelatesToBusiness());
+        tempConclusion.setWorkPlaceBusiness(generator.generateWorkPlaceBusiness());
+        tempConclusion.setBINOrIINofBusiness(generator.generateBIN());
         tempConclusion.setIINDefender(createConclusionRequest.getIINDefender());
         tempConclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
         tempConclusion.setJustification(createConclusionRequest.getJustification());
@@ -75,7 +77,7 @@ public class TempMapperImpl implements TempMapper {
         dto.setCalledPersonFullName(temporaryConclusion.getFullNameOfCalled());
         dto.setCalledPersonPosition(temporaryConclusion.getJobTitleOfCalled());
         dto.setCalledPersonBIN(temporaryConclusion.getBINorIINOfCalled());
-        dto.setWorkPlace(temporaryConclusion.getEventPlace());
+        dto.setWorkPlace(temporaryConclusion.getJobPlace());
         dto.setRegion(temporaryConclusion.getRegion());
         dto.setPlannedInvestigativeActions(temporaryConclusion.getPlannedActions());
         dto.setEventDateTime(utcFormatter.convertUTCToUTCPlus5(temporaryConclusion.getEventTime()));
@@ -85,6 +87,8 @@ public class TempMapperImpl implements TempMapper {
         dto.setRelationToEvent(temporaryConclusion.getRelation());
         dto.setInvestigationTypes(temporaryConclusion.getInvestigation());
         dto.setRelatesToBusiness(temporaryConclusion.getIsBusiness());
+        dto.setWorkPlaceBusiness(temporaryConclusion.getWorkPlaceBusiness());
+        dto.setBINOrIINofBusiness(temporaryConclusion.getBINOrIINofBusiness());
         dto.setDefenseAttorneyIIN(temporaryConclusion.getIINDefender());
         dto.setDefenseAttorneyFullName(temporaryConclusion.getFullNameOfDefender());
         dto.setJustification(temporaryConclusion.getJustification());

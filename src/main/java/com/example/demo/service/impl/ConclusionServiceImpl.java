@@ -383,7 +383,7 @@ public class ConclusionServiceImpl implements ConclusionService {
             conclusion.setResult(request.getResult());
         }
 
-        Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
+        Status status = statusRepository.findByName(StatusConstants.TO_BE_AGREED.getLabel());
         conclusion.setStatus(status);
 
         conclusionRepository.save(conclusion);

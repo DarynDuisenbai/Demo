@@ -95,4 +95,7 @@ public class Conclusion {
 
     @Field("result")
     private String result;
+
+    @Field("acceptanceDate")
+    private LocalDateTime acceptDateTime;
 }

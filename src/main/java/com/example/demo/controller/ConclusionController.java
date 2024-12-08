@@ -282,8 +282,9 @@ public class ConclusionController {
     })
     @GetMapping("/history")
     public ResponseEntity<History> history(@RequestParam String iinOfCalled,
-                                           @RequestParam String goal) throws UserNotFoundException {
-        History history = conclusionService.history(iinOfCalled, goal);
+                                           @RequestParam String iinUser,
+                                           @RequestParam String goal) throws UserNotFoundException, NoConclusionException {
+        History history = conclusionService.history(iinUser, iinOfCalled, goal);
         return ResponseEntity.ok(history);
     }
 }

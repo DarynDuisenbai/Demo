@@ -13,7 +13,6 @@ import com.example.demo.dto.responce.TempConclusionDto;
 import com.example.demo.exception.*;
 import com.example.demo.mapper.spec.AgreementMapper;
 import com.example.demo.mapper.spec.ConclusionMapper;
-import com.example.demo.mapper.spec.HistoryMapper;
 import com.example.demo.mapper.spec.TempMapper;
 import com.example.demo.domain.*;
 import com.example.demo.repository.spec.*;
@@ -44,7 +43,6 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final ConclusionMapper conclusionMapper;
     private final TempMapper tempMapper;
     private final AgreementMapper agreementMapper;
-    private final HistoryMapper historyMapper;
     private final Generator generator;
     private final UTCFormatter utcFormatter;
     private final Validator validator;
@@ -550,6 +548,7 @@ public class ConclusionServiceImpl implements ConclusionService {
             Status refusedStatus = statusRepository.findByName(StatusConstants.REFUSED.getLabel());
             conclusion.setStatus(refusedStatus);
         }
+        conclusion.setAcceptDateTime(LocalDateTime.now());
         conclusionRepository.save(conclusion);
     }
 
@@ -591,10 +590,21 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
-    public History history(String iinOfCalled, String goal) throws UserNotFoundException {
-        User user = userRepository.findByIIN(iinOfCalled).orElseThrow(() -> new UserNotFoundException("User with IIN: " + iinOfCalled + " not found."));
+    public History history(String iinUser, String iinOfCalled, String goal) throws UserNotFoundException, NoConclusionException {
+        User user = userRepository.findByIIN(iinUser).orElseThrow(() -> new UserNotFoundException("User with given iin: " + iinUser + " not found."));
 
-        List<Agreement> agreements = agreementRepository.getAgreementsByIInOfCalled(user.getIIN());
-        return historyMapper.toHistory(agreements, goal);
+        List<Conclusion> conclusionsByIINOfCalled = conclusionRepository.findConclusionsByIINofCalled(iinOfCalled);
+        History history = new History();
+        if(conclusionsByIINOfCalled.isEmpty() || conclusionsByIINOfCalled == null){
+            throw new NoConclusionException("There is no conclusion related to person with " + iinOfCalled);
+        }
+        Conclusion lastConclusion = conclusionsByIINOfCalled.get(conclusionsByIINOfCalled.size()-1);
+        history.setGoal(goal);
+        history.setFullName(lastConclusion.getFullNameOfCalled());
+        history.setStatus(lastConclusion.getStatus().getName());
+        history.setPrevCall(lastConclusion.getRegistrationNumber());
+        history.setCame(lastConclusion.getCreationDate());
+        history.setLeave(lastConclusion.getAcceptDateTime() == null  ? null : lastConclusion.getAcceptDateTime());
+        return history;
     }
 }

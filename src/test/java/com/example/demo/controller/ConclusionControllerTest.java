@@ -318,15 +318,16 @@ public class ConclusionControllerTest {
 
     @Test
     public void history_Successful() throws Exception {//
-        String iin = "050411550617";
+        String iin = "000000000000";
         String goal = "For review";
+        String iinUser = "050411550617";
         History mockHistory = new History();
-        mockHistory.setAgreements(new ArrayList<>());
         mockHistory.setGoal(goal);
-        when(conclusionService.history(iin, goal)).thenReturn(mockHistory);
+        when(conclusionService.history(iinUser, iin, goal)).thenReturn(mockHistory);
 
         MvcResult result = mockMvc.perform(get("/history")
                         .param("iinOfCalled", iin)
+                        .param("iinUser", iinUser)
                         .param("goal", goal))
                 .andExpect(status().isOk()).andReturn();
 

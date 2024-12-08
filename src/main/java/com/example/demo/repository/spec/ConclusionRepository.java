@@ -24,5 +24,6 @@ public interface ConclusionRepository extends MongoRepository<Conclusion, String
             "{ $sort: { sortOrder: 1 } }"
     })
     List<Conclusion> findByRegistrationNumbers(List<String> registrationNumbers);
+    List<Conclusion> findConclusionsByIINofCalled(String iinOfCalled);
 
 }

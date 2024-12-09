@@ -58,12 +58,10 @@ public class FilterConclusionRepoImpl implements FilterConclusionRepo {
                                 (filterRequest.getRegion() == null ||
                                         (conclusion.getRegion() != null && filterRequest.getRegion().equals(conclusion.getRegion().getName())))
                                 &&
-                                (filterRequest.getFrom() == null || filterRequest.getTo() == null ||
+                                ((filterRequest.getFrom() == null && filterRequest.getTo() == null) ||
                                         (conclusion.getCreationDate() != null &&
-                                                !conclusion.getCreationDate().isBefore(
-                                                        filterRequest.getFrom().atStartOfDay()) &&
-                                                !conclusion.getCreationDate().isAfter(
-                                                        filterRequest.getTo().atTime(23, 59, 59, 999999))))
+                                                (filterRequest.getFrom() == null || !conclusion.getCreationDate().isBefore(filterRequest.getFrom().atStartOfDay())) &&
+                                                (filterRequest.getTo() == null || !conclusion.getCreationDate().isAfter(filterRequest.getTo().atTime(23, 59, 59, 999999)))))
                                 &&
                                 (filterRequest.getUD() == null ||
                                         filterRequest.getUD().equals(conclusion.getUD()))

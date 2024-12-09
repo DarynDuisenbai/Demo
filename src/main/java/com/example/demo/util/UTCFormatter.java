@@ -13,10 +13,10 @@ import java.util.Locale;
 @Component
 public class UTCFormatter {
     public LocalDateTime convertUTCToUTCPlus5(LocalDateTime dateTime) {
-        ZoneId localZoneId = ZoneId.systemDefault();
+        ZoneId utcZoneId = ZoneId.of("UTC");
+        ZonedDateTime utcZonedDateTime = dateTime.atZone(utcZoneId);
 
-        ZonedDateTime localZonedDateTime = dateTime.atZone(localZoneId);
-        ZonedDateTime utcPlus5ZonedDateTime = localZonedDateTime.withZoneSameInstant(ZoneOffset.ofHours(5));
+        ZonedDateTime utcPlus5ZonedDateTime = utcZonedDateTime.withZoneSameInstant(ZoneOffset.ofHours(5));
 
         return utcPlus5ZonedDateTime.toLocalDateTime()
                 .withNano(0)

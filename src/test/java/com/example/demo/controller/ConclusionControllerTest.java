@@ -88,11 +88,12 @@ class ConclusionControllerTest {
     @Test
     @WithMockUser
     void myAgreementsTest() throws Exception {
-        List<AgreementDto> agreements = List.of(new AgreementDto());
-        when(conclusionService.userAgreements("123456789012")).thenReturn(agreements);
+        AgreementDto agreement = new AgreementDto();
+        when(conclusionService.userAgreements("123456789012", "Z012")).thenReturn(agreement);
 
         mockMvc.perform(get("/usersAgreements")
-                        .param("IIN", "123456789012"))
+                        .param("IIN", "123456789012")
+                        .param("regNum", "Z012"))
                 .andExpect(status().isOk());
     }
 

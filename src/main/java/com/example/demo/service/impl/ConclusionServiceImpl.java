@@ -475,11 +475,12 @@ public class ConclusionServiceImpl implements ConclusionService {
     public AgreementDto userAgreements(String IIN, String regNum) throws UserNotFoundException {
         User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User with IIN: " + IIN + " not found."));
 
-        Agreement agreement = user.getAgreements().stream().
+        List<Agreement> agreements = user.getAgreements().stream().
                 filter(x -> x.getRegNumber().equals(regNum)).
-                collect(Collectors.toList()).
-                get(user.getAgreements().size()-1);
-        return agreementMapper.toAgreementDto(agreement);
+                collect(Collectors.toList());
+        Agreement last = agreements.get(agreements.size()-1);
+
+        return agreementMapper.toAgreementDto(last);
     }
 
     @Override

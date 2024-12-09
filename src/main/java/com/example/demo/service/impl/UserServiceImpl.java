@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         user.setJob(jobTitle);
 
         List<User> managers = userRepository.getBoss(user);
-        if(managers == null && managers.isEmpty()) {
+        if(managers == null || managers.isEmpty()) {
             user.setManagerIIN("");
         }else {
             user.setManagerIIN(managers.get(new Random().nextInt(managers.size())).getIIN());

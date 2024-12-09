@@ -29,11 +29,36 @@ public class Validator {
         return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar;
     }
     public boolean isValidIIN(String IIN) {
-        if (IIN == null || IIN.length() != 12) {
+        if (IIN == null || IIN.length() != 12 || !IIN.chars().allMatch(Character::isDigit)) {
             return false;
         }
-        return IIN.chars().allMatch(Character::isDigit);
+
+        int[] digits = IIN.chars().map(Character::getNumericValue).toArray();
+
+        int s = 0;
+        for (int i = 0; i < 11; i++) {
+            s += (i + 1) * digits[i];
+        }
+        int k = s % 11;
+
+        if (k == 10) {
+            s = 0;
+            for (int i = 0; i < 11; i++) {
+                int t = (i + 3) % 11;
+                if (t == 0) {
+                    t = 11;
+                }
+                s += t * digits[i];
+            }
+            k = s % 11;
+            if (k == 10) {
+                return false;
+            }
+        }
+
+        return k == digits[11];
     }
+
 
     public boolean isValidUD(String UD) {
         if (UD == null || UD.length() != 15) {

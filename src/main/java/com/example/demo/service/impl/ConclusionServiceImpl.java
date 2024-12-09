@@ -13,7 +13,6 @@ import com.example.demo.dto.responce.TempConclusionDto;
 import com.example.demo.exception.*;
 import com.example.demo.mapper.spec.AgreementMapper;
 import com.example.demo.mapper.spec.ConclusionMapper;
-import com.example.demo.mapper.spec.HistoryMapper;
 import com.example.demo.mapper.spec.TempMapper;
 import com.example.demo.domain.*;
 import com.example.demo.repository.spec.*;
@@ -53,7 +52,6 @@ public class ConclusionServiceImpl implements ConclusionService {
     private final ConclusionMapper conclusionMapper;
     private final TempMapper tempMapper;
     private final AgreementMapper agreementMapper;
-    private final HistoryMapper historyMapper;
     private final Generator generator;
     private final UTCFormatter utcFormatter;
     private final Validator validator;
@@ -82,16 +80,6 @@ public class ConclusionServiceImpl implements ConclusionService {
         conclusion.setArticle(relatedCase.getArticle());
         conclusion.setDecision(relatedCase.getDecision());
         conclusion.setPlot(relatedCase.getSummary());
-
-        String calledName = generator.generateNames();
-        String defenderName = generator.generateNames();
-
-        while (defenderName.equals(calledName)) {
-            defenderName = generator.generateNames();
-        }
-
-        conclusion.setFullNameOfCalled(calledName);
-        conclusion.setFullNameOfDefender(defenderName);
 
         String iinInvestigator = createConclusionRequest.getIINOfInvestigator();
         conclusion.setInvestigatorIIN(iinInvestigator);
@@ -153,17 +141,6 @@ public class ConclusionServiceImpl implements ConclusionService {
         temporaryConclusion.setDecision(relatedCase.getDecision());
         temporaryConclusion.setPlot(relatedCase.getSummary());
 
-        String calledName = generator.generateNames();
-        String defenderName = generator.generateNames();
-
-        while (defenderName.equals(calledName)) {
-            defenderName = generator.generateNames();
-        }
-
-        temporaryConclusion.setFullNameOfCalled(calledName);
-        temporaryConclusion.setFullNameOfDefender(defenderName);
-
-
         String iinInvestigator = createConclusionRequest.getIINOfInvestigator();
         temporaryConclusion.setInvestigatorIIN(iinInvestigator);
 
@@ -206,14 +183,17 @@ public class ConclusionServiceImpl implements ConclusionService {
         }
         if (request.getIINOfCalled() != null) {
             temporaryConclusion.setIINofCalled(request.getIINOfCalled());
+            temporaryConclusion.setFullNameOfCalled(generator.generateNames());
         }
 
         if (request.getIINDefender() != null) {
             temporaryConclusion.setIINDefender(request.getIINDefender());
+            temporaryConclusion.setFullNameOfDefender(generator.generateNames());
         }
 
         if (request.getBIN_IIN() != null) {
             temporaryConclusion.setBINorIINOfCalled(request.getBIN_IIN());
+            temporaryConclusion.setJobPlace(generator.generateJobPlaces());
         }
 
         if (request.getJobTitle() != null) {
@@ -248,6 +228,8 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         if (request.getRelatesToBusiness() != null) {
             temporaryConclusion.setIsBusiness(request.getRelatesToBusiness());
+            temporaryConclusion.setBINOrIINofBusiness(generator.generateBIN());
+            temporaryConclusion.setWorkPlaceBusiness(generator.generateWorkPlaceBusiness());
         }
 
         if (request.getJustification() != null) {
@@ -257,16 +239,6 @@ public class ConclusionServiceImpl implements ConclusionService {
         if (request.getResult() != null) {
             temporaryConclusion.setResult(request.getResult());
         }
-
-        String calledName = generator.generateNames();
-        String defenderName = generator.generateNames();
-
-        while (defenderName.equals(calledName)) {
-            defenderName = generator.generateNames();
-        }
-
-        temporaryConclusion.setFullNameOfCalled(calledName);
-        temporaryConclusion.setFullNameOfDefender(defenderName);
 
         Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
         temporaryConclusion.setStatus(status);
@@ -340,7 +312,8 @@ public class ConclusionServiceImpl implements ConclusionService {
 
     @Override
     @Transactional
-    public void remakeConclusion(EditSavedConclusionRequest editSavedConclusionRequest) throws NoConclusionException, NoPermissionForUpdateException, CaseNotFound, RegionNotFoundException {
+    public void remakeConclusion(EditSavedConclusionRequest editSavedConclusionRequest)
+            throws NoConclusionException, NoPermissionForUpdateException, CaseNotFound, RegionNotFoundException {
         Conclusion conclusion = conclusionRepository.findConclusionByRegistrationNumber(editSavedConclusionRequest.getRegistrationNumber()).
                 orElseThrow(()-> new NoConclusionException(
                         "Conclusion with registration number: " + editSavedConclusionRequest.getRegistrationNumber() + " not found.")
@@ -360,14 +333,17 @@ public class ConclusionServiceImpl implements ConclusionService {
         }
         if (request.getIINOfCalled() != null) {
             conclusion.setIINofCalled(request.getIINOfCalled());
+            conclusion.setFullNameOfCalled(generator.generateNames());
         }
 
         if (request.getIINDefender() != null) {
             conclusion.setIINDefender(request.getIINDefender());
+            conclusion.setFullNameOfDefender(generator.generateNames());
         }
 
         if (request.getBIN_IIN() != null) {
             conclusion.setBINorIINOfCalled(request.getBIN_IIN());
+            conclusion.setJobPlace(generator.generateJobPlaces());
         }
 
         if (request.getJobTitle() != null) {
@@ -402,6 +378,8 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         if (request.getRelatesToBusiness() != null) {
             conclusion.setBusiness(request.getRelatesToBusiness());
+            conclusion.setWorkPlaceBusiness(generator.generateWorkPlaceBusiness());
+            conclusion.setBINOrIINofBusiness(generator.generateBIN());
         }
 
         if (request.getJustification() != null) {
@@ -412,17 +390,7 @@ public class ConclusionServiceImpl implements ConclusionService {
             conclusion.setResult(request.getResult());
         }
 
-        String calledName = generator.generateNames();
-        String defenderName = generator.generateNames();
-
-        while (defenderName.equals(calledName)) {
-            defenderName = generator.generateNames();
-        }
-
-        conclusion.setFullNameOfCalled(calledName);
-        conclusion.setFullNameOfDefender(defenderName);
-
-        Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
+        Status status = statusRepository.findByName(StatusConstants.TO_BE_AGREED.getLabel());
         conclusion.setStatus(status);
 
         conclusionRepository.save(conclusion);
@@ -589,6 +557,7 @@ public class ConclusionServiceImpl implements ConclusionService {
             Status refusedStatus = statusRepository.findByName(StatusConstants.REFUSED.getLabel());
             conclusion.setStatus(refusedStatus);
         }
+        conclusion.setAcceptDateTime(LocalDateTime.now());
         conclusionRepository.save(conclusion);
     }
 
@@ -610,23 +579,42 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
-    public ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException {
+    public ConclusionDto getSpecific(String regNumber, String iin) throws NoConclusionException, UserNotFoundException, AccessDeniedException {
+        User user = userRepository.findByIIN(iin).orElseThrow(() -> new UserNotFoundException("User with IIN: " + iin + " not found."));
+        if(!user.getConclusionsRegNumbers().contains(regNumber)){
+            throw new AccessDeniedException("You do not have permission for this operation");
+        }
         return conclusionMapper.toConclusionDto(conclusionRepository.
                 findConclusionByRegistrationNumber(regNumber).orElseThrow(() -> new NoConclusionException("Conclusion with registration number: " + regNumber + " not found")));
     }
 
     @Override
-    public TempConclusionDto getSpecificTemp(String regNumber) throws NoConclusionException, UserNotFoundException {
+    public TempConclusionDto getSpecificTemp(String regNumber, String iin) throws NoConclusionException, UserNotFoundException, AccessDeniedException {
+        User user = userRepository.findByIIN(iin).orElseThrow(() -> new UserNotFoundException("User with IIN: " + iin + " not found."));
+        if(!user.getTemporaryConclusionsRegNumbers().contains(regNumber)){
+            throw new AccessDeniedException("You do not have permission for this operation");
+        }
         return tempMapper.toTempConclusionDto(temporaryConclusionRepository.
                 findTemporaryConclusionByRegistrationNumber(regNumber).orElseThrow(() -> new NoConclusionException("Conclusion with registration number: " + regNumber + " not found")));
     }
 
     @Override
-    public History history(String iinOfCalled, String goal) throws UserNotFoundException {
-        User user = userRepository.findByIIN(iinOfCalled).orElseThrow(() -> new UserNotFoundException("User with IIN: " + iinOfCalled + " not found."));
+    public History history(String iinUser, String iinOfCalled, String goal) throws UserNotFoundException, NoConclusionException {
+        User user = userRepository.findByIIN(iinUser).orElseThrow(() -> new UserNotFoundException("User with given iin: " + iinUser + " not found."));
 
-        List<Agreement> agreements = agreementRepository.getAgreementsByIInOfCalled(user.getIIN());
-        return historyMapper.toHistory(agreements, goal);
+        List<Conclusion> conclusionsByIINOfCalled = conclusionRepository.findConclusionsByIINofCalled(iinOfCalled);
+        History history = new History();
+        if(conclusionsByIINOfCalled.isEmpty() || conclusionsByIINOfCalled == null){
+            throw new NoConclusionException("There is no conclusion related to person with " + iinOfCalled);
+        }
+        Conclusion lastConclusion = conclusionsByIINOfCalled.get(conclusionsByIINOfCalled.size()-1);
+        history.setGoal(goal);
+        history.setFullName(lastConclusion.getFullNameOfCalled());
+        history.setStatus(lastConclusion.getStatus().getName());
+        history.setPrevCall(lastConclusion.getRegistrationNumber());
+        history.setCame(lastConclusion.getCreationDate());
+        history.setLeave(lastConclusion.getAcceptDateTime() == null  ? null : lastConclusion.getAcceptDateTime());
+        return history;
     }
 
     @Override

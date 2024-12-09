@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         user.setJob(jobTitle);
 
         List<User> managers = userRepository.getBoss(user);
-        if(managers == null && managers.isEmpty()) {
+        if(managers == null || managers.isEmpty()) {
             user.setManagerIIN("");
         }else {
             user.setManagerIIN(managers.get(new Random().nextInt(managers.size())).getIIN());
@@ -166,6 +166,8 @@ public class UserServiceImpl implements UserService {
             emailSender.sendSetPasswordEmail(forgotPasswordRequest.getEmail());
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send set password email, please try again");
+        } catch (InvalidPasswordException e) {
+            throw new RuntimeException(e);
         }
     }
 

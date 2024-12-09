@@ -12,6 +12,7 @@ import com.example.demo.domain.User;
 import com.example.demo.repository.spec.RegionRepository;
 import com.example.demo.repository.spec.StatusRepository;
 import com.example.demo.repository.spec.UserRepository;
+import com.example.demo.util.Generator;
 import com.example.demo.util.UTCFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ import java.util.List;
 public class TempMapperImpl implements TempMapper {
     private final RegionRepository regionRepository;
     private final UTCFormatter utcFormatter;
+    private final Generator generator;
     @Override
     public TemporaryConclusion fromCreateToTemp(CreateConclusionRequest createConclusionRequest) throws RegionNotFoundException, UserNotFoundException {
         TemporaryConclusion tempConclusion = new TemporaryConclusion();
@@ -40,11 +42,24 @@ public class TempMapperImpl implements TempMapper {
         tempConclusion.setRelation(createConclusionRequest.getRelation());
         tempConclusion.setInvestigation(createConclusionRequest.getInvestigationType());
         tempConclusion.setIsBusiness(createConclusionRequest.getRelatesToBusiness());
+        tempConclusion.setWorkPlaceBusiness(generator.generateWorkPlaceBusiness());
+        tempConclusion.setBINOrIINofBusiness(generator.generateBIN());
         tempConclusion.setIINDefender(createConclusionRequest.getIINDefender());
         tempConclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
         tempConclusion.setJustification(createConclusionRequest.getJustification());
         tempConclusion.setResult(createConclusionRequest.getResult());
 
+        tempConclusion.setJobPlace(generator.generateJobPlaces());
+
+        String calledName = generator.generateNames();
+        String defenderName = generator.generateNames();
+
+        while (defenderName.equals(calledName)) {
+            defenderName = generator.generateNames();
+        }
+
+        tempConclusion.setFullNameOfCalled(calledName);
+        tempConclusion.setFullNameOfDefender(defenderName);
         return tempConclusion;
     }
 
@@ -62,7 +77,7 @@ public class TempMapperImpl implements TempMapper {
         dto.setCalledPersonFullName(temporaryConclusion.getFullNameOfCalled());
         dto.setCalledPersonPosition(temporaryConclusion.getJobTitleOfCalled());
         dto.setCalledPersonBIN(temporaryConclusion.getBINorIINOfCalled());
-        dto.setWorkPlace(temporaryConclusion.getEventPlace());
+        dto.setWorkPlace(temporaryConclusion.getJobPlace());
         dto.setRegion(temporaryConclusion.getRegion());
         dto.setPlannedInvestigativeActions(temporaryConclusion.getPlannedActions());
         dto.setEventDateTime(utcFormatter.convertUTCToUTCPlus5(temporaryConclusion.getEventTime()));
@@ -72,6 +87,8 @@ public class TempMapperImpl implements TempMapper {
         dto.setRelationToEvent(temporaryConclusion.getRelation());
         dto.setInvestigationTypes(temporaryConclusion.getInvestigation());
         dto.setRelatesToBusiness(temporaryConclusion.getIsBusiness());
+        dto.setWorkPlaceBusiness(temporaryConclusion.getWorkPlaceBusiness());
+        dto.setBINOrIINofBusiness(temporaryConclusion.getBINOrIINofBusiness());
         dto.setDefenseAttorneyIIN(temporaryConclusion.getIINDefender());
         dto.setDefenseAttorneyFullName(temporaryConclusion.getFullNameOfDefender());
         dto.setJustification(temporaryConclusion.getJustification());

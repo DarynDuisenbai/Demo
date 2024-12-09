@@ -135,9 +135,10 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "Conclusion not found.")
     })
     @GetMapping("/fullConclusion")
-    public ResponseEntity<?> getSpecificConclusion(@RequestParam String regNumber) throws NoConclusionException,
-            UserNotFoundException {
-        ConclusionDto conclusionDto = conclusionService.getSpecific(regNumber);
+    public ResponseEntity<?> getSpecificConclusion(@RequestParam String regNumber,
+                                                   @RequestParam String iin) throws NoConclusionException,
+            UserNotFoundException, AccessDeniedException {
+        ConclusionDto conclusionDto = conclusionService.getSpecific(regNumber, iin);
         return ResponseEntity.ok(conclusionDto);
     }
 
@@ -148,9 +149,10 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "Conclusion not found.")
     })
     @GetMapping("/fullTempConclusion")
-    public ResponseEntity<?> getSpecificTempConclusion(@RequestParam String regNumber) throws NoConclusionException,
-            UserNotFoundException {
-        TempConclusionDto conclusionDto = conclusionService.getSpecificTemp(regNumber);
+    public ResponseEntity<?> getSpecificTempConclusion(@RequestParam String regNumber,
+                                                       @RequestParam String iin) throws NoConclusionException,
+            UserNotFoundException, AccessDeniedException {
+        TempConclusionDto conclusionDto = conclusionService.getSpecificTemp(regNumber, iin);
         return ResponseEntity.ok(conclusionDto);
     }
     @Operation(summary = "Get all UD", description = "Retrieves a list of UD's")
@@ -285,8 +287,9 @@ public class ConclusionController {
     })
     @GetMapping("/history")
     public ResponseEntity<History> history(@RequestParam String iinOfCalled,
-                                           @RequestParam String goal) throws UserNotFoundException {
-        History history = conclusionService.history(iinOfCalled, goal);
+                                           @RequestParam String iinUser,
+                                           @RequestParam String goal) throws UserNotFoundException, NoConclusionException {
+        History history = conclusionService.history(iinUser, iinOfCalled, goal);
         return ResponseEntity.ok(history);
     }
 

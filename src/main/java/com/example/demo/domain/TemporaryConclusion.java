@@ -81,6 +81,9 @@ public class TemporaryConclusion {
     @Field("BIN/IINPension")
     private String BINOrIINofBusiness;
 
+    @Field("workPlaceBusiness")
+    private String workPlaceBusiness;
+
     @Field("IINofDefender")
     private String IINDefender;
 

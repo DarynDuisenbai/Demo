@@ -15,7 +15,6 @@ public interface ConclusionMapper {
     ConclusionDto  toConclusionDto(Conclusion conclusion) throws UserNotFoundException;
     List<ConclusionDto> toDtoList(List<Conclusion> conclusions) throws UserNotFoundException;
     Set<ConclusionDto> toDtoSet(List<Conclusion> conclusions);
-    Set<ConclusionDto> toDtoSet(Set<Conclusion> conclusions);
     Conclusion fromTempToConclusion(TemporaryConclusion tempConclusion);
     List<Conclusion> fromTempListToConclusionList(List<TemporaryConclusion> tempConclusionDtos);
 

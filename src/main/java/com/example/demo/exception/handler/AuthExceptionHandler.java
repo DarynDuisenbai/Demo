@@ -32,6 +32,11 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("IIN code must be exactly 12 digits");
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException accessDeniedException){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(accessDeniedException.getMessage());
+    }
+
 
 
 }

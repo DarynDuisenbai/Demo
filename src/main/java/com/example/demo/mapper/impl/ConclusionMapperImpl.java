@@ -11,6 +11,7 @@ import com.example.demo.domain.Region;
 import com.example.demo.domain.TemporaryConclusion;
 import com.example.demo.repository.spec.RegionRepository;
 import com.example.demo.repository.spec.StatusRepository;
+import com.example.demo.util.Generator;
 import com.example.demo.util.UTCFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ import java.util.Set;
 public class ConclusionMapperImpl implements ConclusionMapper {
     private final RegionRepository regionRepository;
     private final StatusRepository statusRepository;
+    private final Generator generator;
     private final UTCFormatter utcFormatter;
 
     @Override
@@ -43,10 +45,25 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setRelation(createConclusionRequest.getRelation());
         conclusion.setInvestigation(createConclusionRequest.getInvestigationType());
         conclusion.setBusiness(createConclusionRequest.getRelatesToBusiness());
+        conclusion.setBINOrIINofBusiness(generator.generateBIN());
+        conclusion.setWorkPlaceBusiness(generator.generateWorkPlaceBusiness());
+
         conclusion.setIINDefender(createConclusionRequest.getIINDefender());
         conclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
         conclusion.setJustification(createConclusionRequest.getJustification());
         conclusion.setResult(createConclusionRequest.getResult());
+
+        conclusion.setJobPlace(generator.generateJobPlaces());
+
+        String calledName = generator.generateNames();
+        String defenderName = generator.generateNames();
+
+        while (defenderName.equals(calledName)) {
+            defenderName = generator.generateNames();
+        }
+
+        conclusion.setFullNameOfCalled(calledName);
+        conclusion.setFullNameOfDefender(defenderName);
 
         return conclusion;
     }
@@ -65,7 +82,9 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         dto.setCalledPersonFullName(conclusion.getFullNameOfCalled());
         dto.setCalledPersonPosition(conclusion.getJobTitleOfCalled());
         dto.setCalledPersonBIN(conclusion.getBINorIINOfCalled());
-        dto.setWorkPlace(conclusion.getEventPlace());
+        dto.setWorkPlace(conclusion.getJobPlace());
+        dto.setBINOrIINofBusiness(conclusion.getBINOrIINofBusiness());
+        dto.setWorkPlaceBusiness(conclusion.getWorkPlaceBusiness());
         dto.setRegion(conclusion.getRegion());
         dto.setPlannedInvestigativeActions(conclusion.getPlannedActions());
         dto.setEventDateTime(utcFormatter.convertUTCToUTCPlus5(conclusion.getEventTime()));
@@ -106,8 +125,10 @@ public class ConclusionMapperImpl implements ConclusionMapper {
         conclusion.setFullNameOfCalled(tempConclusionDto.getFullNameOfCalled());
         conclusion.setJobTitleOfCalled(tempConclusionDto.getJobTitleOfCalled());
         conclusion.setBINorIINOfCalled(tempConclusionDto.getBINorIINOfCalled());
-        conclusion.setEventPlace(tempConclusionDto.getEventPlace());
+        conclusion.setJobPlace(tempConclusionDto.getJobPlace());
         conclusion.setRegion(tempConclusionDto.getRegion());
+        conclusion.setBINOrIINofBusiness(tempConclusionDto.getBINOrIINofBusiness());
+        conclusion.setWorkPlaceBusiness(tempConclusionDto.getWorkPlaceBusiness());
         conclusion.setPlannedActions(tempConclusionDto.getPlannedActions());
         conclusion.setEventTime(utcFormatter.convertUTCToUTCPlus5(tempConclusionDto.getEventTime()));
         conclusion.setEventPlace(tempConclusionDto.getEventPlace());
@@ -135,15 +156,6 @@ public class ConclusionMapperImpl implements ConclusionMapper {
 
     @Override
     public Set<ConclusionDto> toDtoSet(List<Conclusion> conclusions) {
-        Set<ConclusionDto> conclusionDtos = new HashSet<>();
-        for(Conclusion conclusion : conclusions){
-            conclusionDtos.add(toConclusionDto(conclusion));
-        }
-        return conclusionDtos;
-    }
-
-    @Override
-    public Set<ConclusionDto> toDtoSet(Set<Conclusion> conclusions) {
         Set<ConclusionDto> conclusionDtos = new HashSet<>();
         for(Conclusion conclusion : conclusions){
             conclusionDtos.add(toConclusionDto(conclusion));

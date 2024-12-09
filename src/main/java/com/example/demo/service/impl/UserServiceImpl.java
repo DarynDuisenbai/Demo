@@ -251,5 +251,12 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public void uploadProfileImage(String iin, String url) throws UserNotFoundException {
+        User user = userRepository.findByIIN(iin).orElseThrow(() -> new UserNotFoundException("User with " + iin + " not found"));
+        user.setProfileImage(url);
+
+        userRepository.save(user);
+    }
 }
 

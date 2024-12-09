@@ -133,4 +133,15 @@ public class UserController {
         List<UserDto> userDtos = userService.getAllUsers();
         return ResponseEntity.ok(userDtos);
     }
+
+    @Operation(summary = "Add profile image")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile image uploaded")
+    })
+    @PatchMapping("/image")
+    public ResponseEntity<?> image(@RequestParam String iin,
+                                   @RequestParam String imageUrl) throws UserNotFoundException {
+        userService.uploadProfileImage(iin, imageUrl);
+        return ResponseEntity.ok("Profile image has uploaded");
+    }
 }

@@ -24,4 +24,5 @@ public interface UserService extends UserDetailsService {
     void editProfile(EditProfileRequest editProfileRequest) throws UserNotFoundException;
     List<UserDto> getAllUsers();
     User getAnalystOfDepartment(String department);
+    void uploadProfileImage(String iin, String url) throws UserNotFoundException;
 }

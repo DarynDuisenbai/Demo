@@ -3,27 +3,25 @@ package com.example.demo.service.impl;
 import com.example.demo.domain.Conclusion;
 import com.example.demo.dto.responce.ConclusionDto;
 import com.example.demo.exception.NoConclusionException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.spec.ConclusionRepository;
 import com.example.demo.service.spec.ConclusionService;
 import com.example.demo.service.spec.ExportService;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.example.demo.util.UTCFormatter;
+import com.itextpdf.text.*;
+
+import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.util.List;
-import java.util.Set;
 
 
 @Service
@@ -31,6 +29,7 @@ import java.util.Set;
 public class ExportServiceImpl implements ExportService {
     private final ConclusionRepository conclusionRepository;
     private final ConclusionService conclusionService;
+    private final UTCFormatter utcFormatter;
 
     @Override
     public ByteArrayInputStream exportToExcel(String IIN) {
@@ -97,57 +96,141 @@ public class ExportServiceImpl implements ExportService {
 
     private CellStyle createHeaderStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
-        Font font = workbook.createFont();
+
+        org.apache.poi.ss.usermodel.Font font = workbook.createFont();
         font.setBold(true);
         style.setFont(font);
         return style;
     }
 
     @Override
-    public ByteArrayInputStream exportToPdf(String regNumber) throws NoConclusionException, IOException {
-        // Retrieve the conclusion data from the database
-        Conclusion conclusion = conclusionRepository.findConclusionByRegistrationNumber(regNumber)
-                .orElseThrow(NoConclusionException::new);
+    public ByteArrayInputStream exportToPdf(String IIN)
+            throws NoConclusionException, IOException, UserNotFoundException, DocumentException {
+        List<ConclusionDto> conclusions = conclusionService.userConclusions(IIN);
+        if (conclusions == null || conclusions.isEmpty()) {
+            throw new NoConclusionException("No conclusions found for the given IIN: " + IIN);
+        }
 
-        // Create a new PDF document
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
-        document.addPage(page);
-
-        // Add content to the document
-        addConclusionDataToPdf(document, page, conclusion);
-
-        // Save the document to a byte array
+        Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        document.save(out);
+
+        PdfWriter.getInstance(document, out);
+        document.open();
+        InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/DejaVuSans.ttf");
+        if (fontStream == null) {
+            throw new IOException("Font file not found in resources: fonts/DejaVuSans.ttf");
+        }
+        BaseFont baseFont = BaseFont.createFont("DejaVuSans.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, true,
+                fontStream.readAllBytes(), null);
+
+        Font titleFont = new Font(baseFont, 18, Font.BOLD);
+        Font headerFont = new Font(baseFont, 12, Font.BOLD);
+        Font cellFont = new Font(baseFont, 10, Font.NORMAL);
+
+        Paragraph title = new Paragraph("Репорт Заключении", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+        document.add(new Paragraph(" "));
+
+        PdfPTable table = new PdfPTable(5);
+        table.setWidthPercentage(100);
+        table.setSpacingBefore(10f);
+
+        String[] headers = {"Registration Number", "Creation Date", "Article", "Decision", "Region"};
+        for (String header : headers) {
+            PdfPCell headerCell = new PdfPCell(new Phrase(header, headerFont));
+            headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(headerCell);
+        }
+
+        for (ConclusionDto conclusion : conclusions) {
+            table.addCell(new Phrase(conclusion.getRegistrationNumber(), cellFont));
+            table.addCell(new Phrase(String.valueOf(conclusion.getCreationDate()), cellFont));
+            table.addCell(new Phrase(conclusion.getArticle(), cellFont));
+            table.addCell(new Phrase(conclusion.getDecision(), cellFont));
+            table.addCell(new Phrase(conclusion.getRegion().getName(), cellFont));
+        }
+
+        document.add(table);
         document.close();
 
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    private void addConclusionDataToPdf(PDDocument document, PDPage page, Conclusion conclusion) throws IOException {
-        try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-            InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/Faberge-Regular.otf");
-            if (fontStream == null) {
-                throw new FileNotFoundException("Font file not found in resources");
-            }
+    @Override
+    public ByteArrayInputStream generateConclusionPdf(String registrationNumber) throws NoConclusionException, IOException, DocumentException {
 
-            PDType0Font font = PDType0Font.load(document, fontStream);
-            contentStream.beginText();
-            contentStream.newLineAtOffset(50, 750);
-            contentStream.setFont(font, 12);
-            // Add text content to the document
-            contentStream.showText("Заявление");
-            contentStream.newLineAtOffset(0, -20);
+        Conclusion conclusion = conclusionRepository
+                .findConclusionByRegistrationNumber(registrationNumber)
+                .orElseThrow(() -> new NoConclusionException("Conclusion with registration number: " + registrationNumber + " not found"));
+        Document document = new Document();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            contentStream.showText("Регистрационный номер: " + conclusion.getRegistrationNumber());
-            contentStream.newLineAtOffset(0, -20);
-
-            contentStream.showText("Статья: " + conclusion.getArticle());
-            contentStream.newLineAtOffset(0, -20);
-
-            contentStream.endText();
+        PdfWriter writer = PdfWriter.getInstance(document, out);
+        document.open();
+        InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/DejaVuSans.ttf");
+        if (fontStream == null) {
+            throw new IOException("Font file not found in resources: fonts/DejaVuSans.ttf");
         }
+        BaseFont baseFont = BaseFont.createFont("DejaVuSans.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, true,
+                fontStream.readAllBytes(), null);
+
+
+        Font titleFont = new Font(baseFont, 18, Font.BOLD);
+        Font paragraphFont = new Font(baseFont, 14);
+
+        Paragraph investigation = new Paragraph(conclusion.getInvestigation(), paragraphFont);
+        investigation.setAlignment(Element.ALIGN_CENTER);
+        document.add(investigation);
+
+        Paragraph title = new Paragraph(conclusion.getArticle(), titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+        document.add(new Paragraph(" "));
+
+        Paragraph date = new Paragraph(utcFormatter.formatDateInRussian(conclusion.getRegistrationDate()), paragraphFont);
+        date.setAlignment(Element.ALIGN_RIGHT);
+        document.add(date);
+
+        Paragraph eventPlace = new Paragraph(conclusion.getEventPlace(), paragraphFont);
+        eventPlace.setAlignment(Element.ALIGN_CENTER);
+        document.add(eventPlace);
+
+        Paragraph region = new Paragraph(conclusion.getRegion().getName(), paragraphFont);
+        region.setAlignment(Element.ALIGN_CENTER);
+        document.add(region);
+
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph(" "));
+
+        Paragraph context = new Paragraph(conclusion.getPlot() + " " +
+                conclusion.getDecision() + " " + conclusion.getResult(), paragraphFont);
+        context.setAlignment(Element.ALIGN_CENTER);
+        document.add(context);
+
+        Paragraph sign = new Paragraph("Подпись _______", paragraphFont);
+        float x1 = document.right() - 120;
+        float y1 = document.bottom() + 150;
+
+        ColumnText.showTextAligned(writer.getDirectContentUnder(), Element.ALIGN_RIGHT, sign,
+                x1, y1, 0);
+
+        InputStream imageStream = getClass().getClassLoader().getResourceAsStream("штамп.png");
+        if (fontStream == null) {
+            throw new IOException("Font file not found in resources: штамп.png");
+        }
+        byte[] imageBytes = imageStream.readAllBytes();
+
+        Image image = Image.getInstance(imageBytes);
+        image.scaleToFit(200, 100);
+        float x2 = 100;
+        float y2 = y1;
+        image.setAbsolutePosition(x2, y2);
+        document.add(image);
+
+        document.close();
+        return new ByteArrayInputStream(out.toByteArray());
     }
 }
 

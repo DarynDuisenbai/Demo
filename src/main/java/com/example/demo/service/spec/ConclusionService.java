@@ -12,7 +12,10 @@ import com.example.demo.dto.responce.TempConclusionDto;
 import com.example.demo.exception.*;
 import com.example.demo.domain.Agreement;
 import com.example.demo.domain.Conclusion;
+import com.itextpdf.text.DocumentException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Set;
 
@@ -34,9 +37,7 @@ public interface ConclusionService {
 
     void sendConclusion(Conclusion conclusion, User manager) throws UserNotFoundException;
     AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException;
-    ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException;
-    TempConclusionDto getSpecificTemp(String regNumber) throws NoConclusionException, UserNotFoundException;
-    History history(String iinInvestigator, String goal) throws UserNotFoundException;
-
-
+    ConclusionDto getSpecific(String regNumber, String iin) throws NoConclusionException, UserNotFoundException, AccessDeniedException;
+    TempConclusionDto getSpecificTemp(String regNumber, String iin) throws NoConclusionException, UserNotFoundException, AccessDeniedException;
+    History history(String iinUser, String iinInvestigator, String goal) throws UserNotFoundException, NoConclusionException;
 }

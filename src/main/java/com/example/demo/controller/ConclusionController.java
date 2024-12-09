@@ -292,35 +292,4 @@ public class ConclusionController {
         History history = conclusionService.history(iinUser, iinOfCalled, goal);
         return ResponseEntity.ok(history);
     }
-
-    @Operation(summary = "History call", description = "Retrieve history as a PDF document")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "History retrieved successfully",
-                    content = @Content(mediaType = "application/pdf")),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @GetMapping("/pdfConclusion")
-    public ResponseEntity<Resource> getPdfConclusion(@RequestParam String registerNumber)
-            throws NoConclusionException, DocumentException, IOException {
-        // Генерация PDF
-        File pdfFile = conclusionService.generateConclusionPdf(registerNumber);
-
-        // Преобразование файла в ресурс
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(pdfFile));
-
-        // Установка заголовков
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDisposition(ContentDisposition
-                .builder("inline")
-                .filename(pdfFile.getName())
-                .build());
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(resource);
-    }
-
-
 }

@@ -6,7 +6,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 
 @Component
 public class UTCFormatter {
@@ -19,5 +21,9 @@ public class UTCFormatter {
         return utcPlus5ZonedDateTime.toLocalDateTime()
                 .withNano(0)
                 .truncatedTo(ChronoUnit.MINUTES);
+    }
+    public String formatDateInRussian(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy 'г.'", new Locale("ru"));
+        return dateTime.format(formatter);
     }
 }

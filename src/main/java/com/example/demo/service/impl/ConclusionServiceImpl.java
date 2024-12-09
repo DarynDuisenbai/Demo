@@ -21,14 +21,23 @@ import com.example.demo.service.spec.ConclusionService;
 import com.example.demo.util.Generator;
 import com.example.demo.util.UTCFormatter;
 import com.example.demo.util.Validator;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -618,5 +627,71 @@ public class ConclusionServiceImpl implements ConclusionService {
 
         List<Agreement> agreements = agreementRepository.getAgreementsByIInOfCalled(user.getIIN());
         return historyMapper.toHistory(agreements, goal);
+    }
+
+    @Override
+    @Transactional
+    public File generateConclusionPdf(String registrationNumber) throws NoConclusionException, DocumentException, FileNotFoundException {
+        LOGGER.debug("Generating PDF for conclusion with registration number: {}", registrationNumber);
+
+        // Найти заключение
+        Conclusion conclusion = conclusionRepository
+                .findConclusionByRegistrationNumber(registrationNumber)
+                .orElseThrow(() -> new NoConclusionException("Conclusion with registration number: " + registrationNumber + " not found"));
+
+        // Указать путь для сохранения файла
+        String filePath = "Conclusion_" + registrationNumber + ".pdf";
+        File pdfFile = new File(filePath);
+
+        // Создать новый документ
+        Document document = new Document(PageSize.A4);
+        PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
+
+        // Открыть документ
+        document.open();
+
+        // Добавить заголовок
+        Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD, BaseColor.DARK_GRAY);
+        Paragraph title = new Paragraph("Conclusion Details", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+
+        // Добавить отступ
+        document.add(new Paragraph("\n"));
+
+        // Создать таблицу
+        PdfPTable table = new PdfPTable(2);
+        table.setWidthPercentage(100);
+        table.setSpacingBefore(10f);
+        table.setSpacingAfter(10f);
+
+        // Добавить данные в таблицу
+        addPdfTableRow(table, "Registration Number", conclusion.getRegistrationNumber());
+        // (Другие строки...)
+        addPdfTableRow(table, "Investigator IIN", conclusion.getInvestigatorIIN());
+
+        // Добавить таблицу в документ
+        document.add(table);
+
+        // Закрыть документ
+        document.close();
+
+        LOGGER.debug("PDF generated and saved to file: {}", filePath);
+
+        return pdfFile;
+    }
+
+    // Helper method to add rows to PDF table
+    private void addPdfTableRow(PdfPTable table, String label, String value) {
+        Font labelFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, BaseColor.DARK_GRAY);
+        Font valueFont = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL, BaseColor.BLACK);
+
+        PdfPCell labelCell = new PdfPCell(new Phrase(label, labelFont));
+        labelCell.setBorderColor(BaseColor.LIGHT_GRAY);
+        table.addCell(labelCell);
+
+        PdfPCell valueCell = new PdfPCell(new Phrase(value != null ? value : "N/A", valueFont));
+        valueCell.setBorderColor(BaseColor.LIGHT_GRAY);
+        table.addCell(valueCell);
     }
 }

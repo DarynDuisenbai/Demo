@@ -16,7 +16,7 @@ public interface UserService extends UserDetailsService {
     UserDto getProfile(String email) throws UserNotFoundException;
     void changePassword(ChangePasswordRequest changePasswordRequest) throws UserNotFoundException, InvalidPasswordException;
     void deleteAccount(DeleteAccountRequest deleteAccountRequest) throws UserNotFoundException;
-    String forgotPassword(String email) throws UserNotFoundException;
+    void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) throws UserNotFoundException,InvalidPasswordException;
     List<String> allNames();
     List<UserDto> getAllWithinDep(String department);
     List<UserDto> getAllWithinJob(String job);

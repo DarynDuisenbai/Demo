@@ -11,6 +11,7 @@ import com.example.demo.dto.responce.History;
 import com.example.demo.dto.responce.TempConclusionDto;
 import com.example.demo.exception.*;
 import com.example.demo.service.spec.ConclusionService;
+import com.itextpdf.text.DocumentException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,12 +20,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -284,4 +289,35 @@ public class ConclusionController {
         History history = conclusionService.history(iinOfCalled, goal);
         return ResponseEntity.ok(history);
     }
+
+    @Operation(summary = "History call", description = "Retrieve history as a PDF document")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "History retrieved successfully",
+                    content = @Content(mediaType = "application/pdf")),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("/pdfConclusion")
+    public ResponseEntity<Resource> getPdfConclusion(@RequestParam String registerNumber)
+            throws NoConclusionException, DocumentException, IOException {
+        // Генерация PDF
+        File pdfFile = conclusionService.generateConclusionPdf(registerNumber);
+
+        // Преобразование файла в ресурс
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(pdfFile));
+
+        // Установка заголовков
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition
+                .builder("inline")
+                .filename(pdfFile.getName())
+                .build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
+    }
+
+
 }

@@ -157,17 +157,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String forgotPassword(String email) throws UserNotFoundException {
-        if(!isPresent(email)){
+    public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) throws UserNotFoundException, InvalidPasswordException {
+        if(!isPresent(forgotPasswordRequest.getEmail())){
             LOGGER.warn("User not found...");
-            throw new UserNotFoundException("User with email: " + email + " not found.");
+            throw new UserNotFoundException("User with email: " + forgotPasswordRequest.getEmail() + " not found.");
         }
         try {
-            emailSender.sendSetPasswordEmail(email);
+            emailSender.sendSetPasswordEmail(forgotPasswordRequest.getEmail());
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send set password email, please try again");
         }
-        return "Please check your email to set new password to your account.";
     }
 
     @Override

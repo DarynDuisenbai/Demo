@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.request.user.ChangePasswordRequest;
 import com.example.demo.dto.request.user.DeleteAccountRequest;
 import com.example.demo.dto.request.user.EditProfileRequest;
+import com.example.demo.dto.request.user.ForgotPasswordRequest;
 import com.example.demo.dto.responce.UserDto;
 import com.example.demo.exception.InvalidPasswordException;
 import com.example.demo.exception.UserNotFoundException;
@@ -69,9 +70,10 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PutMapping("/reset-password")
-    public ResponseEntity<?> forgotPassword(@RequestParam String email)
-            throws UserNotFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.forgotPassword(email));
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest)
+            throws UserNotFoundException,InvalidPasswordException {
+        userService.forgotPassword(forgotPasswordRequest);
+        return ResponseEntity.ok("Password changed successfully");
     }
 
     @Operation(summary = "All names")

@@ -10,9 +10,11 @@ import com.example.demo.dto.responce.ConclusionDto;
 import com.example.demo.dto.responce.History;
 import com.example.demo.dto.responce.TempConclusionDto;
 import com.example.demo.exception.*;
-import com.example.demo.domain.Agreement;
 import com.example.demo.domain.Conclusion;
+import com.itextpdf.text.DocumentException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Set;
 
@@ -31,12 +33,11 @@ public interface ConclusionService {
     List<AgreementDto> userAgreements(String IIN) throws UserNotFoundException;
     List<String> allUD();
     List<Conclusion> getAllConclusions();
-
     void sendConclusion(Conclusion conclusion, User manager) throws UserNotFoundException;
     AgreementDto makeDecision(DecisionRequest decisionRequest) throws UserNotFoundException, NoConclusionException;
     ConclusionDto getSpecific(String regNumber) throws NoConclusionException, UserNotFoundException;
     TempConclusionDto getSpecificTemp(String regNumber) throws NoConclusionException, UserNotFoundException;
     History history(String iinInvestigator, String goal) throws UserNotFoundException;
-
+    File generateConclusionPdf(String registrationNumber) throws NoConclusionException, DocumentException, FileNotFoundException;
 
 }

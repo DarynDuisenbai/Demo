@@ -166,6 +166,8 @@ public class UserServiceImpl implements UserService {
             emailSender.sendSetPasswordEmail(email);
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send set password email, please try again");
+        } catch (InvalidPasswordException e) {
+            throw new RuntimeException(e);
         }
         return "Please check your email to set new password to your account.";
     }

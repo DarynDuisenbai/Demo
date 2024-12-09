@@ -5,6 +5,7 @@ import com.example.demo.domain.TemporaryConclusion;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.RandomStringGenerator;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -31,6 +32,42 @@ public class Generator {
         int nextNumber = Math.max(maxFromConclusions, maxFromTemporary) + 1;
         return PREFIX + String.format("%03d", nextNumber);
     }
+    public String generatePassword() {
+        String uppercase = new RandomStringGenerator.Builder()
+                .withinRange('A', 'Z')
+                .build()
+                .generate(1);
+
+        String lowercase = new RandomStringGenerator.Builder()
+                .withinRange('a', 'z')
+                .build()
+                .generate(1);
+
+        String digit = new RandomStringGenerator.Builder()
+                .withinRange('0', '9')
+                .build()
+                .generate(1);
+
+        String specialChar = new RandomStringGenerator.Builder()
+                .withinRange('!', '?')
+                .filteredBy(ch -> "!@#$%^&*()-+=<>?".indexOf(ch) >= 0)
+                .build()
+                .generate(1);
+
+        String remaining = new RandomStringGenerator.Builder()
+                .withinRange('0', 'z')
+                .filteredBy(Character::isLetterOrDigit)
+                .build()
+                .generate(3);
+
+        String password = uppercase + lowercase + digit + specialChar + remaining;
+        return new String(new java.util.Random().ints(0, password.length())
+                .distinct()
+                .limit(password.length())
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString());
+    }
+
 
     private <T> int findMaxNumberFromCollection(Class<T> entityClass) {
         Aggregation aggregation = Aggregation.newAggregation(

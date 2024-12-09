@@ -15,15 +15,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
+
+import static com.mongodb.internal.authentication.AwsCredentialHelper.LOGGER;
 
 @Tag(name = "User Controller", description = "Endpoints for managing user operations")
 @RestController
@@ -51,8 +50,14 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PutMapping("/password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest)
+    public ResponseEntity<?> changePassword(@RequestParam String email,
+                                            @RequestParam String oldPass,
+                                            @RequestParam String newPass)
             throws UserNotFoundException, InvalidPasswordException {
+        ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
+        changePasswordRequest.setNewPassword(newPass);
+        changePasswordRequest.setEmail(email);
+        changePasswordRequest.setOldPassword(oldPass);
         userService.changePassword(changePasswordRequest);
         return ResponseEntity.ok("Password changed successfully");
     }
@@ -162,7 +167,6 @@ public class UserController {
 
         String imageUrl = imageService.uploadImageToStorage(request.getImage());
         userService.uploadProfileImage(request.getIin(), imageUrl);
-
         return ResponseEntity.ok("Profile image uploaded successfully.");
     }
 

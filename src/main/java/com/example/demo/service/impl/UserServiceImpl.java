@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("User with email: " + changePasswordRequest.getEmail() + " not found.");
         }
 
-        User user = userRepository.findByEmail(changePasswordRequest.getEmail()).get();
+        User user = userRepository.findByEmail(changePasswordRequest.getEmail()).orElseThrow(() ->new UserNotFoundException("User with email: " + changePasswordRequest.getEmail() + " not found."));
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             LOGGER.warn("Old password incorrect...");
             throw new InvalidPasswordException("Old password is incorrect");

@@ -209,12 +209,19 @@ public class ExportServiceImpl implements ExportService {
         context.setAlignment(Element.ALIGN_CENTER);
         document.add(context);
 
-        Paragraph sign = new Paragraph("Подпись _______", paragraphFont);
+        Paragraph defender = new Paragraph("Рассмотрел(-а): " + conclusion.getFullNameOfDefender(), paragraphFont);
         float x1 = document.right() - 120;
-        float y1 = document.bottom() + 150;
+        float y1 = document.bottom() + 185;
+
+        ColumnText.showTextAligned(writer.getDirectContentUnder(), Element.ALIGN_RIGHT, defender,
+                x1, y1, 0);
+
+        Paragraph sign = new Paragraph("Подпись _______", paragraphFont);
+        float x2 = document.right() - 120;
+        float y2 = document.bottom() + 150;
 
         ColumnText.showTextAligned(writer.getDirectContentUnder(), Element.ALIGN_RIGHT, sign,
-                x1, y1, 0);
+                x2, y2, 0);
 
         InputStream imageStream = getClass().getClassLoader().getResourceAsStream("штамп.png");
         if (fontStream == null) {
@@ -224,8 +231,8 @@ public class ExportServiceImpl implements ExportService {
 
         Image image = Image.getInstance(imageBytes);
         image.scaleToFit(200, 100);
-        float x2 = 100;
-        float y2 = y1;
+        float x3 = 100;
+        float y3 = y2;
         image.setAbsolutePosition(x2, y2);
         document.add(image);
 

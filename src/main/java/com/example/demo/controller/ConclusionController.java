@@ -112,9 +112,10 @@ public class ConclusionController {
             @ApiResponse(responseCode = "404", description = "User not found.")
     })
     @GetMapping("/usersAgreements")
-    public ResponseEntity<?> myAgreements(@RequestParam String IIN) throws UserNotFoundException {
-        List<AgreementDto> agreements = conclusionService.userAgreements(IIN);
-        return ResponseEntity.ok(agreements);
+    public ResponseEntity<?> myAgreements(@RequestParam String IIN,
+                                          @RequestParam String regNum) throws UserNotFoundException {
+        AgreementDto agreement = conclusionService.userAgreements(IIN, regNum);
+        return ResponseEntity.ok(agreement);
     }
 
 

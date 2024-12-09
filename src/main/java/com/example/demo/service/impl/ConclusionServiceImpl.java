@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -471,10 +472,14 @@ public class ConclusionServiceImpl implements ConclusionService {
     }
 
     @Override
-    public List<AgreementDto> userAgreements(String IIN) throws UserNotFoundException {
+    public AgreementDto userAgreements(String IIN, String regNum) throws UserNotFoundException {
         User user = userRepository.findByIIN(IIN).orElseThrow(() -> new UserNotFoundException("User with IIN: " + IIN + " not found."));
 
-        return agreementMapper.toDtoList(user.getAgreements());
+        Agreement agreement = user.getAgreements().stream().
+                filter(x -> x.getRegNumber().equals(regNum)).
+                collect(Collectors.toList()).
+                get(user.getAgreements().size()-1);
+        return agreementMapper.toAgreementDto(agreement);
     }
 
     @Override

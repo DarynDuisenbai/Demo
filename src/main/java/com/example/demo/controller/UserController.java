@@ -1,22 +1,25 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.request.user.ChangePasswordRequest;
-import com.example.demo.dto.request.user.DeleteAccountRequest;
-import com.example.demo.dto.request.user.EditProfileRequest;
-import com.example.demo.dto.request.user.ForgotPasswordRequest;
+import com.example.demo.dto.request.user.*;
 import com.example.demo.dto.responce.UserDto;
 import com.example.demo.exception.InvalidPasswordException;
 import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.service.spec.ImageService;
 import com.example.demo.service.spec.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "User Controller", description = "Endpoints for managing user operations")
@@ -24,6 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final ImageService imageService;
 
     @Operation(summary = "Get user profile")
     @ApiResponses(value = {
@@ -134,14 +138,28 @@ public class UserController {
         return ResponseEntity.ok(userDtos);
     }
 
-    @Operation(summary = "Add profile image")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Profile image uploaded")
-    })
+
+    @Operation(
+            summary = "Add profile image",
+            requestBody = @RequestBody(
+                    content = @Content(
+                            mediaType = "multipart/form-data",
+                            schema = @Schema(
+                                    implementation = ProfileImageUploadRequest.class
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Profile image uploaded successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid request data")
+            }
+    )
     @PatchMapping("/image")
-    public ResponseEntity<?> image(@RequestParam String iin,
-                                   @RequestParam String imageUrl) throws UserNotFoundException {
-        userService.uploadProfileImage(iin, imageUrl);
-        return ResponseEntity.ok("Profile image has uploaded");
+    public ResponseEntity<?> uploadProfileImage(@ModelAttribute ProfileImageUploadRequest request) throws Exception {
+
+        String imageUrl = imageService.uploadImageToStorage(request.getImage());
+        userService.uploadProfileImage(request.getIin(), imageUrl);
+
+        return ResponseEntity.ok("Profile image uploaded successfully.");
     }
 }

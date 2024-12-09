@@ -33,7 +33,7 @@ public class ImageServiceImpl implements ImageService {
         return fileId.toString();
     }
 
-    public Resource getImage(String fileId) throws IOException {
+    public Resource getImage(String fileId) throws FileNotFoundException {
         GridFSFile file = gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(fileId)));
         if (file != null) {
             return new InputStreamResource(gridFSBucket.openDownloadStream(file.getId()));

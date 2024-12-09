@@ -14,11 +14,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -161,5 +164,25 @@ public class UserController {
         userService.uploadProfileImage(request.getIin(), imageUrl);
 
         return ResponseEntity.ok("Profile image uploaded successfully.");
+    }
+
+    @Operation(
+            summary = "Get profile image",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Image fetched successfully"),
+                    @ApiResponse(responseCode = "404", description = "Image not found")
+            }
+    )
+    @GetMapping("/image/{fileId}")
+    public ResponseEntity<?> getProfileImage(@PathVariable String fileId) {
+        try {
+            Resource image = imageService.getImage(fileId);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(image);
+        } catch (FileNotFoundException e) {
+            return ResponseEntity.status(404).body("Image not found");
+        }
     }
 }

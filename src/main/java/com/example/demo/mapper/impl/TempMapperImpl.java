@@ -48,7 +48,6 @@ public class TempMapperImpl implements TempMapper {
         tempConclusion.setIINofCalled(createConclusionRequest.getIINOfCalled());
         tempConclusion.setJustification(createConclusionRequest.getJustification());
         tempConclusion.setResult(createConclusionRequest.getResult());
-
         tempConclusion.setJobPlace(generator.generateJobPlaces());
 
         String calledName = generator.generateNames();

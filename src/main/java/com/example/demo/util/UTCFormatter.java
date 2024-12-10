@@ -16,9 +16,7 @@ public class UTCFormatter {
         ZoneId utcZoneId = ZoneId.of("UTC");
         ZonedDateTime utcZonedDateTime = dateTime.atZone(utcZoneId);
 
-        ZonedDateTime utcPlus5ZonedDateTime = utcZonedDateTime.withZoneSameInstant(ZoneOffset.ofHours(5));
-
-        return utcPlus5ZonedDateTime.toLocalDateTime()
+        return utcZonedDateTime.toLocalDateTime()
                 .withNano(0)
                 .truncatedTo(ChronoUnit.MINUTES);
     }

@@ -130,7 +130,7 @@ public class ConclusionServiceImpl implements ConclusionService {
         TemporaryConclusion temporaryConclusion = tempMapper.fromCreateToTemp(createConclusionRequest);
 
         temporaryConclusion.setRegistrationNumber(generator.generateUniqueNumber());
-        temporaryConclusion.setCreationDate(LocalDateTime.now());
+        temporaryConclusion.setCreationDate(utcFormatter.convertUTCToUTCPlus5(LocalDateTime.now()));
 
         Status status = statusRepository.findByName(StatusConstants.IN_PROGRESS.getLabel());
         temporaryConclusion.setStatus(status);

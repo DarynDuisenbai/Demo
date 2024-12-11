@@ -14,8 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -146,7 +144,7 @@ public class UserControllerTest {
         UserDto userDto = new UserDto();
         userDto.setName("User1");
 
-        Mockito.when(userService.getAllUsers(0, 10)).thenReturn();
+        Mockito.when(userService.getAllUsers()).thenReturn(Collections.singletonList(userDto));
 
         mockMvc.perform(get("/allUsers"))
                 .andExpect(status().isOk())

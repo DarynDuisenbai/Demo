@@ -560,7 +560,7 @@ public class ConclusionServiceImpl implements ConclusionService {
             Status unanimousStatus = relatedAgreements.iterator().next().getStatus();
             conclusion.setStatus(unanimousStatus);
         } else {
-            Status refusedStatus = statusRepository.findByName(StatusConstants.REFUSED.getLabel());
+            Status refusedStatus = statusRepository.findByName(StatusConstants.AGREED.getLabel());
             conclusion.setStatus(refusedStatus);
         }
         conclusion.setAcceptDateTime(LocalDateTime.now());

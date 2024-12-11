@@ -18,8 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -242,9 +240,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> getAllUsers(int page, int size) {
-        Page<User> users = userRepository.findAll(PageRequest.of(page, size));
-        return users.map(userMapper::toUserDto);
+    public List<UserDto> getAllUsers() {
+        return userMapper.toDtoList(userRepository.findAll());
     }
 
 

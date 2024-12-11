@@ -4,7 +4,6 @@ import com.example.demo.dto.request.user.*;
 import com.example.demo.dto.responce.UserDto;
 import com.example.demo.exception.*;
 import com.example.demo.domain.User;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public interface UserService extends UserDetailsService {
     List<UserDto> getAllWithinJob(String job);
     void promote(String IIN) throws UserNotFoundException, AnalystAlreadyExistsException;
     void editProfile(EditProfileRequest editProfileRequest) throws UserNotFoundException;
-    Page<UserDto> getAllUsers(int page, int size);
+    List<UserDto> getAllUsers();
     User getAnalystOfDepartment(String department);
     void uploadProfileImage(String iin, String url) throws UserNotFoundException;
 }
